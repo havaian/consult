@@ -118,13 +118,8 @@ const userSchema = new Schema({
     },
     // Client-specific fields
     legalHistory: {
-        allergies: [String],
-        chronicConditions: [String],
-        currentActions: [String],
-        surgeries: [{
-            procedure: String,
-            year: Number
-        }]
+        type: String,
+        required: false
     },
     emergencyContact: {
         name: String,

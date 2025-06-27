@@ -212,8 +212,8 @@
 //                     ctx.session.appointmentData = {};
 //                 }
                 
-//                 // Save reason for visit
-//                 ctx.session.appointmentData.reasonForVisit = ctx.message.text.trim();
+//                 // Save short description
+//                 ctx.session.appointmentData.shortDescription = ctx.message.text.trim();
 //                 ctx.session.step = 'appointment_confirm';
 
 //                 const { advisorName, date, time, type } = ctx.session.appointmentData;
@@ -234,7 +234,7 @@
 //                     `Date: ${date}\n` +
 //                     `Time: ${time}\n` +
 //                     `Type: ${type}\n` +
-//                     `Reason: ${ctx.session.appointmentData.reasonForVisit}\n\n` +
+//                     `Reason: ${ctx.session.appointmentData.shortDescription}\n\n` +
 //                     "Is this correct? (Yes/No)"
 //                 );
 //             } else if (ctx.session.step === 'appointment_confirm') {
@@ -247,10 +247,10 @@
 //                             throw new Error('Missing appointment or user data');
 //                         }
                         
-//                         const { advisorId, dateTime, type, reasonForVisit } = ctx.session.appointmentData;
+//                         const { advisorId, dateTime, type, shortDescription } = ctx.session.appointmentData;
                         
 //                         // Validate required fields
-//                         if (!advisorId || !dateTime || !type || !reasonForVisit) {
+//                         if (!advisorId || !dateTime || !type || !shortDescription) {
 //                             throw new Error('Missing required appointment fields');
 //                         }
                         
@@ -271,7 +271,7 @@
 //                                 advisorId,
 //                                 dateTime,
 //                                 type,
-//                                 reasonForVisit
+//                                 shortDescription
 //                             },
 //                             {
 //                                 headers: {

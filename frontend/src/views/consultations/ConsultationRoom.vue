@@ -320,7 +320,7 @@ async function initializeJitsi() {
             },
             userInfo: {
                 displayName: authStore.isAdvisor ?
-                    `Dr. ${authStore.user.firstName} ${authStore.user.lastName}` :
+                    `${authStore.user.firstName} ${authStore.user.lastName}` :
                     `${authStore.user.firstName} ${authStore.user.lastName}`
             }
         }

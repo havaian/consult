@@ -139,7 +139,7 @@ class ConsultationController {
                     },
                     dateTime: appointment.dateTime,
                     endTime: appointment.endTime,
-                    reasonForVisit: appointment.reasonForVisit,
+                    shortDescription: appointment.shortDescription,
                     userRole: isAdvisor ? 'advisor' : 'client',
                     jitsi: jitsiConfig
                 }
@@ -328,7 +328,7 @@ class ConsultationController {
                 advisor: originalAppointment.advisor._id,
                 dateTime: followUpDateObj,
                 type: originalAppointment.type,
-                reasonForVisit: `Follow-up to appointment on ${new Date(originalAppointment.dateTime).toLocaleDateString()} - ${notes || 'No notes provided'}`,
+                shortDescription: `Follow-up to appointment on ${new Date(originalAppointment.dateTime).toLocaleDateString()} - ${notes || 'No notes provided'}`,
                 status: 'pending-payment', // Special status for follow-ups pending payment
                 payment: {
                     amount: originalAppointment.advisor.consultationFee,
@@ -594,7 +594,7 @@ class ConsultationController {
                         endTime: endTime,
                         duration: duration,
                         type: appointment.type,
-                        reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
+                        shortDescription: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
                         status: 'pending-payment',
                         payment: {
                             amount: appointment.advisor.consultationFee,

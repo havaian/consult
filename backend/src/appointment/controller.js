@@ -10,7 +10,7 @@ exports.createAppointment = async (req, res) => {
     try {
         const clientId = req.user.id;
 
-        const { advisorId, dateTime, type, reasonForVisit, notes, duration = 30 } = req.body;
+        const { advisorId, dateTime, type, shortDescription, notes, duration = 30 } = req.body;
 
         // Validate duration is a multiple of 15 minutes
         if (duration % 15 !== 0 || duration < 15 || duration > 120) {
@@ -23,7 +23,7 @@ exports.createAppointment = async (req, res) => {
             advisorId,
             dateTime,
             type,
-            reasonForVisit,
+            shortDescription,
             notes
         };
 
@@ -164,7 +164,7 @@ exports.createAppointment = async (req, res) => {
             endTime: endTime,
             duration: duration,
             type,
-            reasonForVisit,
+            shortDescription,
             notes: notes || '',
             status: 'pending-advisor-confirmation',
             advisorConfirmationExpires: calculateAdvisorConfirmationDeadline(advisor, appointmentDate)
@@ -567,7 +567,7 @@ exports.scheduleFollowUp = async (req, res) => {
             endTime: endTime,
             duration: duration,
             type: appointment.type,
-            reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${notes || 'No notes provided'}`,
+            shortDescription: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${notes || 'No notes provided'}`,
             status: 'pending-payment',
             payment: {
                 amount: appointment.advisor.consultationFee,
@@ -598,7 +598,7 @@ exports.getPendingFollowUps = async (req, res) => {
         const appointments = await Appointment.find({
             client: clientId,
             status: 'pending-payment',
-            reasonForVisit: { $regex: 'Follow-up to appointment on', $options: 'i' }
+            shortDescription: { $regex: 'Follow-up to appointment on', $options: 'i' }
         })
             .populate('advisor', 'firstName lastName specializations profilePicture email')
             .sort({ dateTime: 1 });
@@ -923,7 +923,7 @@ exports.updateConsultationResults = async (req, res) => {
                     endTime: endTime,
                     duration: duration,
                     type: appointment.type,
-                    reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
+                    shortDescription: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
                     status: 'pending-payment',
                     payment: {
                         amount: appointment.advisor.consultationFee,
@@ -1104,7 +1104,7 @@ exports.getCalendarAppointments = async (req, res) => {
                 extendedProps: {
                     status: appointment.status,
                     type: appointment.type,
-                    reasonForVisit: appointment.reasonForVisit,
+                    shortDescription: appointment.shortDescription,
                     appointmentId: appointment._id
                 }
             };

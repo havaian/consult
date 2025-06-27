@@ -43,7 +43,7 @@
                                         class="h-12 w-12 rounded-full object-cover" />
                                     <div>
                                         <h3 class="text-lg font-medium text-gray-900">
-                                            Dr. {{ appointment.advisor.firstName }} {{ appointment.advisor.lastName }}
+                                            {{ appointment.advisor.firstName }} {{ appointment.advisor.lastName }}
                                         </h3>
                                         <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                                             <span v-for="spec in appointment.advisor.specializations" :key="spec"

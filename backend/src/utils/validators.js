@@ -73,15 +73,7 @@ exports.validateUserInput = (data) => {
             }),
 
         // Client-specific optional fields
-        legalHistory: Joi.object({
-            allergies: Joi.array().items(Joi.string()),
-            chronicConditions: Joi.array().items(Joi.string()),
-            currentActions: Joi.array().items(Joi.string()),
-            surgeries: Joi.array().items(Joi.object({
-                procedure: Joi.string().required(),
-                year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required()
-            }))
-        }).optional(),
+        legalHistory: Joi.string().optional(),
 
         emergencyContact: Joi.object({
             name: Joi.string().trim().min(2).max(100),
@@ -198,12 +190,12 @@ exports.validateAppointmentInput = (data) => {
                 'any.required': 'Consultation type is required'
             }),
 
-        reasonForVisit: Joi.string().trim().min(5).max(500).required()
+        shortDescription: Joi.string().trim().min(5).max(500).required()
             .messages({
-                'string.empty': 'Reason for visit is required',
-                'string.min': 'Reason for visit must be at least 5 characters long',
-                'string.max': 'Reason for visit cannot exceed 500 characters',
-                'any.required': 'Reason for visit is required'
+                'string.empty': 'Short description is required',
+                'string.min': 'Short description must be at least 5 characters long',
+                'string.max': 'Short description cannot exceed 500 characters',
+                'any.required': 'Short description is required'
             }),
 
         notes: Joi.string().trim().max(1000).optional()

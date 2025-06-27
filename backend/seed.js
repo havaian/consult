@@ -29,104 +29,17 @@ const connectDB = async () => {
 
 // Seed data
 const specializations = [
-    { name: 'Cardiology', description: 'Heart and cardiovascular system specialists', icon: 'fa-heart' },
-    { name: 'Pediatrics', description: 'Child healthcare specialists', icon: 'fa-child' },
-    { name: 'Dermatology', description: 'Skin, hair, and nail specialists', icon: 'fa-hand-holding-legal' },
-    { name: 'Neurology', description: 'Nervous system specialists', icon: 'fa-brain' },
-    { name: 'Orthopedics', description: 'Musculoskeletal system specialists', icon: 'fa-bone' },
-    { name: 'Gynecology', description: 'Women\'s health specialists', icon: 'fa-female' },
-    { name: 'Psychiatry', description: 'Mental health specialists', icon: 'fa-head-side-virus' },
-    { name: 'Ophthalmology', description: 'Eye care specialists', icon: 'fa-eye' },
-    { name: 'General Issue', description: 'General practitioners and family issues', icon: 'fa-user-md' },
-    { name: 'Endocrinology', description: 'Hormone and metabolic disorder specialists', icon: 'fa-dna' }
+    { name: 'Corporate Law', description: 'Business formation, contracts, and corporate governance', icon: 'fa-building' },
+    { name: 'Family Law', description: 'Divorce, custody, adoption, and domestic relations', icon: 'fa-home' },
+    { name: 'Criminal Defense', description: 'Criminal charges, defense strategies, and court representation', icon: 'fa-shield-alt' },
+    { name: 'Real Estate Law', description: 'Property transactions, landlord-tenant, and real estate disputes', icon: 'fa-house-user' },
+    { name: 'Employment Law', description: 'Workplace rights, discrimination, and labor disputes', icon: 'fa-briefcase' },
+    { name: 'Immigration Law', description: 'Visa applications, citizenship, and immigration procedures', icon: 'fa-globe' },
+    { name: 'Personal Injury', description: 'Accident claims, medical malpractice, and compensation cases', icon: 'fa-user-injured' },
+    { name: 'Intellectual Property', description: 'Patents, trademarks, copyrights, and IP protection', icon: 'fa-lightbulb' },
+    { name: 'Tax Law', description: 'Tax planning, disputes, and compliance issues', icon: 'fa-calculator' },
+    { name: 'General Legal Advice', description: 'General legal consultation and document review', icon: 'fa-balance-scale' }
 ];
-
-const adminUser = {
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin@online-consult.com',
-    password: 'Admin123!',
-    phone: '+998901234567',
-    role: 'admin',
-    isActive: true,
-    isVerified: true
-};
-
-const sampleAdvisors = [
-    {
-        firstName: 'John',
-        lastName: 'Smith',
-        email: 'john.smith@online-consult.com',
-        password: 'Advisor123!',
-        phone: '+998901234568',
-        role: 'advisor',
-        specializations: ['Cardiology'],
-        licenseNumber: 'MD12345',
-        experience: 15,
-        bio: 'Experienced cardiologist with 15 years of practice in treating heart conditions.',
-        languages: ['English', 'Russian', 'Uzbek'],
-        consultationFee: 150000,
-        isActive: true,
-        isVerified: true,
-        availability: [
-            { dayOfWeek: 1, isAvailable: true, startTime: '09:00', endTime: '17:00' },
-            { dayOfWeek: 2, isAvailable: true, startTime: '09:00', endTime: '17:00' },
-            { dayOfWeek: 3, isAvailable: true, startTime: '09:00', endTime: '17:00' },
-            { dayOfWeek: 4, isAvailable: true, startTime: '09:00', endTime: '17:00' },
-            { dayOfWeek: 5, isAvailable: true, startTime: '09:00', endTime: '17:00' },
-            { dayOfWeek: 6, isAvailable: false, startTime: null, endTime: null },
-            { dayOfWeek: 0, isAvailable: false, startTime: null, endTime: null }
-        ]
-    },
-    {
-        firstName: 'Sarah',
-        lastName: 'Johnson',
-        email: 'sarah.johnson@online-consult.com',
-        password: 'Advisor123!',
-        phone: '+998901234569',
-        role: 'advisor',
-        specializations: ['Pediatrics'],
-        licenseNumber: 'MD54321',
-        experience: 10,
-        bio: 'Dedicated pediatrician specializing in child development and preventive care.',
-        languages: ['English', 'Uzbek'],
-        consultationFee: 120000,
-        isActive: true,
-        isVerified: true,
-        availability: [
-            { dayOfWeek: 1, isAvailable: true, startTime: '08:00', endTime: '16:00' },
-            { dayOfWeek: 2, isAvailable: true, startTime: '08:00', endTime: '16:00' },
-            { dayOfWeek: 3, isAvailable: true, startTime: '08:00', endTime: '16:00' },
-            { dayOfWeek: 4, isAvailable: true, startTime: '08:00', endTime: '16:00' },
-            { dayOfWeek: 5, isAvailable: true, startTime: '08:00', endTime: '16:00' },
-            { dayOfWeek: 6, isAvailable: true, startTime: '09:00', endTime: '13:00' },
-            { dayOfWeek: 0, isAvailable: false, startTime: null, endTime: null }
-        ]
-    }
-];
-
-const sampleClient = {
-    firstName: 'Jane',
-    lastName: 'Doe',
-    email: 'jane.doe@gmail.com',
-    password: 'Client123!',
-    phone: '+998901234570',
-    role: 'client',
-    dateOfBirth: new Date('1990-01-15'),
-    gender: 'female',
-    isActive: true,
-    isVerified: true,
-    legalHistory: {
-        allergies: ['Penicillin'],
-        chronicConditions: ['Hypertension'],
-        currentActions: ['Lisinopril']
-    },
-    emergencyContact: {
-        name: 'John Doe',
-        relationship: 'Husband',
-        phone: '+998901234571'
-    }
-};
 
 // Seed function with better error handling
 async function seedDatabase() {

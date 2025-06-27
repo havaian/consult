@@ -42,31 +42,31 @@
               class="bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent">CONSULT</span><span
               class="text-legal-green">.COM</span>
           </h1>
-          <p class="text-xl text-gray-700 font-medium">Your Health, Our Digital Care</p>
+          <p class="text-xl text-gray-700 font-medium">Your Legal Issues, Our Expert Solutions</p>
         </div>
 
         <!-- Main Content -->
         <div class="mb-16">
           <div class="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 mb-6 shadow-lg">
             <div class="bg-legal-green rounded-full w-3 h-3 mr-3 pulse-animation"></div>
-            <span class="text-sm font-semibold text-gray-700">Professional Healthcare Platform</span>
+            <span class="text-sm font-semibold text-gray-700">Professional Legal Consultation Platform</span>
           </div>
           <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
-            Professional Healthcare
+            Professional Legal Advice
             <span class="bg-gradient-to-r from-legal-blue to-legal-green bg-clip-text text-transparent">
               At Your Fingertips
             </span>
           </h2>
           <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-8">
-            Connect with qualified advisors online for consultations, advices, and legal advice from the comfort
-            of your home.
+            Connect with qualified legal advisors online for consultations, legal advice, and professional guidance 
+            from the comfort of your home.
           </p>
 
           <!-- Action Buttons -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <router-link to="/advisors"
               class="px-8 py-4 bg-gradient-to-r from-legal-blue to-legal-teal text-white font-semibold rounded-2xl hover:from-legal-teal hover:to-legal-blue focus:ring-4 focus:ring-legal-blue/30 transition-all shadow-lg glow-effect">
-              Find a Advisor
+              Find an Advisor
             </router-link>
             <router-link to="/register"
               class="px-8 py-4 bg-white/90 backdrop-blur-sm text-legal-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-legal-blue/30 transition-all shadow-lg border-2 border-legal-blue/20">
@@ -83,10 +83,10 @@
         <div class="text-center mb-16">
           <h2 class="text-base text-legal-blue font-semibold tracking-wide uppercase mb-2">Features</h2>
           <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
-            Better Healthcare Solution
+            Better Legal Consultation Solution
           </h3>
           <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-            Experience healthcare reimagined with our comprehensive online legal consultation platform.
+            Experience legal consultations reimagined with our comprehensive online legal consultation platform.
           </p>
         </div>
 
@@ -100,7 +100,7 @@
               </svg>
             </div>
             <h4 class="font-bold text-gray-800 mb-3 text-lg">Video Consultations</h4>
-            <p class="text-sm text-gray-600">High-quality video calls with certified healthcare professionals</p>
+            <p class="text-sm text-gray-600">High-quality video calls with certified legal professionals</p>
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
@@ -110,8 +110,8 @@
                   d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
             </div>
-            <h4 class="font-bold text-gray-800 mb-3 text-lg">AI Diagnostics</h4>
-            <p class="text-sm text-gray-600">Smart symptom analysis and preliminary diagnosis</p>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">AI Legal Analysis</h4>
+            <p class="text-sm text-gray-600">case analysis and preliminary legal assessment</p>
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
@@ -121,8 +121,8 @@
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h4 class="font-bold text-gray-800 mb-3 text-lg">Digital Advices</h4>
-            <p class="text-sm text-gray-600">Electronic advices sent directly to pharmacies</p>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">Digital Legal Documents</h4>
+            <p class="text-sm text-gray-600">Electronic legal documents sent directly to your email</p>
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
@@ -132,14 +132,14 @@
                   d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 00-2-2z" />
               </svg>
             </div>
-            <h4 class="font-bold text-gray-800 mb-3 text-lg">Health Monitoring</h4>
-            <p class="text-sm text-gray-600">Track vitals and receive personalized health insights</p>
+            <h4 class="font-bold text-gray-800 mb-3 text-lg">Case Tracking</h4>
+            <p class="text-sm text-gray-600">Track case progress and receive personalized legal insights</p>
           </div>
         </div>
 
         <!-- Trust Indicators -->
         <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-8 mt-16">
-          <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">Trusted Healthcare Technology</h3>
+          <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">Trusted Legal Technology</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
               <div class="text-2xl font-bold text-legal-blue mb-1">24/7</div>
@@ -154,7 +154,7 @@
               <div class="text-sm text-gray-600">Average Wait Time</div>
             </div>
             <div>
-              <div class="text-2xl font-bold text-purple-600 mb-1">HIPAA</div>
+              <div class="text-2xl font-bold text-purple-600 mb-1">GDPR</div>
               <div class="text-sm text-gray-600">Compliant</div>
             </div>
           </div>
@@ -168,7 +168,7 @@
         <div class="text-center mb-16">
           <h2 class="text-base text-legal-blue font-semibold tracking-wide uppercase mb-2">How It Works</h2>
           <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
-            Simple Steps to Better Health
+            Simple Steps to Legal Resolution
           </h3>
         </div>
 
@@ -178,9 +178,9 @@
               class="bg-gradient-to-r from-legal-blue to-sky-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
               <span class="text-white font-bold text-xl">1</span>
             </div>
-            <h4 class="text-xl font-bold text-gray-800 mb-4">Choose a Advisor</h4>
-            <p class="text-gray-600">Browse our network of qualified healthcare professionals and select the right
-              specialist for your needs.</p>
+            <h4 class="text-xl font-bold text-gray-800 mb-4">Choose an Advisor</h4>
+            <p class="text-gray-600">Browse our network of qualified legal professionals and select the right
+              specialist for your legal needs.</p>
           </div>
 
           <div class="text-center">
@@ -198,8 +198,8 @@
               class="bg-gradient-to-r from-legal-teal to-cyan-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
               <span class="text-white font-bold text-xl">3</span>
             </div>
-            <h4 class="text-xl font-bold text-gray-800 mb-4">Get Treatment</h4>
-            <p class="text-gray-600">Join your secure video consultation and receive professional legal care from the
+            <h4 class="text-xl font-bold text-gray-800 mb-4">Get Legal Advice</h4>
+            <p class="text-gray-600">Join your secure video consultation and receive professional legal advice from the
               comfort of your home.</p>
           </div>
         </div>
@@ -210,7 +210,7 @@
     <div class="py-20 legal-gradient">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
-          Ready to Experience the Future of Healthcare?
+          Ready to Experience the Future of Legal Consultation?
         </h2>
         <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
           Join thousands of clients who have already discovered the convenience and quality of online legal

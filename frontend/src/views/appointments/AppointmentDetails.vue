@@ -36,7 +36,7 @@
                                     :alt="appointment.advisor.firstName" class="h-12 w-12 rounded-full object-cover" />
                                 <div>
                                     <p class="font-medium text-gray-900">
-                                        Dr. {{ appointment.advisor.firstName }} {{ appointment.advisor.lastName }}
+                                        {{ appointment.advisor.firstName }} {{ appointment.advisor.lastName }}
                                     </p>
                                     <div class="mt-2 flex flex-wrap gap-2">
                                         <span v-for="spec in appointment.advisor.specializations" :key="spec"
@@ -80,10 +80,10 @@
                         </div>
                     </div>
 
-                    <!-- Reason for Visit -->
+                    <!-- Short Description -->
                     <div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Reason for Visit</h3>
-                        <p class="text-gray-900">{{ appointment.reasonForVisit }}</p>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Short Description</h3>
+                        <p class="text-gray-900">{{ appointment.shortDescription }}</p>
                     </div>
 
                     <!-- Consultation Summary (only for completed appointments) -->
@@ -366,7 +366,7 @@ const getChatButtonText = computed(() => {
 
     const otherParty = authStore.isAdvisor ?
         `${appointment.value.client.firstName} ${appointment.value.client.lastName}` :
-        `Dr. ${appointment.value.advisor.firstName} ${appointment.value.advisor.lastName}`
+        `${appointment.value.advisor.firstName} ${appointment.value.advisor.lastName}`
 
     return `Chat with ${otherParty} about this appointment`
 })
@@ -398,7 +398,7 @@ async function findFollowUpAppointment() {
         // Find follow-up for this appointment
         const followUps = response.data.appointments || []
         const followUp = followUps.find(app =>
-            app.reasonForVisit.includes(`Follow-up to appointment on`) &&
+            app.shortDescription.includes(`Follow-up to appointment on`) &&
             app.advisor._id === appointment.value.advisor._id)
 
         if (followUp) {

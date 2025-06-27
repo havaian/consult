@@ -481,7 +481,7 @@ class EmailService {
         try {
             await followUpAppointment.populate('client advisor');
 
-            const { client, advisor, dateTime, type, reasonForVisit } = followUpAppointment;
+            const { client, advisor, dateTime, type, shortDescription } = followUpAppointment;
 
             await this.sendEmail({
                 to: client.email,
@@ -496,7 +496,7 @@ class EmailService {
                         <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
-                        <p><strong>Reason:</strong> ${reasonForVisit}</p>
+                        <p><strong>Reason:</strong> ${shortDescription}</p>
                     </div>
                     
                     <p>This appointment requires payment confirmation. Please log in to your Online-consult.com account to confirm and complete payment for this follow-up appointment.</p>
@@ -517,7 +517,7 @@ class EmailService {
                         <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
                         <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
-                        <p><strong>Reason:</strong> ${reasonForVisit}</p>
+                        <p><strong>Reason:</strong> ${shortDescription}</p>
                     </div>
                     
                     <p>The client has been notified and needs to confirm the appointment by completing payment.</p>
