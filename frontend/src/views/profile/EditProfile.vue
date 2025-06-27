@@ -348,7 +348,7 @@ async function fetchUserProfile() {
             formData.emergencyContact = user.emergencyContact || { name: '', phone: '', relationship: '' }
 
             // Update input fields
-            legalHistoryInput.value = user.legalHistory? || ''
+            legalHistoryInput.value = user.legalHistory || ''
         }
     } catch (error) {
         console.error('Error fetching user profile:', error)
