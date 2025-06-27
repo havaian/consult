@@ -10,11 +10,11 @@ const formatDateTime = (date) => {
   return format(new Date(date), 'MMMM d, yyyy h:mm a');
 };
 
-exports.appointmentBookedPatient = (appointment) => {
-  const { doctor, dateTime, type, payment } = appointment;
+exports.appointmentBookedClient = (appointment) => {
+  const { advisor, dateTime, type, payment } = appointment;
 
   return {
-    subject: 'Appointment Confirmation - E-polyclinic.uz',
+    subject: 'Appointment Confirmation - Online-consult.com',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
@@ -22,25 +22,25 @@ exports.appointmentBookedPatient = (appointment) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          <p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName}</p>
-          <p><strong>Specialization:</strong> ${doctor.specializations.join(', ')}</p>
+          <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+          <p><strong>Specialization:</strong> ${advisor.specializations.join(', ')}</p>
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
           <p><strong>Amount Paid:</strong> ${formatCurrency(payment.amount)}</p>
         </div>
         
         <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
-        <p>You can view your appointment details and join the consultation by logging into your E-polyclinic.uz account.</p>
+        <p>You can view your appointment details and join the consultation by logging into your Online-consult.com account.</p>
       </div>
     `
   };
 };
 
-exports.appointmentBookedDoctor = (appointment) => {
-  const { patient, dateTime, type } = appointment;
+exports.appointmentBookedAdvisor = (appointment) => {
+  const { client, dateTime, type } = appointment;
 
   return {
-    subject: 'New Appointment Scheduled - E-polyclinic.uz',
+    subject: 'New Appointment Scheduled - Online-consult.com',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #4a90e2;">New Appointment</h2>
@@ -48,22 +48,22 @@ exports.appointmentBookedDoctor = (appointment) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          <p><strong>Patient:</strong> ${patient.firstName} ${patient.lastName}</p>
+          <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
         </div>
         
-        <p>Please log in to your E-polyclinic.uz account to view the complete appointment details.</p>
+        <p>Please log in to your Online-consult.com account to view the complete appointment details.</p>
       </div>
     `
   };
 };
 
 exports.appointmentBookingFailed = (data) => {
-  const { doctor, dateTime, type, error } = data;
+  const { advisor, dateTime, type, error } = data;
 
   return {
-    subject: 'Appointment Booking Failed - E-polyclinic.uz',
+    subject: 'Appointment Booking Failed - Online-consult.com',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #e74c3c;">Appointment Booking Failed</h2>
@@ -71,7 +71,7 @@ exports.appointmentBookingFailed = (data) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          <p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName}</p>
+          <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
           <p><strong>Reason:</strong> ${error}</p>
@@ -84,11 +84,11 @@ exports.appointmentBookingFailed = (data) => {
 };
 
 exports.appointmentReminder = (appointment) => {
-  const { doctor, patient, dateTime, type } = appointment;
-  const isDoctor = Boolean(doctor.email);
+  const { advisor, client, dateTime, type } = appointment;
+  const isAdvisor = Boolean(advisor.email);
 
   return {
-    subject: 'Appointment Reminder - E-polyclinic.uz',
+    subject: 'Appointment Reminder - Online-consult.com',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #4a90e2;">Appointment Reminder</h2>
@@ -96,9 +96,9 @@ exports.appointmentReminder = (appointment) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          ${isDoctor
-        ? `<p><strong>Patient:</strong> ${patient.firstName} ${patient.lastName}</p>`
-        : `<p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName}</p>`
+          ${isAdvisor
+        ? `<p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>`
+        : `<p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>`
       }
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
@@ -111,11 +111,11 @@ exports.appointmentReminder = (appointment) => {
 };
 
 exports.appointmentCancelled = (appointment, cancelledBy) => {
-  const { doctor, patient, dateTime, type } = appointment;
-  const isDoctor = Boolean(doctor.email);
+  const { advisor, client, dateTime, type } = appointment;
+  const isAdvisor = Boolean(advisor.email);
 
   return {
-    subject: 'Appointment Cancelled - E-polyclinic.uz',
+    subject: 'Appointment Cancelled - Online-consult.com',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #e74c3c;">Appointment Cancelled</h2>
@@ -123,15 +123,15 @@ exports.appointmentCancelled = (appointment, cancelledBy) => {
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Appointment Details</h3>
-          ${isDoctor
-        ? `<p><strong>Patient:</strong> ${patient.firstName} ${patient.lastName}</p>`
-        : `<p><strong>Doctor:</strong> Dr. ${doctor.firstName} ${doctor.lastName}</p>`
+          ${isAdvisor
+        ? `<p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>`
+        : `<p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>`
       }
           <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
         </div>
         
-        ${isDoctor
+        ${isAdvisor
         ? '<p>The time slot is now available for other appointments.</p>'
         : '<p>You can schedule a new appointment through our website.</p>'
       }

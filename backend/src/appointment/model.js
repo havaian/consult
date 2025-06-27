@@ -18,12 +18,12 @@ const chatMessageSchema = new Schema({
 });
 
 const appointmentSchema = new Schema({
-    patient: {
+    client: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    doctor: {
+    advisor: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -55,8 +55,8 @@ const appointmentSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['pending-payment', 'pending-doctor-confirmation', 'scheduled', 'completed', 'canceled', 'no-show'],
-        default: 'pending-doctor-confirmation'
+        enum: ['pending-payment', 'pending-advisor-confirmation', 'scheduled', 'completed', 'canceled', 'no-show'],
+        default: 'pending-advisor-confirmation'
     },
     type: {
         type: String,
@@ -75,8 +75,8 @@ const appointmentSchema = new Schema({
     },
     // Added chatLog field to store messages
     chatLog: [chatMessageSchema],
-    prescriptions: [{
-        medication: String,
+    advices: [{
+        action: String,
         dosage: String,
         frequency: String,
         duration: String,
@@ -106,7 +106,7 @@ const appointmentSchema = new Schema({
         fileType: String,
         uploadedBy: {
             type: String,
-            enum: ['patient', 'doctor']
+            enum: ['client', 'advisor']
         },
         uploadedAt: {
             type: Date,
@@ -116,7 +116,7 @@ const appointmentSchema = new Schema({
     cancellationReason: {
         type: String
     },
-    doctorConfirmationExpires: {
+    advisorConfirmationExpires: {
         type: Date
     },
     createdAt: {
@@ -132,10 +132,10 @@ const appointmentSchema = new Schema({
 });
 
 // Index for efficient queries
-appointmentSchema.index({ patient: 1, dateTime: -1 });
-appointmentSchema.index({ doctor: 1, dateTime: -1 });
+appointmentSchema.index({ client: 1, dateTime: -1 });
+appointmentSchema.index({ advisor: 1, dateTime: -1 });
 appointmentSchema.index({ status: 1 });
-appointmentSchema.index({ doctorConfirmationExpires: 1 }, { expireAfterSeconds: 0 }); // For TTL index
+appointmentSchema.index({ advisorConfirmationExpires: 1 }, { expireAfterSeconds: 0 }); // For TTL index
 
 // Middleware to update the updatedAt field
 appointmentSchema.pre('save', function (next) {
@@ -166,63 +166,63 @@ appointmentSchema.methods.complete = function (summary) {
     return this.save();
 };
 
-appointmentSchema.methods.confirmDoctor = function () {
-    if (this.status === 'pending-doctor-confirmation') {
+appointmentSchema.methods.confirmAdvisor = function () {
+    if (this.status === 'pending-advisor-confirmation') {
         this.status = 'scheduled';
     }
     return this.save();
 };
 
 // Static methods
-appointmentSchema.statics.findUpcomingForPatient = function (patientId) {
+appointmentSchema.statics.findUpcomingForClient = function (clientId) {
     return this.find({
-        patient: patientId,
+        client: clientId,
         dateTime: { $gte: new Date() },
         status: 'scheduled'
-    }).sort({ dateTime: 1 }).populate('doctor');
+    }).sort({ dateTime: 1 }).populate('advisor');
 };
 
-appointmentSchema.statics.findUpcomingForDoctor = function (doctorId) {
+appointmentSchema.statics.findUpcomingForAdvisor = function (advisorId) {
     return this.find({
-        doctor: doctorId,
+        advisor: advisorId,
         dateTime: { $gte: new Date() },
         status: 'scheduled'
-    }).sort({ dateTime: 1 }).populate('patient');
+    }).sort({ dateTime: 1 }).populate('client');
 };
 
-// Add method to find pending-payment follow-ups for a patient
-appointmentSchema.statics.findPendingFollowUpsForPatient = function (patientId) {
+// Add method to find pending-payment follow-ups for a client
+appointmentSchema.statics.findPendingFollowUpsForClient = function (clientId) {
     return this.find({
-        patient: patientId,
+        client: clientId,
         status: 'pending-payment'
-    }).sort({ dateTime: 1 }).populate('doctor');
+    }).sort({ dateTime: 1 }).populate('advisor');
 };
 
-// Find appointments pending doctor confirmation
-appointmentSchema.statics.findPendingDoctorConfirmation = function (doctorId) {
+// Find appointments pending advisor confirmation
+appointmentSchema.statics.findPendingAdvisorConfirmation = function (advisorId) {
     return this.find({
-        doctor: doctorId,
-        status: 'pending-doctor-confirmation',
-        doctorConfirmationExpires: { $gt: new Date() }
-    }).sort({ doctorConfirmationExpires: 1 }).populate('patient');
+        advisor: advisorId,
+        status: 'pending-advisor-confirmation',
+        advisorConfirmationExpires: { $gt: new Date() }
+    }).sort({ advisorConfirmationExpires: 1 }).populate('client');
 };
 
-// Find expired doctor confirmation appointments
-appointmentSchema.statics.findExpiredDoctorConfirmation = function () {
+// Find expired advisor confirmation appointments
+appointmentSchema.statics.findExpiredAdvisorConfirmation = function () {
     return this.find({
-        status: 'pending-doctor-confirmation',
-        doctorConfirmationExpires: { $lte: new Date() }
-    }).populate('patient').populate('doctor');
+        status: 'pending-advisor-confirmation',
+        advisorConfirmationExpires: { $lte: new Date() }
+    }).populate('client').populate('advisor');
 };
 
 // Find appointments for calendar view
 appointmentSchema.statics.findForCalendar = function (userId, userRole, startDate, endDate) {
     const query = {};
 
-    if (userRole === 'patient') {
-        query.patient = userId;
-    } else if (userRole === 'doctor') {
-        query.doctor = userId;
+    if (userRole === 'client') {
+        query.client = userId;
+    } else if (userRole === 'advisor') {
+        query.advisor = userId;
     }
 
     if (startDate && endDate) {
@@ -234,7 +234,7 @@ appointmentSchema.statics.findForCalendar = function (userId, userRole, startDat
 
     return this.find(query)
         .sort({ dateTime: 1 })
-        .populate(userRole === 'patient' ? 'doctor' : 'patient');
+        .populate(userRole === 'client' ? 'advisor' : 'client');
 };
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

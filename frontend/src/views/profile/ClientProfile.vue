@@ -4,13 +4,13 @@
       <!-- Profile Header -->
       <div class="p-6 sm:p-8 border-b border-gray-200">
         <div class="flex flex-col sm:flex-row items-center">
-          <img :src="user?.profilePicture || 'https://via.placeholder.com/150'" :alt="user?.firstName"
+          <img :src="user?.profilePicture || ''" :alt="user?.firstName"
             class="h-32 w-32 rounded-full object-cover" />
           <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left">
             <h1 class="text-2xl font-bold text-gray-900">
               {{ user?.firstName }} {{ user?.lastName }}
             </h1>
-            <p class="text-gray-600">Patient</p>
+            <p class="text-gray-600">Client</p>
           </div>
         </div>
       </div>
@@ -41,15 +41,15 @@
             </dl>
           </div>
 
-          <!-- Medical History -->
+          <!-- Legal History -->
           <div>
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Medical History</h2>
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Legal History</h2>
             <dl class="space-y-4">
               <div>
                 <dt class="text-sm font-medium text-gray-500">Allergies</dt>
                 <dd class="mt-1 text-gray-900">
-                  <ul v-if="user?.medicalHistory?.allergies?.length" class="list-disc list-inside">
-                    <li v-for="allergy in user.medicalHistory.allergies" :key="allergy">
+                  <ul v-if="user?.legalHistory?.allergies?.length" class="list-disc list-inside">
+                    <li v-for="allergy in user.legalHistory.allergies" :key="allergy">
                       {{ allergy }}
                     </li>
                   </ul>
@@ -59,8 +59,8 @@
               <div>
                 <dt class="text-sm font-medium text-gray-500">Chronic Conditions</dt>
                 <dd class="mt-1 text-gray-900">
-                  <ul v-if="user?.medicalHistory?.chronicConditions?.length" class="list-disc list-inside">
-                    <li v-for="condition in user.medicalHistory.chronicConditions" :key="condition">
+                  <ul v-if="user?.legalHistory?.chronicConditions?.length" class="list-disc list-inside">
+                    <li v-for="condition in user.legalHistory.chronicConditions" :key="condition">
                       {{ condition }}
                     </li>
                   </ul>
@@ -123,6 +123,7 @@ const formatGender = (gender) => {
 async function fetchUserProfile() {
   try {
     const response = await axios.get('/api/users/me')
+    console.log(response);
     user.value = response.data.user
   } catch (error) {
     console.error('Error fetching user profile:', error)

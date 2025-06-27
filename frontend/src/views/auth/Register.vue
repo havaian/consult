@@ -33,8 +33,8 @@
                     <div>
                         <label for="role" class="label">I am a</label>
                         <select id="role" v-model="formData.role" class="input mt-1" required>
-                            <option value="patient">Patient</option>
-                            <option value="doctor">Doctor</option>
+                            <option value="client">Client</option>
+                            <option value="advisor">Advisor</option>
                         </select>
                     </div>
 
@@ -68,7 +68,7 @@
 
                     <!-- Removed: Date of Birth and Gender moved to conditional blocks -->
 
-                    <template v-if="formData.role === 'doctor'">
+                    <template v-if="formData.role === 'advisor'">
                         <div>
                             <label for="specializations" class="label">Specializations</label>
                             <div class="space-y-2">
@@ -85,7 +85,7 @@
                                     </button>
                                 </div>
                                 <button type="button" @click="addSpecialization"
-                                    class="text-sm text-indigo-600 hover:text-indigo-800">
+                                    class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-800">
                                     + Add Specialization
                                 </button>
                             </div>
@@ -116,15 +116,15 @@
                         </div>
                     </template>
 
-                    <!-- Date of Birth - Only for patients -->
-                    <div v-if="formData.role === 'patient'">
+                    <!-- Date of Birth - Only for clients -->
+                    <div v-if="formData.role === 'client'">
                         <label for="dateOfBirth" class="label">Date of Birth</label>
                         <input id="dateOfBirth" v-model="formData.dateOfBirth" type="date" required class="input mt-1"
                             :max="maxDate" />
                     </div>
 
-                    <!-- Gender - Only for patients -->
-                    <div v-if="formData.role === 'patient'">
+                    <!-- Gender - Only for clients -->
+                    <div v-if="formData.role === 'client'">
                         <label for="gender" class="label">Gender</label>
                         <select id="gender" v-model="formData.gender" class="input mt-1" required>
                             <option value="">Select gender</option>
@@ -145,7 +145,7 @@
 
             <p class="mt-2 text-center text-sm text-gray-600">
                 Already have an account?
-                <router-link to="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+                <router-link to="/login" class="font-medium bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-500">
                     Sign in
                 </router-link>
             </p>
@@ -170,7 +170,7 @@ const availableSpecializations = ref([])
 const languagesInput = ref('')
 
 const formData = reactive({
-    role: 'patient',
+    role: 'client',
     firstName: '',
     lastName: '',
     email: '',
@@ -204,9 +204,9 @@ const removeSpecialization = (index) => {
     formData.specializations.splice(index, 1)
 }
 
-// Add default empty specialization when switching to doctor role
+// Add default empty specialization when switching to advisor role
 const watchRole = () => {
-    if (formData.role === 'doctor' && formData.specializations.length === 0) {
+    if (formData.role === 'advisor' && formData.specializations.length === 0) {
         formData.specializations.push('')
     }
 }
@@ -219,22 +219,22 @@ async function handleSubmit() {
         // Create a copy of the formData to modify before sending
         const registrationData = { ...formData };
 
-        if (registrationData.role === 'doctor') {
+        if (registrationData.role === 'advisor') {
             // Make sure specializations is processed properly
             registrationData.specializations = formData.specializations.filter(s => s !== "");
 
-            // Process languages for doctor registration
+            // Process languages for advisor registration
             if (languagesInput.value) {
                 registrationData.languages = languagesInput.value.split(',').map(lang => lang.trim()).filter(Boolean);
             } else {
                 registrationData.languages = [];
             }
 
-            // Remove patient-only fields for doctor registration
+            // Remove client-only fields for advisor registration
             delete registrationData.dateOfBirth;
             delete registrationData.gender;
         } else {
-            // For patient registration, remove all doctor-specific fields
+            // For client registration, remove all advisor-specific fields
             delete registrationData.specializations;
             delete registrationData.licenseNumber;
             delete registrationData.experience;
@@ -262,7 +262,7 @@ async function fetchSpecializations() {
             'Cardiology',
             'Dermatology',
             'Endocrinology',
-            'Family Medicine',
+            'Family Issue',
             'Gastroenterology',
             'Neurology',
             'Obstetrics & Gynecology',

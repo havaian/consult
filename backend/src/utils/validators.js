@@ -44,7 +44,7 @@ exports.validateUserInput = (data) => {
                 'string.pattern.base': 'Please provide a valid phone number'
             }),
 
-        role: Joi.string().valid('patient', 'doctor').default('patient'),
+        role: Joi.string().valid('client', 'advisor').default('client'),
 
         // Common optional fields
         address: Joi.object({
@@ -56,27 +56,27 @@ exports.validateUserInput = (data) => {
         }).optional()
     };
 
-    // Define patient-specific schema
-    const patientSchema = {
-        // Patient-specific required fields
+    // Define client-specific schema
+    const clientSchema = {
+        // Client-specific required fields
         dateOfBirth: Joi.date().max('now').required()
             .messages({
                 'date.base': 'Please provide a valid date of birth',
                 'date.max': 'Date of birth cannot be in the future',
-                'any.required': 'Date of birth is required for patients'
+                'any.required': 'Date of birth is required for clients'
             }),
 
         gender: Joi.string().valid('male', 'female', 'other', 'prefer not to say').required()
             .messages({
                 'any.only': 'Gender must be one of: male, female, other, prefer not to say',
-                'any.required': 'Gender is required for patients'
+                'any.required': 'Gender is required for clients'
             }),
 
-        // Patient-specific optional fields
-        medicalHistory: Joi.object({
+        // Client-specific optional fields
+        legalHistory: Joi.object({
             allergies: Joi.array().items(Joi.string()),
             chronicConditions: Joi.array().items(Joi.string()),
-            currentMedications: Joi.array().items(Joi.string()),
+            currentActions: Joi.array().items(Joi.string()),
             surgeries: Joi.array().items(Joi.object({
                 procedure: Joi.string().required(),
                 year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required()
@@ -90,22 +90,22 @@ exports.validateUserInput = (data) => {
         }).optional(),
     };
 
-    // Define doctor-specific schema
-    const doctorSchema = {
-        // Doctor-specific required fields
+    // Define advisor-specific schema
+    const advisorSchema = {
+        // Advisor-specific required fields
         specializations: Joi.string().trim().required()
             .messages({
-                'string.empty': 'Specialization is required for doctors'
+                'string.empty': 'Specialization is required for advisors'
             }),
 
         specializations: Joi.array().items(Joi.string().trim()).min(1).required()
             .messages({
-                'array.min': 'At least one specializations is required for doctors'
+                'array.min': 'At least one specializations is required for advisors'
             }),
 
         licenseNumber: Joi.string().trim().required()
             .messages({
-                'string.empty': 'License number is required for doctors'
+                'string.empty': 'License number is required for advisors'
             }),
 
         experience: Joi.number().integer().min(0).required()
@@ -113,17 +113,17 @@ exports.validateUserInput = (data) => {
                 'number.base': 'Experience must be a number',
                 'number.integer': 'Experience must be an integer',
                 'number.min': 'Experience cannot be negative',
-                'any.required': 'Experience is required for doctors'
+                'any.required': 'Experience is required for advisors'
             }),
 
         consultationFee: Joi.number().positive().required()
             .messages({
                 'number.base': 'Consultation fee must be a number',
                 'number.positive': 'Consultation fee must be positive',
-                'any.required': 'Consultation fee is required for doctors'
+                'any.required': 'Consultation fee is required for advisors'
             }),
 
-        // Doctor-specific optional fields
+        // Advisor-specific optional fields
         bio: Joi.string().trim().max(500).optional()
             .messages({
                 'string.max': 'Bio cannot exceed 500 characters'
@@ -159,11 +159,11 @@ exports.validateUserInput = (data) => {
 
     // Choose schema based on role
     let schemaToUse;
-    if (data.role === 'doctor') {
-        schemaToUse = { ...baseSchema, ...doctorSchema };
+    if (data.role === 'advisor') {
+        schemaToUse = { ...baseSchema, ...advisorSchema };
     } else {
-        // Patient role
-        schemaToUse = { ...baseSchema, ...patientSchema };
+        // Client role
+        schemaToUse = { ...baseSchema, ...clientSchema };
     }
 
     // Create and return schema
@@ -178,11 +178,11 @@ exports.validateUserInput = (data) => {
  */
 exports.validateAppointmentInput = (data) => {
     const schema = Joi.object({
-        // Remove patientId from validation schema completely
-        doctorId: Joi.string().required()
+        // Remove clientId from validation schema completely
+        advisorId: Joi.string().required()
             .messages({
-                'string.empty': 'Doctor ID is required',
-                'any.required': 'Doctor ID is required'
+                'string.empty': 'Advisor ID is required',
+                'any.required': 'Advisor ID is required'
             }),
 
         dateTime: Joi.date().greater('now').required()
@@ -216,16 +216,16 @@ exports.validateAppointmentInput = (data) => {
 };
 
 /**
- * Validate prescription input
- * @param {Object} data Prescription data for validation
+ * Validate advice input
+ * @param {Object} data Advice data for validation
  * @returns {Object} Validation result
  */
-exports.validatePrescriptionInput = (data) => {
-    const prescriptionSchema = Joi.object({
-        medication: Joi.string().trim().required()
+exports.validateAdviceInput = (data) => {
+    const adviceSchema = Joi.object({
+        action: Joi.string().trim().required()
             .messages({
-                'string.empty': 'Medication name is required',
-                'any.required': 'Medication name is required'
+                'string.empty': 'Action name is required',
+                'any.required': 'Action name is required'
             }),
 
         dosage: Joi.string().trim().required()
@@ -253,10 +253,10 @@ exports.validatePrescriptionInput = (data) => {
     });
 
     const schema = Joi.object({
-        prescriptions: Joi.array().items(prescriptionSchema).min(1).required()
+        advices: Joi.array().items(adviceSchema).min(1).required()
             .messages({
-                'array.min': 'At least one prescription is required',
-                'any.required': 'Prescriptions are required'
+                'array.min': 'At least one advice is required',
+                'any.required': 'Advices are required'
             })
     });
 
@@ -264,7 +264,7 @@ exports.validatePrescriptionInput = (data) => {
 };
 
 /**
- * Validate doctor availability input
+ * Validate advisor availability input
  * @param {Object} data Availability data for validation
  * @returns {Object} Validation result
  */

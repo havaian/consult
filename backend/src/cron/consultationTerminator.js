@@ -14,7 +14,7 @@ const scheduleConsultationTerminator = () => {
             const expiredConsultations = await Appointment.find({
                 status: 'scheduled',
                 endTime: { $lt: now }
-            }).populate('doctor patient');
+            }).populate('advisor client');
 
             console.log(`Found ${expiredConsultations.length} consultations to auto-terminate`);
 
@@ -30,7 +30,7 @@ const scheduleConsultationTerminator = () => {
 
                 await appointment.save();
 
-                // Send notifications to both patient and doctor
+                // Send notifications to both client and advisor
                 await NotificationService.sendConsultationCompletedNotification(appointment);
 
                 console.log(`Auto-completed consultation ${appointment._id} that ended at ${appointment.endTime}`);

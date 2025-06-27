@@ -31,20 +31,20 @@ const connectDB = async () => {
 const specializations = [
     { name: 'Cardiology', description: 'Heart and cardiovascular system specialists', icon: 'fa-heart' },
     { name: 'Pediatrics', description: 'Child healthcare specialists', icon: 'fa-child' },
-    { name: 'Dermatology', description: 'Skin, hair, and nail specialists', icon: 'fa-hand-holding-medical' },
+    { name: 'Dermatology', description: 'Skin, hair, and nail specialists', icon: 'fa-hand-holding-legal' },
     { name: 'Neurology', description: 'Nervous system specialists', icon: 'fa-brain' },
     { name: 'Orthopedics', description: 'Musculoskeletal system specialists', icon: 'fa-bone' },
     { name: 'Gynecology', description: 'Women\'s health specialists', icon: 'fa-female' },
     { name: 'Psychiatry', description: 'Mental health specialists', icon: 'fa-head-side-virus' },
     { name: 'Ophthalmology', description: 'Eye care specialists', icon: 'fa-eye' },
-    { name: 'General Medicine', description: 'General practitioners and family medicine', icon: 'fa-user-md' },
+    { name: 'General Issue', description: 'General practitioners and family issues', icon: 'fa-user-md' },
     { name: 'Endocrinology', description: 'Hormone and metabolic disorder specialists', icon: 'fa-dna' }
 ];
 
 const adminUser = {
     firstName: 'Admin',
     lastName: 'User',
-    email: 'admin@e-polyclinic.uz',
+    email: 'admin@online-consult.com',
     password: 'Admin123!',
     phone: '+998901234567',
     role: 'admin',
@@ -52,14 +52,14 @@ const adminUser = {
     isVerified: true
 };
 
-const sampleDoctors = [
+const sampleAdvisors = [
     {
         firstName: 'John',
         lastName: 'Smith',
-        email: 'john.smith@e-polyclinic.uz',
-        password: 'Doctor123!',
+        email: 'john.smith@online-consult.com',
+        password: 'Advisor123!',
         phone: '+998901234568',
-        role: 'doctor',
+        role: 'advisor',
         specializations: ['Cardiology'],
         licenseNumber: 'MD12345',
         experience: 15,
@@ -81,10 +81,10 @@ const sampleDoctors = [
     {
         firstName: 'Sarah',
         lastName: 'Johnson',
-        email: 'sarah.johnson@e-polyclinic.uz',
-        password: 'Doctor123!',
+        email: 'sarah.johnson@online-consult.com',
+        password: 'Advisor123!',
         phone: '+998901234569',
-        role: 'doctor',
+        role: 'advisor',
         specializations: ['Pediatrics'],
         licenseNumber: 'MD54321',
         experience: 10,
@@ -105,21 +105,21 @@ const sampleDoctors = [
     }
 ];
 
-const samplePatient = {
+const sampleClient = {
     firstName: 'Jane',
     lastName: 'Doe',
     email: 'jane.doe@gmail.com',
-    password: 'Patient123!',
+    password: 'Client123!',
     phone: '+998901234570',
-    role: 'patient',
+    role: 'client',
     dateOfBirth: new Date('1990-01-15'),
     gender: 'female',
     isActive: true,
     isVerified: true,
-    medicalHistory: {
+    legalHistory: {
         allergies: ['Penicillin'],
         chronicConditions: ['Hypertension'],
-        currentMedications: ['Lisinopril']
+        currentActions: ['Lisinopril']
     },
     emergencyContact: {
         name: 'John Doe',
@@ -158,33 +158,33 @@ async function seedDatabase() {
         const admin = await User.create(adminUser);
         console.log('✅ [db seed] Admin user created');
 
-        console.log('👨‍⚕️ [db seed] Creating doctor accounts...');
+        console.log('👨‍⚕️ [db seed] Creating advisor accounts...');
         
-        // Create doctor accounts
-        for (const doctor of sampleDoctors) {
+        // Create advisor accounts
+        for (const advisor of sampleAdvisors) {
             // Hash password
-            doctor.password = await bcrypt.hash(doctor.password, salt);
+            advisor.password = await bcrypt.hash(advisor.password, salt);
             
-            // Create doctor
-            const createdDoctor = await User.create(doctor);
-            console.log(`✅ [db seed] Created doctor: ${createdDoctor.firstName} ${createdDoctor.lastName}`);
+            // Create advisor
+            const createdAdvisor = await User.create(advisor);
+            console.log(`✅ [db seed] Created advisor: ${createdAdvisor.firstName} ${createdAdvisor.lastName}`);
         }
 
-        console.log('👩‍🦰 [db seed] Creating patient account...');
+        console.log('👩‍🦰 [db seed] Creating client account...');
         
-        // Hash patient password
-        samplePatient.password = await bcrypt.hash(samplePatient.password, salt);
+        // Hash client password
+        sampleClient.password = await bcrypt.hash(sampleClient.password, salt);
         
-        // Create patient
-        const patient = await User.create(samplePatient);
-        console.log('✅ [db seed] Patient account created');
+        // Create client
+        const client = await User.create(sampleClient);
+        console.log('✅ [db seed] Client account created');
 
         console.log('\n🎉 [db seed] Database seeded successfully!');
         console.log('\n📝 [db seed] Login credentials:');
-        console.log('[db seed] Admin: admin@e-polyclinic.uz / Admin123!');
-        console.log('[db seed] Doctor 1: john.smith@e-polyclinic.uz / Doctor123!');
-        console.log('[db seed] Doctor 2: sarah.johnson@e-polyclinic.uz / Doctor123!');
-        console.log('[db seed] Patient: jane.doe@gmail.com / Patient123!');
+        console.log('[db seed] Admin: admin@online-consult.com / Admin123!');
+        console.log('[db seed] Advisor 1: john.smith@online-consult.com / Advisor123!');
+        console.log('[db seed] Advisor 2: sarah.johnson@online-consult.com / Advisor123!');
+        console.log('[db seed] Client: jane.doe@gmail.com / Client123!');
 
     } catch (error) {
         console.error('❌ [db seed] Seeding error:', error);

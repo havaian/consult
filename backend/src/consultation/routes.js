@@ -9,7 +9,7 @@ const consultationController = new ConsultationController();
 /**
  * @route GET /api/consultations/:appointmentId/join
  * @desc Join a consultation session
- * @access Private (Patient or Doctor involved in appointment)
+ * @access Private (Client or Advisor involved in appointment)
  */
 router.get(
     '/:appointmentId/join',
@@ -25,7 +25,7 @@ router.get(
 /**
  * @route POST /api/consultations/:appointmentId/end
  * @desc End a consultation
- * @access Private (Doctors only)
+ * @access Private (Advisors only)
  */
 router.post(
     '/:appointmentId/end',
@@ -34,20 +34,20 @@ router.post(
 );
 
 /**
- * @route POST /api/consultations/:appointmentId/prescriptions
- * @desc Add prescriptions to a completed appointment
- * @access Private (Doctors only)
+ * @route POST /api/consultations/:appointmentId/advices
+ * @desc Add advices to a completed appointment
+ * @access Private (Advisors only)
  */
 router.post(
-    '/:appointmentId/prescriptions',
+    '/:appointmentId/advices',
     authenticateUser,
-    consultationController.addPrescriptions
+    consultationController.addAdvices
 );
 
 /**
  * @route POST /api/consultations/:appointmentId/follow-up
  * @desc Create a follow-up appointment
- * @access Private (Doctors only)
+ * @access Private (Advisors only)
  */
 router.post(
     '/:appointmentId/follow-up',
@@ -58,7 +58,7 @@ router.post(
 /**
  * @route GET /api/consultations/:appointmentId/status
  * @desc Get consultation status
- * @access Private (Patient or Doctor involved in appointment)
+ * @access Private (Client or Advisor involved in appointment)
  */
 router.get(
     '/:appointmentId/status',
@@ -69,7 +69,7 @@ router.get(
 /**
  * @route POST /api/consultations/:appointmentId/chat-log
  * @desc Save chat log from consultation
- * @access Private (Patient or Doctor involved in appointment)
+ * @access Private (Client or Advisor involved in appointment)
  */
 router.post(
     '/:appointmentId/chat-log',
@@ -80,7 +80,7 @@ router.post(
 /**
  * @route POST /api/consultations/:appointmentId/exit
  * @desc Handle exit from consultation room
- * @access Private (Patient or Doctor involved in appointment)
+ * @access Private (Client or Advisor involved in appointment)
  */
 router.post(
     '/:appointmentId/exit',

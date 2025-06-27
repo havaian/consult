@@ -36,7 +36,7 @@ router.patch('/users/:id/status', adminController.updateUserStatus);
 
 /**
  * @route PATCH /api/admin/users/:id/verify
- * @desc Manually verify a user (useful for doctors verification)
+ * @desc Manually verify a user (useful for advisors verification)
  * @access Private (Admin only)
  */
 router.patch('/users/:id/verify', adminController.verifyUser);
@@ -85,7 +85,7 @@ router.get('/system-health', adminController.getSystemHealth);
 
 /**
  * @route POST /api/admin/specializations
- * @desc Create a new medical specializations
+ * @desc Create a new legal specializations
  * @access Private (Admin only)
  */
 router.post('/specializations', adminController.createSpecialization);

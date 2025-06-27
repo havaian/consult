@@ -12,20 +12,20 @@ exports.sendDocumentUploadNotification = async (appointment, document, recipient
         }
 
         // Get uploader information
-        const uploader = document.uploadedBy === 'doctor' ? appointment.doctor : appointment.patient;
+        const uploader = document.uploadedBy === 'advisor' ? appointment.advisor : appointment.client;
 
         // Make sure we have the populated objects
         let uploaderName, recipientEmail;
 
         if (typeof uploader === 'object') {
-            uploaderName = document.uploadedBy === 'doctor' ?
+            uploaderName = document.uploadedBy === 'advisor' ?
                 `Dr. ${uploader.firstName} ${uploader.lastName}` :
                 `${uploader.firstName} ${uploader.lastName}`;
         } else {
             // Fetch user data if not populated
             const User = require('../user/model');
             const uploaderUser = await User.findById(uploader);
-            uploaderName = document.uploadedBy === 'doctor' ?
+            uploaderName = document.uploadedBy === 'advisor' ?
                 `Dr. ${uploaderUser.firstName} ${uploaderUser.lastName}` :
                 `${uploaderUser.firstName} ${uploaderUser.lastName}`;
         }
@@ -42,7 +42,7 @@ exports.sendDocumentUploadNotification = async (appointment, document, recipient
         // Send email notification
         await emailService.sendEmail({
             to: recipientEmail,
-            subject: 'New Document Uploaded - E-Polyclinic',
+            subject: 'New Document Uploaded - Online-consult',
             text: `${uploaderName} has uploaded a new document for your appointment scheduled on ${new Date(appointment.dateTime).toLocaleDateString()}.
             Document name: ${document.name}
             Please log in to your account to view the document.`,

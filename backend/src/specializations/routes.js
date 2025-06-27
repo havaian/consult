@@ -17,10 +17,10 @@ router.get('/', specializationController.getActiveSpecializations);
 router.get('/:id', specializationController.getSpecializationById);
 
 /**
- * @route GET /api/specializations/:id/doctors
- * @desc Get doctors by specializations
+ * @route GET /api/specializations/:id/advisors
+ * @desc Get advisors by specializations
  * @access Public
  */
-router.get('/:id/doctors', specializationController.getDoctorsBySpecialization);
+router.get('/:id/advisors', specializationController.getAdvisorsBySpecialization);
 
 module.exports = router;

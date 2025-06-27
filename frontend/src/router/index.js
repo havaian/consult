@@ -53,21 +53,21 @@ const router = createRouter({
     },
     // Profile routes
     {
-      path: '/profile',
-      name: 'patient-profile',
-      component: () => import('@/views/profile/PatientProfile.vue'),
+      path: '/profile/client',
+      name: 'client-profile',
+      component: () => import('@/views/profile/ClientProfile.vue'),
       meta: {
         requiresAuth: true,
-        requiresPatient: true
+        requiresClient: true
       }
     },
     {
-      path: '/doctor-profile',
-      name: 'doctor-profile',
-      component: () => import('@/views/profile/DoctorProfile.vue'),
+      path: '/profile/advisor',
+      name: 'advisor-profile',
+      component: () => import('@/views/profile/AdvisorProfile.vue'),
       meta: {
         requiresAuth: true,
-        requiresDoctor: true
+        requiresAdvisor: true
       }
     },
     {
@@ -78,43 +78,43 @@ const router = createRouter({
         requiresAuth: true
       }
     },
-    // Doctor routes
+    // Advisor routes
     {
-      path: '/doctors',
-      name: 'doctor-list',
-      component: () => import('@/views/doctors/DoctorList.vue')
+      path: '/advisors',
+      name: 'advisor-list',
+      component: () => import('@/views/advisors/AdvisorList.vue')
     },
     {
-      path: '/doctors/:id',
-      name: 'doctor-profile-view',
-      component: () => import('@/views/doctors/DoctorProfile.vue')
+      path: '/advisors/:id',
+      name: 'advisor-profile-view',
+      component: () => import('@/views/advisors/AdvisorProfile.vue')
     },
     // Appointment routes
     {
-      path: '/appointments/book/:doctorId',
+      path: '/appointments/book/:advisorId',
       name: 'book-appointment',
       component: () => import('@/views/appointments/BookAppointment.vue'),
       meta: {
         requiresAuth: true,
-        requiresPatient: true
+        requiresClient: true
       }
     },
     {
-      path: '/appointments/patient',
-      name: 'patient-appointments',
-      component: () => import('@/views/appointments/PatientAppointments.vue'),
+      path: '/appointments/client',
+      name: 'client-appointments',
+      component: () => import('@/views/appointments/ClientAppointments.vue'),
       meta: {
         requiresAuth: true,
-        requiresPatient: true
+        requiresClient: true
       }
     },
     {
-      path: '/appointments/doctor',
-      name: 'doctor-appointments',
-      component: () => import('@/views/appointments/DoctorAppointments.vue'),
+      path: '/appointments/advisor',
+      name: 'advisor-appointments',
+      component: () => import('@/views/appointments/AdvisorAppointments.vue'),
       meta: {
         requiresAuth: true,
-        requiresDoctor: true
+        requiresAdvisor: true
       }
     },
     {
@@ -204,9 +204,9 @@ router.beforeEach((to, from, next) => {
     next('/login')
   } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/')
-  } else if (to.meta.requiresPatient && !authStore.isPatient) {
+  } else if (to.meta.requiresClient && !authStore.isClient) {
     next('/')
-  } else if (to.meta.requiresDoctor && !authStore.isDoctor) {
+  } else if (to.meta.requiresAdvisor && !authStore.isAdvisor) {
     next('/')
   } else {
     next()

@@ -8,9 +8,9 @@ const emailService = require('../notification/emailService.js');
 // Create a new appointment
 exports.createAppointment = async (req, res) => {
     try {
-        const patientId = req.user.id;
+        const clientId = req.user.id;
 
-        const { doctorId, dateTime, type, reasonForVisit, notes, duration = 30 } = req.body;
+        const { advisorId, dateTime, type, reasonForVisit, notes, duration = 30 } = req.body;
 
         // Validate duration is a multiple of 15 minutes
         if (duration % 15 !== 0 || duration < 15 || duration > 120) {
@@ -20,23 +20,22 @@ exports.createAppointment = async (req, res) => {
         }
 
         const appointmentData = {
-            doctorId,
+            advisorId,
             dateTime,
             type,
             reasonForVisit,
-            notes,
-            duration
+            notes
         };
 
         const { error } = validateAppointmentInput(appointmentData);
         if (error) {
-            // Send failure email to patient
-            const patient = await User.findById(patientId);
-            const doctor = await User.findById(doctorId);
+            // Send failure email to client
+            const client = await User.findById(clientId);
+            const advisor = await User.findById(advisorId);
 
-            await emailService.sendAppointmentFailedEmail({
-                patient,
-                doctor,
+            await emailService.sendAppointmentBookingFailed({
+                client,
+                advisor,
                 dateTime,
                 type,
                 error: error.details[0].message
@@ -45,16 +44,16 @@ exports.createAppointment = async (req, res) => {
             return res.status(400).json({ message: error.details[0].message });
         }
 
-        // Verify that doctor exists
-        const doctor = await User.findById(doctorId);
-        if (!doctor || doctor.role !== 'doctor') {
-            return res.status(404).json({ message: 'Doctor not found' });
+        // Verify that advisor exists
+        const advisor = await User.findById(advisorId);
+        if (!advisor || advisor.role !== 'advisor') {
+            return res.status(404).json({ message: 'Advisor not found' });
         }
 
-        // Verify that patient exists
-        const patient = await User.findById(patientId);
-        if (!patient || patient.role !== 'patient') {
-            return res.status(404).json({ message: 'Patient not found' });
+        // Verify that client exists
+        const client = await User.findById(clientId);
+        if (!client || client.role !== 'client') {
+            return res.status(404).json({ message: 'Client not found' });
         }
 
         // Check appointment type is valid
@@ -67,9 +66,9 @@ exports.createAppointment = async (req, res) => {
         const appointmentDate = new Date(dateTime);
         const endTime = new Date(appointmentDate.getTime() + duration * 60000);
 
-        // Check if the doctor is available for the entire duration
+        // Check if the advisor is available for the entire duration
         const conflictingAppointment = await Appointment.findOne({
-            doctor: doctorId,
+            advisor: advisorId,
             $or: [
                 // Case 1: New appointment starts during an existing appointment
                 {
@@ -91,29 +90,29 @@ exports.createAppointment = async (req, res) => {
         });
 
         if (conflictingAppointment) {
-            // Send failure email to patient
-            await emailService.sendAppointmentFailedEmail({
-                patient,
-                doctor,
+            // Send failure email to client
+            await emailService.sendAppointmentBookingFailed({
+                client,
+                advisor,
                 dateTime,
                 type,
-                error: 'Doctor is not available at this time'
+                error: 'Advisor is not available at this time'
             });
 
-            return res.status(409).json({ message: 'Doctor is not available at this time' });
+            return res.status(409).json({ message: 'Advisor is not available at this time' });
         }
 
-        // Check if doctor's working hours allow this appointment
+        // Check if advisor's working hours allow this appointment
         const dayOfWeek = appointmentDate.getDay(); // 0 is Sunday, 1 is Monday
         const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convert to 0-based (Monday = 0, Sunday = 6)
 
-        const doctorAvailability = doctor.availability.find(a => a.dayOfWeek === dayIndex);
+        const advisorAvailability = advisor.availability.find(a => a.dayOfWeek === dayIndex);
 
-        if (!doctorAvailability || !doctorAvailability.isAvailable) {
-            return res.status(400).json({ message: 'Doctor is not available on this day' });
+        if (!advisorAvailability || !advisorAvailability.isAvailable) {
+            return res.status(400).json({ message: 'Advisor is not available on this day' });
         }
 
-        // Check if appointment falls within doctor's working hours
+        // Check if appointment falls within advisor's working hours
         const appointmentHour = appointmentDate.getHours();
         const appointmentMinute = appointmentDate.getMinutes();
         const appointmentTime = appointmentHour * 60 + appointmentMinute;
@@ -122,12 +121,12 @@ exports.createAppointment = async (req, res) => {
         const endMinute = endTime.getMinutes();
         const appointmentEndTime = endHour * 60 + endMinute;
 
-        // Parse doctor's working hours
+        // Parse advisor's working hours
         let isWithinWorkingHours = false;
 
         // Check each working time slot for the day
-        if (Array.isArray(doctorAvailability.timeSlots) && doctorAvailability.timeSlots.length > 0) {
-            for (const slot of doctorAvailability.timeSlots) {
+        if (Array.isArray(advisorAvailability.timeSlots) && advisorAvailability.timeSlots.length > 0) {
+            for (const slot of advisorAvailability.timeSlots) {
                 const [startHour, startMinute] = slot.startTime.split(':').map(Number);
                 const [endHour, endMinute] = slot.endTime.split(':').map(Number);
 
@@ -142,8 +141,8 @@ exports.createAppointment = async (req, res) => {
             }
         } else {
             // Fallback to the old format if timeSlots is not available
-            const [startHour, startMinute] = doctorAvailability.startTime.split(':').map(Number);
-            const [endHour, endMinute] = doctorAvailability.endTime.split(':').map(Number);
+            const [startHour, startMinute] = advisorAvailability.startTime.split(':').map(Number);
+            const [endHour, endMinute] = advisorAvailability.endTime.split(':').map(Number);
 
             const workingStartTime = startHour * 60 + startMinute;
             const workingEndTime = endHour * 60 + endMinute;
@@ -154,21 +153,21 @@ exports.createAppointment = async (req, res) => {
         }
 
         if (!isWithinWorkingHours) {
-            return res.status(400).json({ message: 'Appointment time is outside doctor\'s working hours' });
+            return res.status(400).json({ message: 'Appointment time is outside advisor\'s working hours' });
         }
 
-        // Create new appointment with pending-doctor-confirmation status
+        // Create new appointment with pending-advisor-confirmation status
         const appointment = new Appointment({
-            patient: patientId,
-            doctor: doctorId,
+            client: clientId,
+            advisor: advisorId,
             dateTime: appointmentDate,
             endTime: endTime,
             duration: duration,
             type,
             reasonForVisit,
             notes: notes || '',
-            status: 'pending-doctor-confirmation',
-            doctorConfirmationExpires: calculateDoctorConfirmationDeadline(doctor, appointmentDate)
+            status: 'pending-advisor-confirmation',
+            advisorConfirmationExpires: calculateAdvisorConfirmationDeadline(advisor, appointmentDate)
         });
 
         await appointment.save();
@@ -176,12 +175,12 @@ exports.createAppointment = async (req, res) => {
         // Send confirmation emails
         await emailService.sendAppointmentBookedEmails({
             ...appointment.toObject(),
-            patient,
-            doctor
+            client,
+            advisor
         });
 
         res.status(201).json({
-            message: 'Appointment created successfully, awaiting doctor confirmation',
+            message: 'Appointment created successfully, awaiting advisor confirmation',
             appointment
         });
     } catch (error) {
@@ -190,14 +189,14 @@ exports.createAppointment = async (req, res) => {
     }
 };
 
-// Helper function to calculate doctor confirmation deadline
-function calculateDoctorConfirmationDeadline(doctor, appointmentDate) {
+// Helper function to calculate advisor confirmation deadline
+function calculateAdvisorConfirmationDeadline(advisor, appointmentDate) {
     // Get the day of the appointment
     const appointmentDay = appointmentDate.getDay(); // 0 is Sunday, 1 is Monday
     const dayIndex = appointmentDay === 0 ? 6 : appointmentDay - 1; // Convert to 0-based (Monday = 0, Sunday = 6)
 
-    // Find doctor's working hours for this day
-    const workingHours = doctor.availability.find(a => a.dayOfWeek === dayIndex);
+    // Find advisor's working hours for this day
+    const workingHours = advisor.availability.find(a => a.dayOfWeek === dayIndex);
 
     if (!workingHours || !workingHours.isAvailable) {
         // Fallback: If no working hours defined, set deadline to 1 hour from now
@@ -227,13 +226,13 @@ function calculateDoctorConfirmationDeadline(doctor, appointmentDate) {
     return deadline;
 }
 
-// Get all appointments for a patient
-exports.getPatientAppointments = async (req, res) => {
+// Get all appointments for a client
+exports.getClientAppointments = async (req, res) => {
     try {
-        const { patientId } = req.params || req.user.id;
+        const { clientId } = req.params || req.user.id;
         const { status, limit = 10, skip = 0, view = 'list' } = req.query;
 
-        const query = { patient: patientId };
+        const query = { client: clientId };
         if (status) {
             query.status = status;
         }
@@ -253,7 +252,7 @@ exports.getPatientAppointments = async (req, res) => {
             .sort({ dateTime: view === 'calendar' ? 1 : -1 }) // Ascending for calendar, descending for list
             .skip(parseInt(skip))
             .limit(parseInt(limit))
-            .populate('doctor', 'firstName lastName specializations profilePicture');
+            .populate('advisor', 'firstName lastName specializations profilePicture');
 
         const total = await Appointment.countDocuments(query);
 
@@ -266,18 +265,18 @@ exports.getPatientAppointments = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error fetching patient appointments:', error);
+        console.error('Error fetching client appointments:', error);
         res.status(500).json({ message: 'An error occurred while fetching appointments' });
     }
 };
 
-// Get all appointments for a doctor
-exports.getDoctorAppointments = async (req, res) => {
+// Get all appointments for a advisor
+exports.getAdvisorAppointments = async (req, res) => {
     try {
-        const { doctorId } = req.params;
+        const { advisorId } = req.params;
         const { status, date, limit = 10, skip = 0, view = 'list' } = req.query;
 
-        const query = { doctor: doctorId };
+        const query = { advisor: advisorId };
         if (status) {
             query.status = status;
         }
@@ -310,7 +309,7 @@ exports.getDoctorAppointments = async (req, res) => {
             .sort({ dateTime: view === 'calendar' ? 1 : -1 }) // Ascending for calendar, descending for list
             .skip(parseInt(skip))
             .limit(parseInt(limit))
-            .populate('patient', 'firstName lastName profilePicture dateOfBirth');
+            .populate('client', 'firstName lastName profilePicture dateOfBirth');
 
         const total = await Appointment.countDocuments(query);
 
@@ -323,40 +322,40 @@ exports.getDoctorAppointments = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error fetching doctor appointments:', error);
+        console.error('Error fetching advisor appointments:', error);
         res.status(500).json({ message: 'An error occurred while fetching appointments' });
     }
 };
 
-// Doctor confirms appointment
+// Advisor confirms appointment
 exports.confirmAppointment = async (req, res) => {
     try {
         const { id } = req.params;
-        const doctorId = req.user.id;
+        const advisorId = req.user.id;
 
         const appointment = await Appointment.findById(id)
-            .populate('patient')
-            .populate('doctor');
+            .populate('client')
+            .populate('advisor');
 
         if (!appointment) {
             return res.status(404).json({ message: 'Appointment not found' });
         }
 
-        // Verify doctor is assigned to this appointment
-        if (appointment.doctor._id.toString() !== doctorId) {
+        // Verify advisor is assigned to this appointment
+        if (appointment.advisor._id.toString() !== advisorId.toString()) {
             return res.status(403).json({ message: 'You are not authorized to confirm this appointment' });
         }
 
         // Check appointment status
-        if (appointment.status !== 'pending-doctor-confirmation') {
+        if (appointment.status !== 'pending-advisor-confirmation') {
             return res.status(400).json({ message: `Cannot confirm appointment with status "${appointment.status}"` });
         }
 
         // Check confirmation deadline
-        if (appointment.doctorConfirmationExpires && new Date() > new Date(appointment.doctorConfirmationExpires)) {
+        if (appointment.advisorConfirmationExpires && new Date() > new Date(appointment.advisorConfirmationExpires)) {
             // Auto-cancel appointment if deadline passed
             appointment.status = 'canceled';
-            appointment.cancellationReason = 'Doctor did not confirm in time';
+            appointment.cancellationReason = 'Advisor did not confirm in time';
             await appointment.save();
 
             // Refund payment if any
@@ -368,7 +367,7 @@ exports.confirmAppointment = async (req, res) => {
                 }
             }
 
-            // Notify patient
+            // Notify client
             await NotificationService.sendAppointmentCancellationNotification(appointment, 'system');
 
             return res.status(400).json({
@@ -380,7 +379,7 @@ exports.confirmAppointment = async (req, res) => {
         appointment.status = 'scheduled';
         await appointment.save();
 
-        // Notify patient of confirmed appointment
+        // Notify client of confirmed appointment
         await NotificationService.sendAppointmentConfirmedNotification(appointment);
 
         res.status(200).json({
@@ -400,8 +399,8 @@ exports.updateAppointmentStatus = async (req, res) => {
         const { status, consultationSummary, cancellationReason } = req.body;
 
         const appointment = await Appointment.findById(id)
-            .populate('patient')
-            .populate('doctor');
+            .populate('client')
+            .populate('advisor');
 
         if (!appointment) {
             return res.status(404).json({ message: 'Appointment not found' });
@@ -409,7 +408,7 @@ exports.updateAppointmentStatus = async (req, res) => {
 
         // Validate status transition
         const validTransitions = {
-            'pending-doctor-confirmation': ['scheduled', 'canceled'],
+            'pending-advisor-confirmation': ['scheduled', 'canceled'],
             'pending-payment': ['scheduled', 'canceled'],
             'scheduled': ['completed', 'canceled', 'no-show'],
             'completed': [],
@@ -450,7 +449,7 @@ exports.updateAppointmentStatus = async (req, res) => {
 
         // Send cancellation emails if appointment was canceled
         if (status === 'canceled' && oldStatus === 'scheduled') {
-            const cancelledBy = req.user.role === 'doctor' ? 'doctor' : 'patient';
+            const cancelledBy = req.user.role === 'advisor' ? 'advisor' : 'client';
             await emailService.sendAppointmentCancelledEmails(appointment, cancelledBy);
         }
 
@@ -470,8 +469,8 @@ exports.getAppointmentById = async (req, res) => {
         const { id } = req.params;
 
         const appointment = await Appointment.findById(id)
-            .populate('doctor', 'firstName lastName specializations profilePicture email phone')
-            .populate('patient', 'firstName lastName profilePicture dateOfBirth email phone');
+            .populate('advisor', 'firstName lastName specializations profilePicture email phone')
+            .populate('client', 'firstName lastName profilePicture dateOfBirth email phone');
 
         if (!appointment) {
             return res.status(404).json({ message: 'Appointment not found' });
@@ -484,45 +483,45 @@ exports.getAppointmentById = async (req, res) => {
     }
 };
 
-// Add/update prescriptions for an appointment
-exports.updatePrescriptions = async (req, res) => {
+// Add/update advices for an appointment
+exports.updateAdvices = async (req, res) => {
     try {
         const { id } = req.params;
-        const { prescriptions } = req.body;
+        const { advices } = req.body;
 
         const appointment = await Appointment.findById(id);
         if (!appointment) {
             return res.status(404).json({ message: 'Appointment not found' });
         }
 
-        // Only allow doctors to update prescriptions for completed appointments
+        // Only allow advisors to update advices for completed appointments
         if (appointment.status !== 'completed') {
             return res.status(400).json({
-                message: 'Prescriptions can only be added to completed appointments'
+                message: 'Advices can only be added to completed appointments'
             });
         }
 
-        // Validate doctor is assigned to this appointment
-        if (req.user.role === 'doctor' && appointment.doctor.toString() !== req.user.id) {
-            return res.status(403).json({ message: 'You are not authorized to update prescriptions for this appointment' });
+        // Validate advisor is assigned to this appointment
+        if (req.user.role === 'advisor' && appointment.advisor.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'You are not authorized to update advices for this appointment' });
         }
 
-        // Add new prescriptions (preserve existing ones)
-        const existingPrescriptions = appointment.prescriptions || [];
-        appointment.prescriptions = [...existingPrescriptions, ...prescriptions];
+        // Add new advices (preserve existing ones)
+        const existingAdvices = appointment.advices || [];
+        appointment.advices = [...existingAdvices, ...advices];
 
         await appointment.save();
 
-        // Notify patient about new prescriptions
-        await NotificationService.sendPrescriptionNotification(appointment);
+        // Notify client about new advices
+        await NotificationService.sendAdviceNotification(appointment);
 
         res.status(200).json({
-            message: 'Prescriptions updated successfully',
+            message: 'Advices updated successfully',
             appointment
         });
     } catch (error) {
-        console.error('Error updating prescriptions:', error);
-        res.status(500).json({ message: 'An error occurred while updating prescriptions' });
+        console.error('Error updating advices:', error);
+        res.status(500).json({ message: 'An error occurred while updating advices' });
     }
 };
 
@@ -540,8 +539,8 @@ exports.scheduleFollowUp = async (req, res) => {
         }
 
         const appointment = await Appointment.findById(id)
-            .populate('doctor')
-            .populate('patient');
+            .populate('advisor')
+            .populate('client');
 
         if (!appointment) {
             return res.status(404).json({ message: 'Appointment not found' });
@@ -562,8 +561,8 @@ exports.scheduleFollowUp = async (req, res) => {
 
         // Create a new appointment for the follow-up with pending-payment status
         const followUpAppointment = new Appointment({
-            patient: appointment.patient._id,
-            doctor: appointment.doctor._id,
+            client: appointment.client._id,
+            advisor: appointment.advisor._id,
             dateTime: followUpDateObj,
             endTime: endTime,
             duration: duration,
@@ -571,7 +570,7 @@ exports.scheduleFollowUp = async (req, res) => {
             reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${notes || 'No notes provided'}`,
             status: 'pending-payment',
             payment: {
-                amount: appointment.doctor.consultationFee,
+                amount: appointment.advisor.consultationFee,
                 status: 'pending'
             }
         });
@@ -593,15 +592,15 @@ exports.scheduleFollowUp = async (req, res) => {
 
 exports.getPendingFollowUps = async (req, res) => {
     try {
-        const { patientId } = req.params;
+        const { clientId } = req.params;
 
-        // Find all pending-payment follow-up appointments for the patient
+        // Find all pending-payment follow-up appointments for the client
         const appointments = await Appointment.find({
-            patient: patientId,
+            client: clientId,
             status: 'pending-payment',
             reasonForVisit: { $regex: 'Follow-up to appointment on', $options: 'i' }
         })
-            .populate('doctor', 'firstName lastName specializations profilePicture email')
+            .populate('advisor', 'firstName lastName specializations profilePicture email')
             .sort({ dateTime: 1 });
 
         res.status(200).json({
@@ -618,20 +617,20 @@ exports.getPendingFollowUps = async (req, res) => {
     }
 };
 
-// Get doctor's availability slots
-exports.getDoctorAvailability = async (req, res) => {
+// Get advisor's availability slots
+exports.getAdvisorAvailability = async (req, res) => {
     try {
-        const { doctorId } = req.params;
+        const { advisorId } = req.params;
         const { date } = req.query;
 
         if (!date) {
             return res.status(400).json({ message: 'Date parameter is required' });
         }
 
-        // Get doctor's working hours
-        const doctor = await User.findById(doctorId);
-        if (!doctor || doctor.role !== 'doctor') {
-            return res.status(404).json({ message: 'Doctor not found' });
+        // Get advisor's working hours
+        const advisor = await User.findById(advisorId);
+        if (!advisor || advisor.role !== 'advisor') {
+            return res.status(404).json({ message: 'Advisor not found' });
         }
 
         // Parse date and get working hours for that day of week
@@ -639,17 +638,17 @@ exports.getDoctorAvailability = async (req, res) => {
         const dayOfWeek = requestedDate.getDay(); // 0 is Sunday, 1 is Monday, etc.
         const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convert to 0-based (Monday = 0, Sunday = 6)
 
-        const dayAvailability = doctor.availability.find(a => a.dayOfWeek === dayIndex);
+        const dayAvailability = advisor.availability.find(a => a.dayOfWeek === dayIndex);
         if (!dayAvailability || !dayAvailability.isAvailable) {
             return res.status(200).json({
-                message: 'Doctor is not available on this day',
+                message: 'Advisor is not available on this day',
                 availableSlots: []
             });
         }
 
         let availableSlots = [];
 
-        // Check if the doctor has time slots defined
+        // Check if the advisor has time slots defined
         if (Array.isArray(dayAvailability.timeSlots) && dayAvailability.timeSlots.length > 0) {
             // For each time slot, generate available appointment slots
             for (const timeSlot of dayAvailability.timeSlots) {
@@ -657,7 +656,7 @@ exports.getDoctorAvailability = async (req, res) => {
                     requestedDate,
                     timeSlot.startTime,
                     timeSlot.endTime,
-                    doctorId
+                    advisorId
                 );
                 availableSlots = [...availableSlots, ...slots];
             }
@@ -667,7 +666,7 @@ exports.getDoctorAvailability = async (req, res) => {
                 requestedDate,
                 dayAvailability.startTime,
                 dayAvailability.endTime,
-                doctorId
+                advisorId
             );
         }
 
@@ -678,42 +677,42 @@ exports.getDoctorAvailability = async (req, res) => {
                 { start: dayAvailability.startTime, end: dayAvailability.endTime }
         });
     } catch (error) {
-        console.error('Error fetching doctor availability:', error);
-        res.status(500).json({ message: 'An error occurred while fetching doctor availability' });
+        console.error('Error fetching advisor availability:', error);
+        res.status(500).json({ message: 'An error occurred while fetching advisor availability' });
     }
 };
 
 /**
- * Get appointments pending doctor confirmation
+ * Get appointments pending advisor confirmation
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
 exports.getPendingConfirmations = async (req, res) => {
     try {
-        const { doctorId } = req.params;
+        const { advisorId } = req.params;
         const { limit = 10, skip = 0 } = req.query;
 
-        // Find appointments that are pending doctor confirmation for this doctor
+        // Find appointments that are pending advisor confirmation for this advisor
         const query = {
-            doctor: doctorId,
-            status: 'pending-doctor-confirmation',
+            advisor: advisorId,
+            status: 'pending-advisor-confirmation',
             // Only include appointments that haven't expired yet
-            doctorConfirmationExpires: { $gt: new Date() }
+            advisorConfirmationExpires: { $gt: new Date() }
         };
 
         const appointments = await Appointment.find(query)
-            .sort({ doctorConfirmationExpires: 1 }) // Sort by expiration time (most urgent first)
+            .sort({ advisorConfirmationExpires: 1 }) // Sort by expiration time (most urgent first)
             .skip(parseInt(skip))
             .limit(parseInt(limit))
-            .populate('patient', 'firstName lastName profilePicture dateOfBirth email phone')
-            .populate('doctor', 'firstName lastName specializations');
+            .populate('client', 'firstName lastName profilePicture dateOfBirth email phone')
+            .populate('advisor', 'firstName lastName specializations');
 
         const total = await Appointment.countDocuments(query);
 
         // Calculate time remaining for each appointment
         const appointmentsWithTimeRemaining = appointments.map(appointment => {
             const now = new Date();
-            const expiresAt = new Date(appointment.doctorConfirmationExpires);
+            const expiresAt = new Date(appointment.advisorConfirmationExpires);
             const timeRemainingMs = expiresAt - now;
             const timeRemainingHours = Math.max(0, Math.floor(timeRemainingMs / (1000 * 60 * 60)));
             const timeRemainingMinutes = Math.max(0, Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60)));
@@ -749,7 +748,7 @@ exports.getPendingConfirmations = async (req, res) => {
 };
 
 // Helper function to generate time slots
-async function generateTimeSlots(date, startTimeStr, endTimeStr, doctorId) {
+async function generateTimeSlots(date, startTimeStr, endTimeStr, advisorId) {
     // Parse start and end times
     const [startHour, startMinute] = startTimeStr.split(':').map(Number);
     const [endHour, endMinute] = endTimeStr.split(':').map(Number);
@@ -760,7 +759,7 @@ async function generateTimeSlots(date, startTimeStr, endTimeStr, doctorId) {
     const endTime = new Date(date);
     endTime.setHours(endHour, endMinute, 0, 0);
 
-    // Generate slots at 15-minute intervals
+    // Generate slots at 30-minute intervals
     const slots = [];
     let currentSlot = new Date(startTime);
 
@@ -775,17 +774,17 @@ async function generateTimeSlots(date, startTimeStr, endTimeStr, doctorId) {
             });
         }
 
-        currentSlot.setMinutes(currentSlot.getMinutes() + 15); // Move to next 15-min interval
+        currentSlot.setMinutes(currentSlot.getMinutes() + 30); // Move to next 30-min interval
     }
 
     // Remove slots that already have appointments
     const bookedAppointments = await Appointment.find({
-        doctor: doctorId,
+        advisor: advisorId,
         dateTime: {
             $gte: new Date(date.setHours(0, 0, 0, 0)),
             $lt: new Date(date.setHours(23, 59, 59, 999))
         },
-        status: { $in: ['scheduled', 'pending-doctor-confirmation'] }
+        status: { $in: ['scheduled', 'pending-advisor-confirmation'] }
     });
 
     // Check for conflicts with each potential slot
@@ -809,14 +808,14 @@ exports.cleanupExpiredAppointments = async () => {
     try {
         // Find appointments past their confirmation deadline
         const expiredAppointments = await Appointment.find({
-            status: 'pending-doctor-confirmation',
-            doctorConfirmationExpires: { $lt: new Date() }
-        }).populate('patient').populate('doctor');
+            status: 'pending-advisor-confirmation',
+            advisorConfirmationExpires: { $lt: new Date() }
+        }).populate('client').populate('advisor');
 
         for (const appointment of expiredAppointments) {
             // Update status to canceled
             appointment.status = 'canceled';
-            appointment.cancellationReason = 'Doctor did not confirm in time';
+            appointment.cancellationReason = 'Advisor did not confirm in time';
             await appointment.save();
 
             // Process refund if payment exists
@@ -840,27 +839,27 @@ exports.cleanupExpiredAppointments = async () => {
 };
 
 /**
- * Update consultation summary and add new prescriptions
+ * Update consultation summary and add new advices
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
 exports.updateConsultationResults = async (req, res) => {
     try {
         const { id } = req.params;
-        const { consultationSummary, prescriptions, followUp } = req.body;
-        const doctorId = req.user.id;
+        const { consultationSummary, advices, followUp } = req.body;
+        const advisorId = req.user.id;
 
         // Find the appointment
         const appointment = await Appointment.findById(id)
-            .populate('patient', 'firstName lastName email telegramId')
-            .populate('doctor', 'firstName lastName email telegramId');
+            .populate('client', 'firstName lastName email telegramId')
+            .populate('advisor', 'firstName lastName email telegramId');
 
         if (!appointment) {
             return res.status(404).json({ message: 'Appointment not found' });
         }
 
-        // Verify doctor is assigned to this appointment
-        if (appointment.doctor._id.toString() !== doctorId) {
+        // Verify advisor is assigned to this appointment
+        if (appointment.advisor._id.toString() !== advisorId.toString()) {
             return res.status(403).json({ message: 'You are not authorized to update this consultation' });
         }
 
@@ -874,30 +873,30 @@ exports.updateConsultationResults = async (req, res) => {
             appointment.consultationSummary = consultationSummary;
         }
 
-        // Add new prescriptions if provided (don't replace existing ones)
-        if (prescriptions && Array.isArray(prescriptions) && prescriptions.length > 0) {
-            // Filter out invalid prescriptions
-            const validPrescriptions = prescriptions.filter(prescription => {
-                return prescription.medication && prescription.dosage &&
-                    prescription.frequency && prescription.duration;
+        // Add new advices if provided (don't replace existing ones)
+        if (advices && Array.isArray(advices) && advices.length > 0) {
+            // Filter out invalid advices
+            const validAdvices = advices.filter(advice => {
+                return advice.action && advice.dosage &&
+                    advice.frequency && advice.duration;
             });
 
-            // Add timestamp to each new prescription
-            const timestampedPrescriptions = validPrescriptions.map(prescription => ({
-                ...prescription,
+            // Add timestamp to each new advice
+            const timestampedAdvices = validAdvices.map(advice => ({
+                ...advice,
                 createdAt: Date.now()
             }));
 
-            // If appointment already has prescriptions, append new ones
-            if (appointment.prescriptions && Array.isArray(appointment.prescriptions)) {
-                appointment.prescriptions = [...appointment.prescriptions, ...timestampedPrescriptions];
+            // If appointment already has advices, append new ones
+            if (appointment.advices && Array.isArray(appointment.advices)) {
+                appointment.advices = [...appointment.advices, ...timestampedAdvices];
             } else {
-                appointment.prescriptions = timestampedPrescriptions;
+                appointment.advices = timestampedAdvices;
             }
 
-            // Send prescription notification
-            if (timestampedPrescriptions.length > 0) {
-                await NotificationService.sendPrescriptionNotification(appointment);
+            // Send advice notification
+            if (timestampedAdvices.length > 0) {
+                await NotificationService.sendAdviceNotification(appointment);
             }
         }
 
@@ -918,8 +917,8 @@ exports.updateConsultationResults = async (req, res) => {
 
                 // Create a new appointment for the follow-up with pending-payment status
                 const followUpAppointment = new Appointment({
-                    patient: appointment.patient._id,
-                    doctor: appointment.doctor._id,
+                    client: appointment.client._id,
+                    advisor: appointment.advisor._id,
                     dateTime: followUpDateObj,
                     endTime: endTime,
                     duration: duration,
@@ -927,7 +926,7 @@ exports.updateConsultationResults = async (req, res) => {
                     reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
                     status: 'pending-payment',
                     payment: {
-                        amount: appointment.doctor.consultationFee,
+                        amount: appointment.advisor.consultationFee,
                         status: 'pending'
                     }
                 });
@@ -954,7 +953,7 @@ exports.updateConsultationResults = async (req, res) => {
 };
 
 /**
- * Upload medical documents for an appointment
+ * Upload legal documents for an appointment
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
@@ -974,11 +973,11 @@ exports.uploadDocument = async (req, res) => {
             return res.status(404).json({ message: 'Appointment not found' });
         }
 
-        // Determine who is uploading (patient or doctor)
-        const isDoctor = req.user.role === 'doctor' && appointment.doctor.toString() === userId;
-        const isPatient = req.user.role === 'patient' && appointment.patient.toString() === userId;
+        // Determine who is uploading (client or advisor)
+        const isAdvisor = req.user.role === 'advisor' && appointment.advisor.toString() === userId;
+        const isClient = req.user.role === 'client' && appointment.client.toString() === userId;
 
-        if (!isDoctor && !isPatient) {
+        if (!isAdvisor && !isClient) {
             // Remove uploaded file if user is not authorized
             if (req.file && req.file.path) {
                 fs.unlinkSync(req.file.path);
@@ -991,7 +990,7 @@ exports.uploadDocument = async (req, res) => {
             name: req.file.originalname,
             fileUrl: `/uploads/documents/${req.file.filename}`,
             fileType: req.file.mimetype,
-            uploadedBy: isDoctor ? 'doctor' : 'patient',
+            uploadedBy: isAdvisor ? 'advisor' : 'client',
             uploadedAt: Date.now()
         };
 
@@ -1003,7 +1002,7 @@ exports.uploadDocument = async (req, res) => {
         await appointment.save();
 
         // Notify the other party about the new document
-        const recipient = isDoctor ? appointment.patient : appointment.doctor;
+        const recipient = isAdvisor ? appointment.client : appointment.advisor;
         await NotificationService.sendDocumentUploadNotification(appointment, document, recipient);
 
         res.status(201).json({
@@ -1034,10 +1033,10 @@ exports.getDocuments = async (req, res) => {
         }
 
         // Verify user is involved in the appointment
-        const isDoctor = req.user.role === 'doctor' && appointment.doctor.toString() === userId;
-        const isPatient = req.user.role === 'patient' && appointment.patient.toString() === userId;
+        const isAdvisor = req.user.role === 'advisor' && appointment.advisor.toString() === userId;
+        const isClient = req.user.role === 'client' && appointment.client.toString() === userId;
 
-        if (!isDoctor && !isPatient && req.user.role !== 'admin') {
+        if (!isAdvisor && !isClient && req.user.role !== 'admin') {
             return res.status(403).json({ message: 'You are not authorized to access documents for this appointment' });
         }
 
@@ -1069,10 +1068,10 @@ exports.getCalendarAppointments = async (req, res) => {
         // Set up query based on user role
         const query = {};
 
-        if (userRole === 'doctor') {
-            query.doctor = userId;
-        } else if (userRole === 'patient') {
-            query.patient = userId;
+        if (userRole === 'advisor') {
+            query.advisor = userId;
+        } else if (userRole === 'client') {
+            query.client = userId;
         } else if (userRole !== 'admin') {
             return res.status(403).json({ message: 'Unauthorized access to calendar' });
         }
@@ -1085,8 +1084,8 @@ exports.getCalendarAppointments = async (req, res) => {
 
         // Get appointments
         const appointments = await Appointment.find(query)
-            .populate('doctor', 'firstName lastName specializations')
-            .populate('patient', 'firstName lastName')
+            .populate('advisor', 'firstName lastName specializations')
+            .populate('client', 'firstName lastName')
             .sort({ dateTime: 1 });
 
         // Format appointments for calendar view
@@ -1095,9 +1094,9 @@ exports.getCalendarAppointments = async (req, res) => {
 
             return {
                 id: appointment._id,
-                title: userRole === 'doctor'
-                    ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
-                    : `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`,
+                title: userRole === 'advisor'
+                    ? `${appointment.client.firstName} ${appointment.client.lastName}`
+                    : `Dr. ${appointment.advisor.firstName} ${appointment.advisor.lastName}`,
                 start: appointment.dateTime,
                 end: appointment.endTime,
                 backgroundColor: eventColor,
@@ -1122,7 +1121,7 @@ exports.getCalendarAppointments = async (req, res) => {
                     return '#e74c3c'; // Red
                 case 'pending-payment':
                     return '#f39c12'; // Orange
-                case 'pending-doctor-confirmation':
+                case 'pending-advisor-confirmation':
                     return '#9b59b6'; // Purple
                 case 'no-show':
                     return '#95a5a6'; // Gray

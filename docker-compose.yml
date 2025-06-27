@@ -11,7 +11,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     networks:
-      - polyclinic_net
+      - consult_net
     command: mongod --port ${MONGODB_PORT}
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--port", "${MONGODB_PORT}"]
@@ -31,7 +31,7 @@ services:
       - redis_data:/data
     command: --port ${REDIS_PORT}
     networks:
-      - polyclinic_net
+      - consult_net
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "${REDIS_PORT}", "ping"]
       interval: 5s
@@ -54,7 +54,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
       - ./rabbitmq/main.conf:/etc/rabbitmq/rabbitmq.conf
     networks:
-      - polyclinic_net
+      - consult_net
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -67,7 +67,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: polyclinic_backend
+    container_name: consult_backend
     restart: always
     depends_on:
       mongodb:
@@ -94,7 +94,7 @@ services:
     volumes:
       - backend_logs:/usr/src/app/logs
     networks:
-      - polyclinic_net
+      - consult_net
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${BACKEND_PORT}/api/health"]
       interval: 20s
@@ -107,7 +107,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    container_name: polyclinic_frontend_prod
+    container_name: consult_frontend_prod
     restart: always
     depends_on:
       backend:
@@ -115,12 +115,13 @@ services:
     env_file:
       - ./.env
     environment:
+      - VITE_SOCKET_URL=${API_URL}
       - VUE_APP_API_URL=${PROJECT_URL}/api
       - VUE_APP_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
     ports:
       - "${FRONTEND_EXPOSE}:80"
     networks:
-      - polyclinic_net
+      - consult_net
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
       interval: 30s
@@ -128,67 +129,67 @@ services:
       retries: 3
       start_period: 15s
 
-  # Monitoring with Prometheus
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    restart: always
-    ports:
-      - "${PROMETHEUS_EXPOSE}:${PROMETHEUS_PORT}"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    networks:
-      - polyclinic_net
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+  # # Monitoring with Prometheus
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   restart: always
+  #   ports:
+  #     - "${PROMETHEUS_EXPOSE}:${PROMETHEUS_PORT}"
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus_data:/prometheus
+  #   networks:
+  #     - consult_net
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 30s
 
-  # Visualization with Grafana
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    restart: always
-    ports:
-      - "${GRAFANA_EXPOSE}:${GRAFANA_PORT}"
-    volumes:
-      - grafana_data:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-    networks:
-      - polyclinic_net
-    depends_on:
-      prometheus:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+  # # Visualization with Grafana
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   restart: always
+  #   ports:
+  #     - "${GRAFANA_EXPOSE}:${GRAFANA_PORT}"
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+  #   networks:
+  #     - consult_net
+  #   depends_on:
+  #     prometheus:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 30s
 
-  # Loki for log aggregation
-  loki:
-    image: grafana/loki:latest
-    container_name: loki
-    restart: always
-    ports:
-      - "${LOKI_EXPOSE}:${LOKI_PORT}"
-    volumes:
-      - loki_data:/loki
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - polyclinic_net
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 20s
+  # # Loki for log aggregation
+  # loki:
+  #   image: grafana/loki:latest
+  #   container_name: loki
+  #   restart: always
+  #   ports:
+  #     - "${LOKI_EXPOSE}:${LOKI_PORT}"
+  #   volumes:
+  #     - loki_data:/loki
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   networks:
+  #     - consult_net
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 20s
 
 volumes:
   mongodb_data:
@@ -202,5 +203,5 @@ volumes:
   nginx_logs:
 
 networks:
-  polyclinic_net:
+  consult_net:
     driver: bridge

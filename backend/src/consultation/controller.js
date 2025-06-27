@@ -30,18 +30,18 @@ class ConsultationController {
 
             // Find appointment
             const appointment = await Appointment.findById(appointmentId)
-                .populate('doctor', 'firstName lastName profilePicture specializations email')
-                .populate('patient', 'firstName lastName profilePicture dateOfBirth email');
+                .populate('advisor', 'firstName lastName profilePicture specializations email')
+                .populate('client', 'firstName lastName profilePicture dateOfBirth email');
 
             if (!appointment) {
                 return res.status(404).json({ message: 'Appointment not found' });
             }
 
             // Check if user is involved in the appointment
-            const isDoctor = req.user.role === 'doctor' && appointment.doctor._id.toString() === userId.toString();
-            const isPatient = req.user.role === 'patient' && appointment.patient._id.toString() === userId.toString();
+            const isAdvisor = req.user.role === 'advisor' && appointment.advisor._id.toString() === userId.toString();
+            const isClient = req.user.role === 'client' && appointment.client._id.toString() === userId.toString();
 
-            if (!isDoctor && !isPatient) {
+            if (!isAdvisor && !isClient) {
                 return res.status(403).json({ message: 'You are not authorized to join this consultation' });
             }
 
@@ -79,12 +79,12 @@ class ConsultationController {
             // User info for Jitsi token
             const userInfo = {
                 id: userId,
-                name: isDoctor ?
-                    `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}` :
-                    `${appointment.patient.firstName} ${appointment.patient.lastName}`,
-                avatar: isDoctor ? appointment.doctor.profilePicture : appointment.patient.profilePicture,
-                email: isDoctor ? appointment.doctor.email : appointment.patient.email,
-                role: isDoctor ? 'doctor' : 'patient'
+                name: isAdvisor ?
+                    `Dr. ${appointment.advisor.firstName} ${appointment.advisor.lastName}` :
+                    `${appointment.client.firstName} ${appointment.client.lastName}`,
+                avatar: isAdvisor ? appointment.advisor.profilePicture : appointment.client.profilePicture,
+                email: isAdvisor ? appointment.advisor.email : appointment.client.email,
+                role: isAdvisor ? 'advisor' : 'client'
             };
 
             // Generate Jitsi configuration
@@ -114,8 +114,8 @@ class ConsultationController {
             jitsiConfig.jwt = JitsiUtils.generateJitsiToken(jitsiConfig.roomName, userInfo, {
                 maxParticipants: 2,
                 allowedParticipants: [
-                    appointment.doctor._id.toString(),
-                    appointment.patient._id.toString()
+                    appointment.advisor._id.toString(),
+                    appointment.client._id.toString()
                 ]
             });
 
@@ -125,22 +125,22 @@ class ConsultationController {
                 consultation: {
                     appointmentId: appointment._id,
                     type: appointment.type,
-                    doctor: {
-                        id: appointment.doctor._id,
-                        name: `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`,
-                        profilePicture: appointment.doctor.profilePicture,
-                        specializations: appointment.doctor.specializations
+                    advisor: {
+                        id: appointment.advisor._id,
+                        name: `Dr. ${appointment.advisor.firstName} ${appointment.advisor.lastName}`,
+                        profilePicture: appointment.advisor.profilePicture,
+                        specializations: appointment.advisor.specializations
                     },
-                    patient: {
-                        id: appointment.patient._id,
-                        name: `${appointment.patient.firstName} ${appointment.patient.lastName}`,
-                        profilePicture: appointment.patient.profilePicture,
-                        dateOfBirth: appointment.patient.dateOfBirth
+                    client: {
+                        id: appointment.client._id,
+                        name: `${appointment.client.firstName} ${appointment.client.lastName}`,
+                        profilePicture: appointment.client.profilePicture,
+                        dateOfBirth: appointment.client.dateOfBirth
                     },
                     dateTime: appointment.dateTime,
                     endTime: appointment.endTime,
                     reasonForVisit: appointment.reasonForVisit,
-                    userRole: isDoctor ? 'doctor' : 'patient',
+                    userRole: isAdvisor ? 'advisor' : 'client',
                     jitsi: jitsiConfig
                 }
             });
@@ -151,7 +151,7 @@ class ConsultationController {
     };
 
     /**
-     * End a consultation (doctor only)
+     * End a consultation (advisor only)
      * @param {Object} req - Express request object
      * @param {Object} res - Express response object
      */
@@ -171,14 +171,14 @@ class ConsultationController {
                 return res.status(404).json({ message: 'Appointment not found' });
             }
 
-            // Only doctor or admin can end consultation
-            if (req.user.role !== 'doctor' && req.user.role !== 'admin') {
-                return res.status(403).json({ message: 'Only doctors can end consultations' });
+            // Only advisor or admin can end consultation
+            if (req.user.role !== 'advisor' && req.user.role !== 'admin') {
+                return res.status(403).json({ message: 'Only advisors can end consultations' });
             }
 
-            // Doctor must be assigned to the appointment
-            if (req.user.role === 'doctor' && appointment.doctor.toString() !== req.user.id) {
-                return res.status(403).json({ message: 'You are not the doctor for this appointment' });
+            // Advisor must be assigned to the appointment
+            if (req.user.role === 'advisor' && appointment.advisor.toString() !== req.user.id) {
+                return res.status(403).json({ message: 'You are not the advisor for this appointment' });
             }
 
             // Update appointment status
@@ -210,21 +210,21 @@ class ConsultationController {
     };
 
     /**
-     * Add prescriptions to a completed appointment
+     * Add advices to a completed appointment
      * @param {Object} req - Express request object
      * @param {Object} res - Express response object
      */
-    addPrescriptions = async (req, res) => {
+    addAdvices = async (req, res) => {
         try {
             const { appointmentId } = req.params;
-            const { prescriptions } = req.body;
+            const { advices } = req.body;
 
             if (!appointmentId) {
                 return res.status(400).json({ message: 'Appointment ID is required' });
             }
 
-            if (!prescriptions || !Array.isArray(prescriptions) || prescriptions.length === 0) {
-                return res.status(400).json({ message: 'Valid prescriptions array is required' });
+            if (!advices || !Array.isArray(advices) || advices.length === 0) {
+                return res.status(400).json({ message: 'Valid advices array is required' });
             }
 
             // Find appointment
@@ -234,39 +234,39 @@ class ConsultationController {
                 return res.status(404).json({ message: 'Appointment not found' });
             }
 
-            // Only doctor or admin can add prescriptions
-            if (req.user.role !== 'doctor' && req.user.role !== 'admin') {
-                return res.status(403).json({ message: 'Only doctors can add prescriptions' });
+            // Only advisor or admin can add advices
+            if (req.user.role !== 'advisor' && req.user.role !== 'admin') {
+                return res.status(403).json({ message: 'Only advisors can add advices' });
             }
 
-            // Doctor must be assigned to the appointment
-            if (req.user.role === 'doctor' && appointment.doctor.toString() !== req.user.id) {
-                return res.status(403).json({ message: 'You are not the doctor for this appointment' });
+            // Advisor must be assigned to the appointment
+            if (req.user.role === 'advisor' && appointment.advisor.toString() !== req.user.id) {
+                return res.status(403).json({ message: 'You are not the advisor for this appointment' });
             }
 
-            // Validate prescription data
-            const validPrescriptions = prescriptions.filter(prescription => {
-                return prescription.medication && prescription.dosage && prescription.frequency && prescription.duration;
+            // Validate advice data
+            const validAdvices = advices.filter(advice => {
+                return advice.action && advice.dosage && advice.frequency && advice.duration;
             });
 
-            if (validPrescriptions.length === 0) {
-                return res.status(400).json({ message: 'No valid prescriptions provided' });
+            if (validAdvices.length === 0) {
+                return res.status(400).json({ message: 'No valid advices provided' });
             }
 
-            // Add prescriptions to appointment
-            appointment.prescriptions = validPrescriptions;
+            // Add advices to appointment
+            appointment.advices = validAdvices;
             await appointment.save();
 
-            // Send prescription notification
-            await NotificationService.sendPrescriptionNotification(appointment);
+            // Send advice notification
+            await NotificationService.sendAdviceNotification(appointment);
 
             res.status(200).json({
-                message: 'Prescriptions added successfully',
-                prescriptions: appointment.prescriptions
+                message: 'Advices added successfully',
+                advices: appointment.advices
             });
         } catch (error) {
-            console.error('Error adding prescriptions:', error);
-            res.status(500).json({ message: 'An error occurred while adding prescriptions' });
+            console.error('Error adding advices:', error);
+            res.status(500).json({ message: 'An error occurred while adding advices' });
         }
     };
 
@@ -297,21 +297,21 @@ class ConsultationController {
 
             // Find the original appointment
             const originalAppointment = await Appointment.findById(appointmentId)
-                .populate('doctor', 'firstName lastName consultationFee')
-                .populate('patient', 'firstName lastName');
+                .populate('advisor', 'firstName lastName consultationFee')
+                .populate('client', 'firstName lastName');
 
             if (!originalAppointment) {
                 return res.status(404).json({ message: 'Original appointment not found' });
             }
 
-            // Only doctor or admin can create follow-up
-            if (req.user.role !== 'doctor' && req.user.role !== 'admin') {
-                return res.status(403).json({ message: 'Only doctors can create follow-up appointments' });
+            // Only advisor or admin can create follow-up
+            if (req.user.role !== 'advisor' && req.user.role !== 'admin') {
+                return res.status(403).json({ message: 'Only advisors can create follow-up appointments' });
             }
 
-            // Doctor must be assigned to the appointment
-            if (req.user.role === 'doctor' && originalAppointment.doctor._id.toString() !== req.user.id) {
-                return res.status(403).json({ message: 'You are not the doctor for this appointment' });
+            // Advisor must be assigned to the appointment
+            if (req.user.role === 'advisor' && originalAppointment.advisor._id.toString() !== req.user.id.toString()) {
+                return res.status(403).json({ message: 'You are not the advisor for this appointment' });
             }
 
             // Update original appointment with follow-up recommendation
@@ -324,21 +324,21 @@ class ConsultationController {
 
             // Create new follow-up appointment with 'pending-payment' status
             const followUpAppointment = new Appointment({
-                patient: originalAppointment.patient._id,
-                doctor: originalAppointment.doctor._id,
+                client: originalAppointment.client._id,
+                advisor: originalAppointment.advisor._id,
                 dateTime: followUpDateObj,
                 type: originalAppointment.type,
                 reasonForVisit: `Follow-up to appointment on ${new Date(originalAppointment.dateTime).toLocaleDateString()} - ${notes || 'No notes provided'}`,
                 status: 'pending-payment', // Special status for follow-ups pending payment
                 payment: {
-                    amount: originalAppointment.doctor.consultationFee,
+                    amount: originalAppointment.advisor.consultationFee,
                     status: 'pending'
                 }
             });
 
             await followUpAppointment.save();
 
-            // Notify patient about follow-up
+            // Notify client about follow-up
             await NotificationService.sendFollowUpNotification(followUpAppointment);
 
             res.status(201).json({
@@ -409,10 +409,10 @@ class ConsultationController {
             }
 
             // Check if user is involved in the appointment
-            const isDoctor = req.user.role === 'doctor' && appointment.doctor.toString() === req.user.id;
-            const isPatient = req.user.role === 'patient' && appointment.patient.toString() === req.user.id;
+            const isAdvisor = req.user.role === 'advisor' && appointment.advisor.toString() === req.user.id;
+            const isClient = req.user.role === 'client' && appointment.client.toString() === req.user.id;
 
-            if (!isDoctor && !isPatient && req.user.role !== 'admin') {
+            if (!isAdvisor && !isClient && req.user.role !== 'admin') {
                 return res.status(403).json({ message: 'You are not authorized to save chat logs for this appointment' });
             }
 
@@ -469,12 +469,12 @@ class ConsultationController {
             };
 
             // Check if both participants have left
-            const doctorId = appointment.doctor.toString();
-            const patientId = appointment.patient.toString();
+            const advisorId = appointment.advisor.toString();
+            const clientId = appointment.client.toString();
 
             const bothParticipantsLeft =
-                appointment.participantStatus[doctorId]?.status === 'left' &&
-                appointment.participantStatus[patientId]?.status === 'left';
+                appointment.participantStatus[advisorId]?.status === 'left' &&
+                appointment.participantStatus[clientId]?.status === 'left';
 
             // If both have left and at least 10 minutes have passed since appointment start time
             const appointmentStartTime = new Date(appointment.dateTime);
@@ -510,27 +510,27 @@ class ConsultationController {
     }
 
     /**
-     * Update consultation summary and add new prescriptions
+     * Update consultation summary and add new advices
      * @param {Object} req - Express request object
      * @param {Object} res - Express response object
     */
     updateConsultationResults = async (req, res) => {
         try {
             const { id } = req.params;
-            const { consultationSummary, prescriptions, followUp } = req.body;
-            const doctorId = req.user.id;
+            const { consultationSummary, advices, followUp } = req.body;
+            const advisorId = req.user.id;
 
             // Find the appointment
             const appointment = await Appointment.findById(id)
-                .populate('patient', 'firstName lastName email telegramId')
-                .populate('doctor', 'firstName lastName email telegramId');
+                .populate('client', 'firstName lastName email telegramId')
+                .populate('advisor', 'firstName lastName email telegramId');
 
             if (!appointment) {
                 return res.status(404).json({ message: 'Appointment not found' });
             }
 
-            // Verify doctor is assigned to this appointment
-            if (appointment.doctor._id.toString() !== doctorId) {
+            // Verify advisor is assigned to this appointment
+            if (appointment.advisor._id.toString() !== advisorId.toString()) {
                 return res.status(403).json({ message: 'You are not authorized to update this consultation' });
             }
 
@@ -544,30 +544,30 @@ class ConsultationController {
                 appointment.consultationSummary = consultationSummary;
             }
 
-            // Add new prescriptions if provided (don't replace existing ones)
-            if (prescriptions && Array.isArray(prescriptions) && prescriptions.length > 0) {
-                // Filter out invalid prescriptions
-                const validPrescriptions = prescriptions.filter(prescription => {
-                    return prescription.medication && prescription.dosage &&
-                        prescription.frequency && prescription.duration;
+            // Add new advices if provided (don't replace existing ones)
+            if (advices && Array.isArray(advices) && advices.length > 0) {
+                // Filter out invalid advices
+                const validAdvices = advices.filter(advice => {
+                    return advice.action && advice.dosage &&
+                        advice.frequency && advice.duration;
                 });
 
-                // Add timestamp to each new prescription
-                const timestampedPrescriptions = validPrescriptions.map(prescription => ({
-                    ...prescription,
+                // Add timestamp to each new advice
+                const timestampedAdvices = validAdvices.map(advice => ({
+                    ...advice,
                     createdAt: Date.now()
                 }));
 
-                // If appointment already has prescriptions, append new ones
-                if (appointment.prescriptions && Array.isArray(appointment.prescriptions)) {
-                    appointment.prescriptions = [...appointment.prescriptions, ...timestampedPrescriptions];
+                // If appointment already has advices, append new ones
+                if (appointment.advices && Array.isArray(appointment.advices)) {
+                    appointment.advices = [...appointment.advices, ...timestampedAdvices];
                 } else {
-                    appointment.prescriptions = timestampedPrescriptions;
+                    appointment.advices = timestampedAdvices;
                 }
 
-                // Send prescription notification
-                if (timestampedPrescriptions.length > 0) {
-                    await NotificationService.sendPrescriptionNotification(appointment);
+                // Send advice notification
+                if (timestampedAdvices.length > 0) {
+                    await NotificationService.sendAdviceNotification(appointment);
                 }
             }
 
@@ -588,8 +588,8 @@ class ConsultationController {
 
                     // Create a new appointment for the follow-up with pending-payment status
                     const followUpAppointment = new Appointment({
-                        patient: appointment.patient._id,
-                        doctor: appointment.doctor._id,
+                        client: appointment.client._id,
+                        advisor: appointment.advisor._id,
                         dateTime: followUpDateObj,
                         endTime: endTime,
                         duration: duration,
@@ -597,7 +597,7 @@ class ConsultationController {
                         reasonForVisit: `Follow-up to appointment on ${appointment.dateTime.toLocaleDateString()} - ${followUp.notes || 'No notes provided'}`,
                         status: 'pending-payment',
                         payment: {
-                            amount: appointment.doctor.consultationFee,
+                            amount: appointment.advisor.consultationFee,
                             status: 'pending'
                         }
                     });

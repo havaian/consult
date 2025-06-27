@@ -6,7 +6,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label for="search" class="label">Search by name</label>
-            <input id="search" v-model="filters.name" type="text" class="input mt-1" placeholder="Search doctors..."
+            <input id="search" v-model="filters.name" type="text" class="input mt-1" placeholder="Search advisors..."
               @input="handleSearch" />
           </div>
           <div>
@@ -30,31 +30,31 @@
         </div>
       </div>
 
-      <!-- Doctor list -->
+      <!-- Advisor list -->
       <div class="space-y-4">
         <div v-if="loading" class="text-center py-8">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
           </div>
-          <p class="mt-2 text-gray-600">Loading doctors...</p>
+          <p class="mt-2 text-gray-600">Loading advisors...</p>
         </div>
 
         <template v-else>
-          <div v-if="doctors.length === 0" class="text-center py-8">
-            <p class="text-gray-600">No doctors found matching your criteria.</p>
+          <div v-if="advisors.length === 0" class="text-center py-8">
+            <p class="text-gray-600">No advisors found matching your criteria.</p>
           </div>
 
           <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="doctor in doctors" :key="doctor._id" class="bg-white shadow rounded-lg overflow-hidden">
+            <div v-for="advisor in advisors" :key="advisor._id" class="bg-white shadow rounded-lg overflow-hidden">
               <div class="p-6">
                 <div class="flex items-center space-x-4">
-                  <img :src="doctor.profilePicture || '/images/user-placeholder.jpg'" :alt="doctor.firstName"
+                  <img :src="advisor.profilePicture || '/images/user-placeholder.jpg'" :alt="advisor.firstName"
                     class="h-16 w-16 rounded-full object-cover" />
                   <div>
                     <h3 class="text-lg font-medium text-gray-900">
-                      Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+                      Dr. {{ advisor.firstName }} {{ advisor.lastName }}
                     </h3>
                     <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
-                      <span v-for="spec in doctor.specializations" :key="spec"
+                      <span v-for="spec in advisor.specializations" :key="spec"
                         class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                         {{ spec }}
                       </span>
@@ -65,20 +65,20 @@
                 <div class="mt-4 space-y-2">
                   <p class="text-sm">
                     <span class="font-medium">Experience:</span>
-                    {{ doctor.experience }} years
+                    {{ advisor.experience }} years
                   </p>
                   <p class="text-sm">
                     <span class="font-medium">Consultation Fee:</span>
-                    {{ formatCurrency(doctor.consultationFee) }} {{ doctor.consultationFee.currency || 'UZS' }}
+                    {{ formatCurrency(advisor.consultationFee) }} {{ advisor.consultationFee.currency || 'UZS' }}
                   </p>
                   <p class="text-sm">
                     <span class="font-medium">Languages:</span>
-                    {{ doctor.languages?.join(', ') || 'Not specified' }}
+                    {{ advisor.languages?.join(', ') || 'Not specified' }}
                   </p>
                 </div>
 
                 <div class="mt-6">
-                  <router-link :to="{ name: 'doctor-profile-view', params: { id: doctor._id } }"
+                  <router-link :to="{ name: 'advisor-profile-view', params: { id: advisor._id } }"
                     class="btn-primary w-full justify-center">
                     View Profile
                   </router-link>
@@ -111,7 +111,7 @@ const specializations = [
   'Cardiology',
   'Dermatology',
   'Endocrinology',
-  'Family Medicine',
+  'Family Issue',
   'Gastroenterology',
   'Neurology',
   'Obstetrics & Gynecology',
@@ -131,7 +131,7 @@ const cities = [
   'Bukhara'
 ]
 
-const doctors = ref([])
+const advisors = ref([])
 const loading = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(1)
@@ -145,7 +145,7 @@ const formatCurrency = (amount) => {
   return new Intl.NumberFormat('uz-UZ').format(amount)
 }
 
-async function fetchDoctors() {
+async function fetchAdvisors() {
   try {
     loading.value = true
     const params = {
@@ -154,11 +154,11 @@ async function fetchDoctors() {
       ...filters
     }
 
-    const response = await axios.get('/api/users/doctors', { params })
-    doctors.value = response.data.doctors
+    const response = await axios.get('/api/users/advisors', { params })
+    advisors.value = response.data.advisors
     totalPages.value = Math.ceil(response.data.pagination.total / response.data.pagination.limit)
   } catch (error) {
-    console.error('Error fetching doctors:', error)
+    console.error('Error fetching advisors:', error)
   } finally {
     loading.value = false
   }
@@ -166,15 +166,15 @@ async function fetchDoctors() {
 
 function handleSearch() {
   currentPage.value = 1
-  fetchDoctors()
+  fetchAdvisors()
 }
 
 function handlePageChange(page) {
   currentPage.value = page
-  fetchDoctors()
+  fetchAdvisors()
 }
 
 onMounted(() => {
-  fetchDoctors()
+  fetchAdvisors()
 })
 </script>

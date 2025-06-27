@@ -6,8 +6,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <h1 class="text-xl font-bold text-gray-900">
-                            Consultation with {{ consultation?.patient?.name ||
-                                consultation?.doctor?.name }}
+                            Consultation with {{ consultation?.client?.name ||
+                                consultation?.advisor?.name }}
                         </h1>
                         <span class="ml-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" :class="{
                             'bg-green-100 text-green-800': isConnected,
@@ -42,7 +42,7 @@
                     <h3 class="text-lg font-medium text-gray-900">End Consultation</h3>
                     <p class="mt-2 text-sm text-gray-500">
                         Are you sure you want to end this consultation?
-                        {{ isDoctor ? 'You\'ll be asked to provide a summary and prescriptions.' : '' }}
+                        {{ isAdvisor ? 'You\'ll be asked to provide a summary and advices.' : '' }}
                     </p>
                     <div class="mt-4 flex justify-end space-x-3">
                         <button @click="showEndConfirmation = false" class="btn-secondary">
@@ -56,8 +56,8 @@
             </div>
         </div>
 
-        <!-- Post-Consultation Form for Doctors -->
-        <div v-if="showPostConsultationForm && isDoctor"
+        <!-- Post-Consultation Form for Advisors -->
+        <div v-if="showPostConsultationForm && isAdvisor"
             class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
             <div class="bg-white rounded-lg overflow-hidden shadow-xl max-w-4xl w-full mx-4 my-8">
                 <div class="p-6 max-h-[90vh] overflow-y-auto">
@@ -73,25 +73,25 @@
                                 rows="4" class="input w-full" required></textarea>
                         </div>
 
-                        <!-- Prescriptions -->
+                        <!-- Advices -->
                         <div class="mb-6">
                             <div class="flex justify-between items-center mb-2">
-                                <h4 class="text-lg font-medium text-gray-900">Prescriptions</h4>
-                                <button type="button" @click="addPrescription"
-                                    class="text-sm text-indigo-600 hover:text-indigo-900">
-                                    + Add Prescription
+                                <h4 class="text-lg font-medium text-gray-900">Advices</h4>
+                                <button type="button" @click="addAdvice"
+                                    class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-900">
+                                    + Add Advice
                                 </button>
                             </div>
 
-                            <div v-for="(prescription, index) in postConsultationData.prescriptions" :key="index"
+                            <div v-for="(advice, index) in postConsultationData.advices" :key="index"
                                 class="bg-gray-50 p-4 rounded-lg mb-3">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                                     <div>
-                                        <label :for="`medication-${index}`"
+                                        <label :for="`action-${index}`"
                                             class="block text-sm font-medium text-gray-700 mb-1">
-                                            Medication
+                                            Action
                                         </label>
-                                        <input :id="`medication-${index}`" v-model="prescription.medication" type="text"
+                                        <input :id="`action-${index}`" v-model="advice.action" type="text"
                                             class="input w-full" required />
                                     </div>
                                     <div>
@@ -99,7 +99,7 @@
                                             class="block text-sm font-medium text-gray-700 mb-1">
                                             Dosage
                                         </label>
-                                        <input :id="`dosage-${index}`" v-model="prescription.dosage" type="text"
+                                        <input :id="`dosage-${index}`" v-model="advice.dosage" type="text"
                                             class="input w-full" required />
                                     </div>
                                 </div>
@@ -109,7 +109,7 @@
                                             class="block text-sm font-medium text-gray-700 mb-1">
                                             Frequency
                                         </label>
-                                        <input :id="`frequency-${index}`" v-model="prescription.frequency" type="text"
+                                        <input :id="`frequency-${index}`" v-model="advice.frequency" type="text"
                                             class="input w-full" required />
                                     </div>
                                     <div>
@@ -117,7 +117,7 @@
                                             class="block text-sm font-medium text-gray-700 mb-1">
                                             Duration
                                         </label>
-                                        <input :id="`duration-${index}`" v-model="prescription.duration" type="text"
+                                        <input :id="`duration-${index}`" v-model="advice.duration" type="text"
                                             class="input w-full" required />
                                     </div>
                                 </div>
@@ -126,18 +126,18 @@
                                         class="block text-sm font-medium text-gray-700 mb-1">
                                         Instructions
                                     </label>
-                                    <textarea :id="`instructions-${index}`" v-model="prescription.instructions" rows="2"
+                                    <textarea :id="`instructions-${index}`" v-model="advice.instructions" rows="2"
                                         class="input w-full"></textarea>
                                 </div>
-                                <button type="button" @click="removePrescription(index)"
+                                <button type="button" @click="removeAdvice(index)"
                                     class="text-sm text-red-600 hover:text-red-900">
                                     Remove
                                 </button>
                             </div>
 
-                            <div v-if="postConsultationData.prescriptions.length === 0"
+                            <div v-if="postConsultationData.advices.length === 0"
                                 class="bg-gray-50 p-4 rounded-lg text-center text-gray-500">
-                                No prescriptions added. Click "Add Prescription" to add one.
+                                No advices added. Click "Add Advice" to add one.
                             </div>
                         </div>
 
@@ -145,7 +145,7 @@
                         <div class="mb-6">
                             <div class="flex items-center mb-2">
                                 <input id="followUpRecommended" v-model="postConsultationData.followUp.recommended"
-                                    type="checkbox" class="h-4 w-4 text-indigo-600 rounded" />
+                                    type="checkbox" class="h-4 w-4 bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  rounded" />
                                 <label for="followUpRecommended" class="ml-2 block text-sm font-medium text-gray-700">
                                     Recommend Follow-up Appointment
                                 </label>
@@ -208,7 +208,7 @@
                     <h3 class="text-lg font-medium text-gray-900 text-center">Follow-up Appointment Created</h3>
                     <p class="mt-2 text-sm text-gray-500 text-center">
                         A follow-up appointment has been created and is now pending payment.
-                        The patient will need to pay to confirm the appointment.
+                        The client will need to pay to confirm the appointment.
                     </p>
                     <div class="mt-4 flex justify-center">
                         <button @click="returnToAppointments" class="btn-primary">
@@ -246,7 +246,7 @@ const showFollowUpNotification = ref(false)
 // Post-consultation form data
 const postConsultationData = reactive({
     consultationSummary: '',
-    prescriptions: [],
+    advices: [],
     followUp: {
         recommended: false,
         date: '',
@@ -254,7 +254,7 @@ const postConsultationData = reactive({
     }
 })
 
-const isDoctor = computed(() => authStore.isDoctor)
+const isAdvisor = computed(() => authStore.isAdvisor)
 
 const minFollowUpDate = computed(() => {
     const tomorrow = addDays(new Date(), 1)
@@ -319,7 +319,7 @@ async function initializeJitsi() {
                 ]
             },
             userInfo: {
-                displayName: authStore.isDoctor ?
+                displayName: authStore.isAdvisor ?
                     `Dr. ${authStore.user.firstName} ${authStore.user.lastName}` :
                     `${authStore.user.firstName} ${authStore.user.lastName}`
             }
@@ -334,8 +334,8 @@ async function initializeJitsi() {
         })
 
         api.value.on('videoConferenceLeft', () => {
-            if (isDoctor.value) {
-                // If doctor hasn't completed the form yet, show it
+            if (isAdvisor.value) {
+                // If advisor hasn't completed the form yet, show it
                 if (!showPostConsultationForm.value) {
                     showPostConsultationForm.value = true
                 }
@@ -386,16 +386,16 @@ function confirmEndConsultation() {
         api.value.dispose()
     }
 
-    if (isDoctor.value) {
+    if (isAdvisor.value) {
         showPostConsultationForm.value = true
     } else {
         router.push({ name: 'appointment-details', params: { id: route.params.appointmentId } })
     }
 }
 
-function addPrescription() {
-    postConsultationData.prescriptions.push({
-        medication: '',
+function addAdvice() {
+    postConsultationData.advices.push({
+        action: '',
         dosage: '',
         frequency: '',
         duration: '',
@@ -403,8 +403,8 @@ function addPrescription() {
     })
 }
 
-function removePrescription(index) {
-    postConsultationData.prescriptions.splice(index, 1)
+function removeAdvice(index) {
+    postConsultationData.advices.splice(index, 1)
 }
 
 async function submitPostConsultationForm() {
@@ -417,10 +417,10 @@ async function submitPostConsultationForm() {
             consultationSummary: postConsultationData.consultationSummary
         })
 
-        // 2. Add prescriptions if any
-        if (postConsultationData.prescriptions.length > 0) {
-            await axios.patch(`/api/appointments/${route.params.appointmentId}/prescriptions`, {
-                prescriptions: postConsultationData.prescriptions
+        // 2. Add advices if any
+        if (postConsultationData.advices.length > 0) {
+            await axios.patch(`/api/appointments/${route.params.appointmentId}/advices`, {
+                advices: postConsultationData.advices
             })
         }
 
@@ -447,13 +447,13 @@ async function submitPostConsultationForm() {
 
 function skipPostConsultation() {
     // Just end the consultation without saving any data
-    router.push({ name: 'doctor-appointments' })
+    router.push({ name: 'advisor-appointments' })
 }
 
 function returnToAppointments() {
-    router.push(isDoctor.value ?
-        { name: 'doctor-appointments' } :
-        { name: 'patient-appointments' }
+    router.push(isAdvisor.value ?
+        { name: 'advisor-appointments' } :
+        { name: 'client-appointments' }
     )
 }
 

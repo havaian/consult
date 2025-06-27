@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('./controller');
-const { authenticateUser, authorizeRoles, preventDoctorRegistration, ensureTermsAccepted } = require('../auth');
+const { authenticateUser, authorizeRoles, preventAdvisorRegistration, ensureTermsAccepted } = require('../auth');
 
 /**
  * @route POST /api/users/register
- * @desc Register a new user (patient or doctor)
+ * @desc Register a new user (client or advisor)
  * @access Public
  */
-router.post('/register', preventDoctorRegistration, ensureTermsAccepted, userController.registerUser);
+router.post('/register', preventAdvisorRegistration, ensureTermsAccepted, userController.registerUser);
 
 /**
  * @route GET /api/users/verify/:token
@@ -60,18 +60,18 @@ router.post('/forgot-password', userController.forgotPassword);
 router.post('/reset-password/:token', userController.resetPassword);
 
 /**
- * @route GET /api/users/doctors
- * @desc Get all doctors with optional filters
+ * @route GET /api/users/advisors
+ * @desc Get all advisors with optional filters
  * @access Public
  */
-router.get('/doctors', userController.getDoctors);
+router.get('/advisors', userController.getAdvisors);
 
 /**
- * @route GET /api/users/doctors/:id
- * @desc Get doctor by ID
+ * @route GET /api/users/advisors/:id
+ * @desc Get advisor by ID
  * @access Public
  */
-router.get('/doctors/:id', userController.getDoctorById);
+router.get('/advisors/:id', userController.getAdvisorById);
 
 /**
  * @route POST /api/users/link-telegram

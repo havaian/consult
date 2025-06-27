@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const Schema = mongoose.Schema;
 
-// Time slot schema for doctor availability
+// Time slot schema for advisor availability
 const timeSlotSchema = new Schema({
     startTime: {
         type: String, // Format: "HH:MM"
@@ -48,17 +48,17 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ['patient', 'doctor', 'admin'],
-        default: 'patient'
+        enum: ['client', 'advisor', 'admin'],
+        default: 'client'
     },
     dateOfBirth: {
         type: Date,
-        required: function () { return this.role === 'patient'; }
+        required: function () { return this.role === 'client'; }
     },
     gender: {
         type: String,
         enum: ['male', 'female', 'other', 'prefer not to say'],
-        required: function () { return this.role === 'patient'; }
+        required: function () { return this.role === 'client'; }
     },
     profilePicture: {
         type: String,
@@ -71,19 +71,19 @@ const userSchema = new Schema({
         zipCode: String,
         country: String
     },
-    // Doctor-specific fields
+    // Advisor-specific fields
     specializations: [{
         type: String,
-        required: function () { return this.role === 'doctor'; }
+        required: function () { return this.role === 'advisor'; }
     }],
     licenseNumber: {
         type: String,
-        required: function () { return this.role === 'doctor'; }
+        required: function () { return this.role === 'advisor'; }
     },
     experience: {
         type: Number,
         default: 0,
-        required: function () { return this.role === 'doctor'; }
+        required: function () { return this.role === 'advisor'; }
     },
     education: [{
         degree: String,
@@ -114,13 +114,13 @@ const userSchema = new Schema({
     }],
     consultationFee: {
         type: Number,
-        required: function () { return this.role === 'doctor'; }
+        required: function () { return this.role === 'advisor'; }
     },
-    // Patient-specific fields
-    medicalHistory: {
+    // Client-specific fields
+    legalHistory: {
         allergies: [String],
         chronicConditions: [String],
-        currentMedications: [String],
+        currentActions: [String],
         surgeries: [{
             procedure: String,
             year: Number
@@ -187,7 +187,7 @@ userSchema.virtual('fullName').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 
-// Add indexes for searching doctors - removed the duplicate email index
+// Add indexes for searching advisors - removed the duplicate email index
 userSchema.index({ specializations: 1 });
 userSchema.index({ 'address.city': 1 });
 userSchema.index({ firstName: 'text', lastName: 'text', specializations: 'text' });
@@ -262,7 +262,7 @@ userSchema.methods.generatePasswordResetToken = function () {
     return resetToken;
 };
 
-// Method to get doctor's basic public profile
+// Method to get advisor's basic public profile
 userSchema.methods.getPublicProfile = function () {
     const user = this.toObject();
 
@@ -276,10 +276,10 @@ userSchema.methods.getPublicProfile = function () {
     return user;
 };
 
-// Static method to find available doctors by specializations
-userSchema.statics.findAvailableDoctors = function (specializations) {
+// Static method to find available advisors by specializations
+userSchema.statics.findAvailableAdvisors = function (specializations) {
     return this.find({
-        role: 'doctor',
+        role: 'advisor',
         isActive: true,
         isVerified: true,
         specializations: specializations || { $exists: true }

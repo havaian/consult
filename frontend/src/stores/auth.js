@@ -8,14 +8,16 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token'))
 
   const isAuthenticated = computed(() => !!token.value)
-  const isDoctor = computed(() => user.value?.role === 'doctor')
-  const isPatient = computed(() => user.value?.role === 'patient')
+  const isAdvisor = computed(() => user.value?.role === 'advisor')
+  const isClient = computed(() => user.value?.role === 'client')
 
   async function login(email, password) {
     try {
       const response = await axios.post('/api/users/login', { email, password })
       token.value = response.data.token
       user.value = response.data.user
+
+      console.log(response.data);
 
       // Persist to localStorage
       localStorage.setItem('token', token.value)
@@ -47,8 +49,8 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     token,
     isAuthenticated,
-    isDoctor,
-    isPatient,
+    isAdvisor,
+    isClient,
     login,
     register,
     logout

@@ -41,8 +41,8 @@
                         </div>
                     </div>
 
-                    <!-- Doctor-specific fields -->
-                    <template v-if="authStore.isDoctor">
+                    <!-- Advisor-specific fields -->
+                    <template v-if="authStore.isAdvisor">
                         <div>
                             <h2 class="text-lg font-medium text-gray-900 mb-4">Professional Information</h2>
 
@@ -63,7 +63,7 @@
                                         </button>
                                     </div>
                                     <button type="button" @click="addSpecialization"
-                                        class="text-sm text-indigo-600 hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Another Specialization
                                     </button>
                                 </div>
@@ -88,7 +88,7 @@
                                         </div>
                                     </div>
                                     <button type="button" @click="addEducation"
-                                        class="text-sm text-indigo-600 hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Education
                                     </button>
                                 </div>
@@ -114,7 +114,7 @@
                                         </div>
                                     </div>
                                     <button type="button" @click="addCertification"
-                                        class="text-sm text-indigo-600 hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Certification
                                     </button>
                                 </div>
@@ -164,10 +164,10 @@
                         </div>
                     </template>
 
-                    <!-- Patient-specific fields -->
+                    <!-- Client-specific fields -->
                     <template v-else>
                         <div>
-                            <h2 class="text-lg font-medium text-gray-900 mb-4">Medical Information</h2>
+                            <h2 class="text-lg font-medium text-gray-900 mb-4">Legal Information</h2>
                             <div class="space-y-4">
                                 <div>
                                     <label for="allergies" class="label">Allergies</label>
@@ -205,7 +205,7 @@
                     </template>
 
                     <div class="flex justify-end space-x-4">
-                        <router-link :to="{ name: authStore.isDoctor ? 'doctor-profile' : 'patient-profile' }"
+                        <router-link :to="{ name: authStore.isAdvisor ? 'advisor-profile' : 'client-profile' }"
                             class="btn-secondary">
                             Cancel
                         </router-link>
@@ -256,7 +256,7 @@ const formData = reactive({
         { dayOfWeek: 6, isAvailable: false, startTime: '09:00', endTime: '17:00' },
         { dayOfWeek: 7, isAvailable: false, startTime: '09:00', endTime: '17:00' }
     ],
-    medicalHistory: {
+    legalHistory: {
         allergies: [],
         chronicConditions: []
     },
@@ -313,7 +313,7 @@ async function fetchSpecializations() {
             'Cardiology',
             'Dermatology',
             'Endocrinology',
-            'Family Medicine',
+            'Family Issue',
             'Gastroenterology',
             'Neurology',
             'Obstetrics & Gynecology',
@@ -335,7 +335,7 @@ async function fetchUserProfile() {
         formData.phone = user.phone
         formData.address = user.address || { street: '', city: '' }
 
-        if (authStore.isDoctor) {
+        if (authStore.isAdvisor) {
             // Handle specializations properly as an array
             formData.specializations = Array.isArray(user.specializations) ? 
                 user.specializations : 
@@ -352,12 +352,12 @@ async function fetchUserProfile() {
             // Update input fields
             languagesInput.value = user.languages?.join(', ') || ''
         } else {
-            formData.medicalHistory = user.medicalHistory || { allergies: [], chronicConditions: [] }
+            formData.legalHistory = user.legalHistory || { allergies: [], chronicConditions: [] }
             formData.emergencyContact = user.emergencyContact || { name: '', phone: '', relationship: '' }
 
             // Update input fields
-            allergiesInput.value = user.medicalHistory?.allergies?.join(', ') || ''
-            conditionsInput.value = user.medicalHistory?.chronicConditions?.join(', ') || ''
+            allergiesInput.value = user.legalHistory?.allergies?.join(', ') || ''
+            conditionsInput.value = user.legalHistory?.chronicConditions?.join(', ') || ''
         }
     } catch (error) {
         console.error('Error fetching user profile:', error)
@@ -376,7 +376,7 @@ async function handleSubmit() {
             address: formData.address
         }
 
-        if (authStore.isDoctor) {
+        if (authStore.isAdvisor) {
             // Ensure specializations is an array of non-empty strings
             updateData.specializations = formData.specializations.filter(Boolean)
             updateData.education = formData.education.filter(e => e.degree && e.institution && e.year)
@@ -387,7 +387,7 @@ async function handleSubmit() {
             updateData.bio = formData.bio
             updateData.availability = formData.availability
         } else {
-            updateData.medicalHistory = {
+            updateData.legalHistory = {
                 allergies: allergiesInput.value.split(',').map(item => item.trim()).filter(Boolean),
                 chronicConditions: conditionsInput.value.split(',').map(item => item.trim()).filter(Boolean)
             }
@@ -395,7 +395,7 @@ async function handleSubmit() {
         }
 
         await axios.patch('/api/users/me', updateData)
-        router.push({ name: authStore.isDoctor ? 'doctor-profile' : 'patient-profile' })
+        router.push({ name: authStore.isAdvisor ? 'advisor-profile' : 'client-profile' })
     } catch (error) {
         console.error('Error updating profile:', error)
     } finally {
@@ -405,8 +405,8 @@ async function handleSubmit() {
 
 onMounted(() => {
     fetchUserProfile()
-    // Fetch specializations if user is a doctor
-    if (authStore.isDoctor) {
+    // Fetch specializations if user is a advisor
+    if (authStore.isAdvisor) {
         fetchSpecializations()
     }
 })

@@ -8,52 +8,52 @@ const upload = require('../utils/multerConfig');
 /**
  * @route POST /api/appointments
  * @desc Create a new appointment
- * @access Private (Patients only - uses authenticated user ID)
+ * @access Private (Clients only - uses authenticated user ID)
  */
 router.post(
     '/',
     authenticateUser,
-    authorizeRoles(['patient', 'admin']),
+    authorizeRoles(['client', 'admin']),
     appointmentController.createAppointment
 );
 
 /**
- * @route GET /api/appointments/patient/:patientId
- * @desc Get all appointments for a patient
- * @access Private (Patient must be the owner or Admin)
+ * @route GET /api/appointments/client/:clientId
+ * @desc Get all appointments for a client
+ * @access Private (Client must be the owner or Admin)
  */
 router.get(
-    '/patient/:patientId',
+    '/client/:clientId',
     authenticateUser,
-    authorizeRoles(['patient', 'admin']),
-    ensureOwnership('patientId'),
-    appointmentController.getPatientAppointments
+    authorizeRoles(['client', 'admin']),
+    ensureOwnership('clientId'),
+    appointmentController.getClientAppointments
 );
 
 /**
- * @route GET /api/appointments/patient/:patientId/pending-followups
- * @desc Get pending follow-up appointments for a patient
- * @access Private (Patient must be the owner or Admin)
+ * @route GET /api/appointments/client/:clientId/pending-followups
+ * @desc Get pending follow-up appointments for a client
+ * @access Private (Client must be the owner or Admin)
  */
 router.get(
-    '/patient/:patientId/pending-followups',
+    '/client/:clientId/pending-followups',
     authenticateUser,
-    authorizeRoles(['patient', 'admin']),
-    ensureOwnership('patientId'),
+    authorizeRoles(['client', 'admin']),
+    ensureOwnership('clientId'),
     appointmentController.getPendingFollowUps
 );
 
 /**
- * @route GET /api/appointments/doctor/:doctorId
- * @desc Get all appointments for a doctor
- * @access Private (Doctor must be the owner or Admin)
+ * @route GET /api/appointments/advisor/:advisorId
+ * @desc Get all appointments for a advisor
+ * @access Private (Advisor must be the owner or Admin)
  */
 router.get(
-    '/doctor/:doctorId',
+    '/advisor/:advisorId',
     authenticateUser,
-    authorizeRoles(['doctor', 'admin']),
-    ensureOwnership('doctorId'),
-    appointmentController.getDoctorAppointments
+    authorizeRoles(['advisor', 'admin']),
+    ensureOwnership('advisorId'),
+    appointmentController.getAdvisorAppointments
 );
 
 /**
@@ -81,7 +81,7 @@ router.get(
 /**
  * @route PATCH /api/appointments/:id/status
  * @desc Update appointment status
- * @access Private (Doctor, Patient or Admin - only for their own appointments)
+ * @access Private (Advisor, Client or Admin - only for their own appointments)
  */
 router.patch(
     '/:id/status',
@@ -91,32 +91,32 @@ router.patch(
 
 /**
  * @route POST /api/appointments/:id/confirm
- * @desc Doctor confirms appointment
- * @access Private (Doctors only - only for their appointments)
+ * @desc Advisor confirms appointment
+ * @access Private (Advisors only - only for their appointments)
  */
 router.post(
     '/:id/confirm',
     authenticateUser,
-    authorizeRoles(['doctor']),
+    authorizeRoles(['advisor']),
     appointmentController.confirmAppointment
 );
 
 /**
- * @route PATCH /api/appointments/:id/prescriptions
- * @desc Add/update prescriptions for an appointment
- * @access Private (Doctors only - only for their appointments)
+ * @route PATCH /api/appointments/:id/advices
+ * @desc Add/update advices for an appointment
+ * @access Private (Advisors only - only for their appointments)
  */
 router.patch(
-    '/:id/prescriptions',
+    '/:id/advices',
     authenticateUser,
-    authorizeRoles(['doctor']),
-    appointmentController.updatePrescriptions
+    authorizeRoles(['advisor']),
+    appointmentController.updateAdvices
 );
 
 /**
  * @route POST /api/appointments/:id/documents
- * @desc Upload medical documents for an appointment
- * @access Private (Patients and Doctors - only for their appointments)
+ * @desc Upload legal documents for an appointment
+ * @access Private (Clients and Advisors - only for their appointments)
  */
 router.post(
     '/:id/documents',
@@ -138,54 +138,54 @@ router.get(
 /**
  * @route POST /api/appointments/:id/follow-up
  * @desc Schedule a follow-up appointment
- * @access Private (Doctors only - only for their appointments)
+ * @access Private (Advisors only - only for their appointments)
  */
 router.post(
     '/:id/follow-up',
     authenticateUser,
-    authorizeRoles(['doctor']),
+    authorizeRoles(['advisor']),
     appointmentController.scheduleFollowUp
 );
 
 /**
- * @route GET /api/appointments/availability/:doctorId
- * @desc Get doctor's availability slots
+ * @route GET /api/appointments/availability/:advisorId
+ * @desc Get advisor's availability slots
  * @access Public (no authentication needed for viewing availability)
  */
 router.get(
-    '/availability/:doctorId',
-    appointmentController.getDoctorAvailability
+    '/availability/:advisorId',
+    appointmentController.getAdvisorAvailability
 );
 
 /**
- * @route GET /api/appointments/pending-confirmation/doctor/:doctorId
- * @desc Get appointments pending doctor confirmation
- * @access Private (Doctor must be the owner or Admin)
+ * @route GET /api/appointments/pending-confirmation/advisor/:advisorId
+ * @desc Get appointments pending advisor confirmation
+ * @access Private (Advisor must be the owner or Admin)
  */
 router.get(
-    '/pending-confirmation/doctor/:doctorId',
+    '/pending-confirmation/advisor/:advisorId',
     authenticateUser,
-    authorizeRoles(['doctor', 'admin']),
-    ensureOwnership('doctorId'),
+    authorizeRoles(['advisor', 'admin']),
+    ensureOwnership('advisorId'),
     appointmentController.getPendingConfirmations
 );
 
 /**
  * @route PATCH /api/appointments/:id/consultation-results
- * @desc Update consultation results (summary, prescriptions, follow-up)
- * @access Private (Doctors only - only for their appointments)
+ * @desc Update consultation results (summary, advices, follow-up)
+ * @access Private (Advisors only - only for their appointments)
  */
 router.patch(
     '/:id/consultation-results',
     authenticateUser,
-    authorizeRoles(['doctor']),
+    authorizeRoles(['advisor']),
     appointmentController.updateConsultationResults
 );
 
 /**
  * @route POST /api/appointments/:id/documents
- * @desc Upload medical documents for an appointment
- * @access Private (Patients and Doctors - only for their appointments)
+ * @desc Upload legal documents for an appointment
+ * @access Private (Clients and Advisors - only for their appointments)
  */
 router.post(
     '/:id/documents',
