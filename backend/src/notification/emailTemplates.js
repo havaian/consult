@@ -14,7 +14,7 @@ exports.appointmentBookedClient = (appointment) => {
   const { advisor, dateTime, type, payment } = appointment;
 
   return {
-    subject: 'Appointment Confirmation - Online-consult.com',
+    subject: 'Appointment Confirmation - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
@@ -30,7 +30,7 @@ exports.appointmentBookedClient = (appointment) => {
         </div>
         
         <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
-        <p>You can view your appointment details and join the consultation by logging into your Online-consult.com account.</p>
+        <p>You can view your appointment details and join the consultation by logging into your consult.ytech.space account.</p>
       </div>
     `
   };
@@ -40,7 +40,7 @@ exports.appointmentBookedAdvisor = (appointment) => {
   const { client, dateTime, type } = appointment;
 
   return {
-    subject: 'New Appointment Scheduled - Online-consult.com',
+    subject: 'New Appointment Scheduled - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #4a90e2;">New Appointment</h2>
@@ -53,7 +53,7 @@ exports.appointmentBookedAdvisor = (appointment) => {
           <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
         </div>
         
-        <p>Please log in to your Online-consult.com account to view the complete appointment details.</p>
+        <p>Please log in to your consult.ytech.space account to view the complete appointment details.</p>
       </div>
     `
   };
@@ -63,7 +63,7 @@ exports.appointmentBookingFailed = (data) => {
   const { advisor, dateTime, type, error } = data;
 
   return {
-    subject: 'Appointment Booking Failed - Online-consult.com',
+    subject: 'Appointment Booking Failed - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #e74c3c;">Appointment Booking Failed</h2>
@@ -88,7 +88,7 @@ exports.appointmentReminder = (appointment) => {
   const isAdvisor = Boolean(advisor.email);
 
   return {
-    subject: 'Appointment Reminder - Online-consult.com',
+    subject: 'Appointment Reminder - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #4a90e2;">Appointment Reminder</h2>
@@ -115,7 +115,7 @@ exports.appointmentCancelled = (appointment, cancelledBy) => {
   const isAdvisor = Boolean(advisor.email);
 
   return {
-    subject: 'Appointment Cancelled - Online-consult.com',
+    subject: 'Appointment Cancelled - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #e74c3c;">Appointment Cancelled</h2>

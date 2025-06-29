@@ -27,7 +27,7 @@ class EmailService {
     async sendEmail(options) {
         try {
             const mailOptions = {
-                from: `"Online-consult.com" <${process.env.SMTP_FROM_EMAIL}>`,
+                from: `"consult.ytech.space" <${process.env.SMTP_FROM_EMAIL}>`,
                 to: options.to,
                 subject: options.subject,
                 text: options.text || '',
@@ -51,7 +51,7 @@ class EmailService {
             // Email to client
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Confirmation - Online-consult.com',
+                subject: 'Appointment Confirmation - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
@@ -67,7 +67,7 @@ class EmailService {
                     </div>
                     
                     <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
-                    <p>You can view your appointment details and join the consultation by logging into your Online-consult.com account.</p>
+                    <p>You can view your appointment details and join the consultation by logging into your consult.ytech.space account.</p>
                 </div>
                 `
             });
@@ -75,7 +75,7 @@ class EmailService {
             // Email to advisor
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'New Appointment Scheduled - Online-consult.com',
+                subject: 'New Appointment Scheduled - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">New Appointment</h2>
@@ -88,7 +88,7 @@ class EmailService {
                         <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
                     </div>
                     
-                    <p>Please log in to your Online-consult.com account to view the complete appointment details.</p>
+                    <p>Please log in to your consult.ytech.space account to view the complete appointment details.</p>
                 </div>
                 `
             });
@@ -108,7 +108,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Booking Failed - Online-consult.com',
+                subject: 'Appointment Booking Failed - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #e74c3c;">Appointment Booking Failed</h2>
@@ -143,7 +143,7 @@ class EmailService {
             // Email to client
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Reminder - Online-consult.com',
+                subject: 'Appointment Reminder - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Reminder</h2>
@@ -164,7 +164,7 @@ class EmailService {
             // Email to advisor
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'Appointment Reminder - Online-consult.com',
+                subject: 'Appointment Reminder - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Reminder</h2>
@@ -198,7 +198,7 @@ class EmailService {
             // Email to client
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Cancelled - Online-consult.com',
+                subject: 'Appointment Cancelled - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #e74c3c;">Appointment Cancelled</h2>
@@ -219,7 +219,7 @@ class EmailService {
             // Email to advisor
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'Appointment Cancelled - Online-consult.com',
+                subject: 'Appointment Cancelled - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #e74c3c;">Appointment Cancelled</h2>
@@ -253,7 +253,7 @@ class EmailService {
             // Email to client
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Confirmed by Advisor - Online-consult.com',
+                subject: 'Appointment Confirmed by Advisor - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Confirmed by Advisor</h2>
@@ -274,7 +274,7 @@ class EmailService {
             // Email confirmation to advisor
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'Appointment Confirmation Successful - Online-consult.com',
+                subject: 'Appointment Confirmation Successful - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
@@ -307,7 +307,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Payment Successful - Online-consult.com',
+                subject: 'Payment Successful - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Payment Successful</h2>
@@ -356,7 +356,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Payment Confirmation - Online-consult.com',
+                subject: 'Payment Confirmation - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Payment Confirmation</h2>
@@ -400,7 +400,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Payment Refund - Online-consult.com',
+                subject: 'Payment Refund - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Payment Refund</h2>
@@ -452,7 +452,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'New Advices from Your Advisor - Online-consult.com',
+                subject: 'New Advices from Your Advisor - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">New Advices</h2>
@@ -462,7 +462,7 @@ class EmailService {
                         ${advicesHtml}
                     </div>
                     
-                    <p>You can view these advices at any time by logging into your Online-consult.com account.</p>
+                    <p>You can view these advices at any time by logging into your consult.ytech.space account.</p>
                     <p><strong>Note:</strong> Always follow your advisor's instructions when taking actions.</p>
                 </div>
                 `
@@ -485,7 +485,7 @@ class EmailService {
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Follow-up Appointment Recommended - Online-consult.com',
+                subject: 'Follow-up Appointment Recommended - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Follow-up Appointment</h2>
@@ -499,14 +499,14 @@ class EmailService {
                         <p><strong>Reason:</strong> ${shortDescription}</p>
                     </div>
                     
-                    <p>This appointment requires payment confirmation. Please log in to your Online-consult.com account to confirm and complete payment for this follow-up appointment.</p>
+                    <p>This appointment requires payment confirmation. Please log in to your consult.ytech.space account to confirm and complete payment for this follow-up appointment.</p>
                 </div>
                 `
             });
 
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'Follow-up Appointment Created - Online-consult.com',
+                subject: 'Follow-up Appointment Created - consult.ytech.space',
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #4a90e2;">Follow-up Appointment Created</h2>

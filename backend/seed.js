@@ -94,9 +94,9 @@ async function seedDatabase() {
 
         console.log('\n🎉 [db seed] Database seeded successfully!');
         console.log('\n📝 [db seed] Login credentials:');
-        console.log('[db seed] Admin: admin@online-consult.com / Admin123!');
-        console.log('[db seed] Advisor 1: john.smith@online-consult.com / Advisor123!');
-        console.log('[db seed] Advisor 2: sarah.johnson@online-consult.com / Advisor123!');
+        console.log('[db seed] Admin: admin@consult.ytech.com / Admin123!');
+        console.log('[db seed] Advisor 1: john.smith@consult.ytech.com / Advisor123!');
+        console.log('[db seed] Advisor 2: sarah.johnson@consult.ytech.com / Advisor123!');
         console.log('[db seed] Client: jane.doe@gmail.com / Client123!');
 
     } catch (error) {

@@ -21,7 +21,7 @@ exports.sendConsultationCompletedNotification = async (appointment) => {
         // Send email to client
         await emailService.sendEmail({
             to: client.email,
-            subject: 'Your Consultation Has Ended - Online-consult',
+            subject: 'Your Consultation Has Ended - E-Consult',
             text: `Your consultation with Dr. ${advisor.firstName} ${advisor.lastName} has ended. 
             If you need to schedule a follow-up appointment, please visit our website.`,
             html: `
@@ -32,7 +32,7 @@ exports.sendConsultationCompletedNotification = async (appointment) => {
               <p><strong>Date:</strong> ${new Date(appointment.dateTime).toLocaleDateString()}</p>
               <p><strong>Time:</strong> ${new Date(appointment.dateTime).toLocaleTimeString()} - ${new Date(appointment.endTime).toLocaleTimeString()}</p>
               <p>If you need to schedule a follow-up appointment, please visit our website.</p>
-              <p>Thank you for choosing Online-consult for your healthcare needs.</p>
+              <p>Thank you for choosing E-Consult for your healthcare needs.</p>
             </div>
             `
         });
@@ -40,7 +40,7 @@ exports.sendConsultationCompletedNotification = async (appointment) => {
         // Send email to advisor
         await emailService.sendEmail({
             to: advisor.email,
-            subject: 'Consultation Completed - Online-consult',
+            subject: 'Consultation Completed - E-Consult',
             text: `Your consultation with ${client.firstName} ${client.lastName} has ended. 
             Please complete your consultation summary if you haven't already done so.`,
             html: `
