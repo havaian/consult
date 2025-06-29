@@ -38,9 +38,9 @@
             </div>
           </div>
           <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-3">
-            ONLINE-<span
-              class="bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent">CONSULT</span><span
-              class="text-royal-gold-light">.COM</span>
+            CONSULT.<span
+              class="bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent">YTECH</span><span
+              class="text-royal-gold-light">.SPACE</span>
           </h1>
           <p class="text-xl text-gray-700 font-medium">Your Legal Issues, Our Expert Solutions</p>
         </div>
