@@ -78,7 +78,7 @@
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="text-lg font-medium text-gray-900">Advices</h4>
                                 <button type="button" @click="addAdvice"
-                                    class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-900">
+                                    class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-900">
                                     + Add Advice
                                 </button>
                             </div>
@@ -145,7 +145,7 @@
                         <div class="mb-6">
                             <div class="flex items-center mb-2">
                                 <input id="followUpRecommended" v-model="postConsultationData.followUp.recommended"
-                                    type="checkbox" class="h-4 w-4 bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  rounded" />
+                                    type="checkbox" class="h-4 w-4 bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  rounded" />
                                 <label for="followUpRecommended" class="ml-2 block text-sm font-medium text-gray-700">
                                     Recommend Follow-up Appointment
                                 </label>

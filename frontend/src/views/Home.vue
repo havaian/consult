@@ -1,22 +1,22 @@
 <template>
   <div>
     <!-- Hero Section with New Legal Design -->
-    <div class="relative min-h-screen legal-gradient overflow-hidden">
+    <div class="relative min-h-screen royal-gradient overflow-hidden">
       <!-- Floating Legal Icons -->
       <div class="absolute inset-0 overflow-hidden">
         <div class="absolute top-20 left-10 float-legal opacity-20">
-          <svg class="h-16 w-16 text-legal-blue" fill="currentColor" viewBox="0 0 24 24">
+          <svg class="h-16 w-16 text-royal-gold" fill="currentColor" viewBox="0 0 24 24">
             <path
               d="M19 8h-2v3h-3v2h3v3h2v-3h3v-2h-3V8zM4 6h5v2h2V6h2V4h-2V1H9v3H4c-1.1 0-2 .9-2 2v15c0 1.1.9 2 2 2h8.31c-.37-.64-.62-1.37-.78-2.16H4V6z" />
           </svg>
         </div>
         <div class="absolute top-32 right-20 float-legal opacity-15" style="animation-delay: -1s;">
-          <svg class="h-20 w-20 text-legal-green" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+          <svg class="h-20 w-20 text-royal-gold-light" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
             <path d="M2 12h3l2-6 2 12 2-9 2 6 2-3h7"/>
           </svg>
         </div>
         <div class="absolute bottom-32 left-32 float-legal opacity-10" style="animation-delay: -2s;">
-          <svg class="h-12 w-12 text-legal-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-12 w-12 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
@@ -29,7 +29,7 @@
           <div class="flex items-center justify-center mb-8">
             <div class="relative">
               <div class="float-legal bg-white/90 backdrop-blur-sm rounded-3xl p-4 shadow-2xl glow-effect">
-                <svg class="h-16 w-16 text-legal-blue" fill="none" stroke="currentColor"
+                <svg class="h-16 w-16 text-royal-gold" fill="none" stroke="currentColor"
                   viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -39,8 +39,8 @@
           </div>
           <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-3">
             ONLINE-<span
-              class="bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent">CONSULT</span><span
-              class="text-legal-green">.COM</span>
+              class="bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent">CONSULT</span><span
+              class="text-royal-gold-light">.COM</span>
           </h1>
           <p class="text-xl text-gray-700 font-medium">Your Legal Issues, Our Expert Solutions</p>
         </div>
@@ -48,12 +48,12 @@
         <!-- Main Content -->
         <div class="mb-16">
           <div class="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 mb-6 shadow-lg">
-            <div class="bg-legal-green rounded-full w-3 h-3 mr-3 pulse-animation"></div>
+            <div class="bg-royal-gold-light rounded-full w-3 h-3 mr-3 pulse-animation"></div>
             <span class="text-sm font-semibold text-gray-700">Professional Legal Consultation Platform</span>
           </div>
           <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
             Professional Legal Advice
-            <span class="bg-gradient-to-r from-legal-blue to-legal-green bg-clip-text text-transparent">
+            <span class="bg-gradient-to-r from-royal-gold to-royal-gold-light bg-clip-text text-transparent">
               At Your Fingertips
             </span>
           </h2>
@@ -65,11 +65,11 @@
           <!-- Action Buttons -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <router-link to="/advisors"
-              class="px-8 py-4 bg-gradient-to-r from-legal-blue to-legal-teal text-white font-semibold rounded-2xl hover:from-legal-teal hover:to-legal-blue focus:ring-4 focus:ring-legal-blue/30 transition-all shadow-lg glow-effect">
+              class="px-8 py-4 bg-gradient-to-r from-royal-gold to-charcoal text-white font-semibold rounded-2xl hover:from-charcoal hover:to-royal-gold focus:ring-4 focus:ring-royal-gold/30 transition-all shadow-lg glow-effect">
               Find an Advisor
             </router-link>
             <router-link to="/register"
-              class="px-8 py-4 bg-white/90 backdrop-blur-sm text-legal-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-legal-blue/30 transition-all shadow-lg border-2 border-legal-blue/20">
+              class="px-8 py-4 bg-white/90 backdrop-blur-sm text-royal-gold font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-royal-gold/30 transition-all shadow-lg border-2 border-royal-gold/20">
               Register Now
             </router-link>
           </div>
@@ -81,7 +81,7 @@
     <div class="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <h2 class="text-base text-legal-blue font-semibold tracking-wide uppercase mb-2">Features</h2>
+          <h2 class="text-base text-royal-gold font-semibold tracking-wide uppercase mb-2">Features</h2>
           <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
             Better Legal Consultation Solution
           </h3>
@@ -93,7 +93,7 @@
         <!-- Feature Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
-            <div class="bg-gradient-to-r from-legal-blue to-sky-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+            <div class="bg-gradient-to-r from-royal-gold to-sky-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
               <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -104,7 +104,7 @@
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
-            <div class="bg-gradient-to-r from-legal-green to-emerald-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+            <div class="bg-gradient-to-r from-royal-gold-light to-emerald-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
               <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -115,7 +115,7 @@
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
-            <div class="bg-gradient-to-r from-legal-teal to-cyan-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+            <div class="bg-gradient-to-r from-charcoal to-cyan-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
               <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -142,15 +142,15 @@
           <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">Trusted Legal Technology</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-              <div class="text-2xl font-bold text-legal-blue mb-1">24/7</div>
+              <div class="text-2xl font-bold text-royal-gold mb-1">24/7</div>
               <div class="text-sm text-gray-600">Available</div>
             </div>
             <div>
-              <div class="text-2xl font-bold text-legal-green mb-1">500+</div>
+              <div class="text-2xl font-bold text-royal-gold-light mb-1">500+</div>
               <div class="text-sm text-gray-600">Certified Advisors</div>
             </div>
             <div>
-              <div class="text-2xl font-bold text-legal-teal mb-1">15min</div>
+              <div class="text-2xl font-bold text-charcoal mb-1">15min</div>
               <div class="text-sm text-gray-600">Average Wait Time</div>
             </div>
             <div>
@@ -166,7 +166,7 @@
     <div class="py-20 bg-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <h2 class="text-base text-legal-blue font-semibold tracking-wide uppercase mb-2">How It Works</h2>
+          <h2 class="text-base text-royal-gold font-semibold tracking-wide uppercase mb-2">How It Works</h2>
           <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
             Simple Steps to Legal Resolution
           </h3>
@@ -175,7 +175,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="text-center">
             <div
-              class="bg-gradient-to-r from-legal-blue to-sky-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              class="bg-gradient-to-r from-royal-gold to-sky-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
               <span class="text-white font-bold text-xl">1</span>
             </div>
             <h4 class="text-xl font-bold text-gray-800 mb-4">Choose an Advisor</h4>
@@ -185,7 +185,7 @@
 
           <div class="text-center">
             <div
-              class="bg-gradient-to-r from-legal-green to-emerald-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              class="bg-gradient-to-r from-royal-gold-light to-emerald-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
               <span class="text-white font-bold text-xl">2</span>
             </div>
             <h4 class="text-xl font-bold text-gray-800 mb-4">Book Appointment</h4>
@@ -195,7 +195,7 @@
 
           <div class="text-center">
             <div
-              class="bg-gradient-to-r from-legal-teal to-cyan-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+              class="bg-gradient-to-r from-charcoal to-cyan-500 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
               <span class="text-white font-bold text-xl">3</span>
             </div>
             <h4 class="text-xl font-bold text-gray-800 mb-4">Get Legal Advice</h4>
@@ -207,7 +207,7 @@
     </div>
 
     <!-- Call to Action Section -->
-    <div class="py-20 legal-gradient">
+    <div class="py-20 royal-gradient">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6">
           Ready to Experience the Future of Legal Consultation?
@@ -218,11 +218,11 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
           <router-link to="/register"
-            class="px-8 py-4 bg-gradient-to-r from-legal-blue to-legal-teal text-white font-semibold rounded-2xl hover:from-legal-teal hover:to-legal-blue focus:ring-4 focus:ring-legal-blue/30 transition-all shadow-lg glow-effect">
+            class="px-8 py-4 bg-gradient-to-r from-royal-gold to-charcoal text-white font-semibold rounded-2xl hover:from-charcoal hover:to-royal-gold focus:ring-4 focus:ring-royal-gold/30 transition-all shadow-lg glow-effect">
             Get Started Today
           </router-link>
           <router-link to="/advisors"
-            class="px-8 py-4 bg-white/90 backdrop-blur-sm text-legal-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-legal-blue/30 transition-all shadow-lg border-2 border-legal-blue/20">
+            class="px-8 py-4 bg-white/90 backdrop-blur-sm text-royal-gold font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-royal-gold/30 transition-all shadow-lg border-2 border-royal-gold/20">
             Browse Advisors
           </router-link>
         </div>
@@ -236,7 +236,7 @@
 </script>
 
 <style scoped>
-.legal-gradient {
+.royal-gradient {
   background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 25%, #f0f9ff 50%, #e0f2fe 75%, #f0f9ff 100%);
 }
 

@@ -85,7 +85,7 @@
                                     </button>
                                 </div>
                                 <button type="button" @click="addSpecialization"
-                                    class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-800">
+                                    class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-800">
                                     + Add Specialization
                                 </button>
                             </div>
@@ -145,7 +145,7 @@
 
             <p class="mt-2 text-center text-sm text-gray-600">
                 Already have an account?
-                <router-link to="/login" class="font-medium bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-500">
+                <router-link to="/login" class="font-medium bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-500">
                     Sign in
                 </router-link>
             </p>

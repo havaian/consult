@@ -63,7 +63,7 @@
                                         </button>
                                     </div>
                                     <button type="button" @click="addSpecialization"
-                                        class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Another Specialization
                                     </button>
                                 </div>
@@ -88,7 +88,7 @@
                                         </div>
                                     </div>
                                     <button type="button" @click="addEducation"
-                                        class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Education
                                     </button>
                                 </div>
@@ -114,7 +114,7 @@
                                         </div>
                                     </div>
                                     <button type="button" @click="addCertification"
-                                        class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-800">
+                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-800">
                                         + Add Certification
                                     </button>
                                 </div>

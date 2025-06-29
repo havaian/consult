@@ -26,8 +26,31 @@ const showFooter = computed(() => !route.meta.hideFooter)
 
 <style>
 /* Global legal design styles */
-.legal-gradient {
-  background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 25%, #f0f9ff 50%, #e0f2fe 75%, #f0f9ff 100%);
+.royal-gradient {
+  background: linear-gradient(135deg, #FFFEF7 0%, #F8F8F8 50%, #FFFFFF 100%);
+}
+
+.glow-effect {
+  box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+}
+
+/* Custom royal button styles */
+.btn-royal-primary {
+  @apply px-8 py-4 text-white font-semibold rounded-2xl focus:ring-4 transition-all shadow-lg;
+  background: linear-gradient(135deg, #D4AF37, #B8941F);
+  box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+}
+
+.btn-royal-primary:hover {
+  background: linear-gradient(135deg, #E5C547, #D4AF37);
+  transform: translateY(-2px);
+  box-shadow: 0 25px 50px rgba(212, 175, 55, 0.2);
+}
+
+.btn-royal-secondary {
+  @apply px-8 py-4 bg-white/90 backdrop-blur-sm font-semibold rounded-2xl hover:bg-white focus:ring-4 transition-all shadow-lg border-2;
+  color: #1A1A1A;
+  border-color: rgba(212, 175, 55, 0.2);
 }
 
 .pulse-animation {
@@ -74,10 +97,6 @@ const showFooter = computed(() => !route.meta.hideFooter)
   }
 }
 
-.glow-effect {
-  box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15);
-}
-
 .card-hover {
   transition: all 0.3s ease;
 }
@@ -105,12 +124,12 @@ const showFooter = computed(() => !route.meta.hideFooter)
 
 /* Custom legal button styles */
 .btn-legal-primary {
-  @apply px-8 py-4 bg-gradient-to-r from-legal-blue to-legal-teal text-white font-semibold rounded-2xl hover:from-legal-teal hover:to-legal-blue focus:ring-4 focus:ring-legal-blue/30 transition-all shadow-lg;
+  @apply px-8 py-4 bg-gradient-to-r from-royal-gold to-charcoal text-white font-semibold rounded-2xl hover:from-charcoal hover:to-royal-gold focus:ring-4 focus:ring-royal-gold/30 transition-all shadow-lg;
   box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15);
 }
 
 .btn-legal-secondary {
-  @apply px-8 py-4 bg-white/90 backdrop-blur-sm text-legal-blue font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-legal-blue/30 transition-all shadow-lg border-2 border-legal-blue/20;
+  @apply px-8 py-4 bg-white/90 backdrop-blur-sm text-royal-gold font-semibold rounded-2xl hover:bg-white focus:ring-4 focus:ring-royal-gold/30 transition-all shadow-lg border-2 border-royal-gold/20;
 }
 
 /* Page transitions */

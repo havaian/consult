@@ -7,14 +7,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        'legal-blue': '#0ea5e9',
-        'legal-green': '#10b981',
-        'legal-teal': '#06b6d4',
-        'soft-blue': '#e0f2fe',
-        'soft-green': '#ecfdf5',
+        'royal-gold': '#D4AF37',
+        'royal-gold-light': '#E5C547',
+        'royal-gold-dark': '#B8941F',
+        'noble-black': '#0F0F0F',
+        'charcoal': '#1A1A1A',
+        'dark-gray': '#2A2A2A',
+        'medium-gray': '#4A4A4A',
+        'light-gray': '#6A6A6A',
+        'silver': '#C0C0C0',
+        'pearl': '#F8F8F8',
+        'ivory': '#FFFEF7',
       },
       backgroundImage: {
-        'legal-gradient': 'linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 25%, #f0f9ff 50%, #e0f2fe 75%, #f0f9ff 100%)',
+        'royal-gradient': 'linear-gradient(135deg, #FFFEF7 0%, #F8F8F8 50%, #FFFFFF 100%)',
+        'gold-gradient': 'linear-gradient(135deg, #D4AF37 0%, #E5C547 50%, #B8941F 100%)',
       },
       animation: {
         'float-legal': 'floatLegal 4s ease-in-out infinite',
@@ -48,9 +55,9 @@ export default {
         },
       },
       boxShadow: {
-        'glow': '0 20px 40px rgba(14, 165, 233, 0.15)',
-        'glow-green': '0 20px 40px rgba(16, 185, 129, 0.15)',
-        'glow-teal': '0 20px 40px rgba(6, 182, 212, 0.15)',
+        'glow': '0 20px 40px rgba(212, 175, 55, 0.15)',
+        'glow-gold': '0 20px 40px rgba(212, 175, 55, 0.2)',
+        'luxury-shadow': '0 25px 50px rgba(15, 15, 15, 0.1)',
       },
     },
   },

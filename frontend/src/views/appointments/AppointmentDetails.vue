@@ -168,7 +168,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-medium text-gray-900">Chat History</h3>
                             <button @click="showChatLog = !showChatLog"
-                                class="text-sm bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent  hover:text-indigo-900">
+                                class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-900">
                                 {{ showChatLog ? 'Hide Chat' : 'Show Chat' }}
                             </button>
                         </div>
