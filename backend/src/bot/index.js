@@ -77,7 +77,7 @@
 //                 "/profile - View your profile\n" +
 //                 "/unlink - Unlink your account\n" +
 //                 "/assistant - Chat with legal assistant\n\n" +
-//                 "If you need further assistance, contact support@consult.ytech.com"
+//                 "If you need further assistance, contact consult@ytech.space"
 //             );
 //         } catch (error) {
 //             console.error("Error in help command:", error);
