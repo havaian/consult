@@ -107,20 +107,29 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const specializations = [
-  'Cardiology',
-  'Dermatology',
-  'Endocrinology',
-  'Family Issue',
-  'Gastroenterology',
-  'Neurology',
-  'Obstetrics & Gynecology',
-  'Ophthalmology',
-  'Pediatrics',
-  'Psychiatry',
-  'Pulmonology',
-  'Urology'
-]
+const specializations = ref([])
+
+async function fetchSpecializations() {
+    try {
+        const response = await axios.get('/api/specializations')
+        specializations.value = response.data.specializations.map(s => s.name)
+    } catch (error) {
+        console.error('Error fetching specializations:', error)
+        // Set some defaults in case API call fails
+        specializations.value = [
+            'Corporate Law',
+            'Family Law',
+            'Criminal Defense',
+            'Real Estate Law',
+            'Employment Law',
+            'Immigration Law',
+            'Personal Injury',
+            'Intellectual Property',
+            'Tax Law',
+            'General Legal Advice',
+        ]
+    }
+}
 
 const cities = [
   'Tashkent',
@@ -176,5 +185,6 @@ function handlePageChange(page) {
 
 onMounted(() => {
   fetchAdvisors()
+  fetchSpecializations()
 })
 </script>
