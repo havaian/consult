@@ -60,45 +60,6 @@ async function seedDatabase() {
         // Create specializations
         const createdSpecializations = await Specialization.insertMany(specializations);
         console.log(`✅ [db seed] Created ${createdSpecializations.length} specializations`);
-
-        console.log('👤 [db seed] Creating admin user...');
-        
-        // Hash admin password
-        const salt = await bcrypt.genSalt(10);
-        adminUser.password = await bcrypt.hash(adminUser.password, salt);
-        
-        // Create admin user
-        const admin = await User.create(adminUser);
-        console.log('✅ [db seed] Admin user created');
-
-        console.log('👨‍⚕️ [db seed] Creating advisor accounts...');
-        
-        // Create advisor accounts
-        for (const advisor of sampleAdvisors) {
-            // Hash password
-            advisor.password = await bcrypt.hash(advisor.password, salt);
-            
-            // Create advisor
-            const createdAdvisor = await User.create(advisor);
-            console.log(`✅ [db seed] Created advisor: ${createdAdvisor.firstName} ${createdAdvisor.lastName}`);
-        }
-
-        console.log('👩‍🦰 [db seed] Creating client account...');
-        
-        // Hash client password
-        sampleClient.password = await bcrypt.hash(sampleClient.password, salt);
-        
-        // Create client
-        const client = await User.create(sampleClient);
-        console.log('✅ [db seed] Client account created');
-
-        console.log('\n🎉 [db seed] Database seeded successfully!');
-        console.log('\n📝 [db seed] Login credentials:');
-        console.log('[db seed] Admin: admin@consult.ytech.com / Admin123!');
-        console.log('[db seed] Advisor 1: john.smith@consult.ytech.com / Advisor123!');
-        console.log('[db seed] Advisor 2: sarah.johnson@consult.ytech.com / Advisor123!');
-        console.log('[db seed] Client: jane.doe@gmail.com / Client123!');
-
     } catch (error) {
         console.error('❌ [db seed] Seeding error:', error);
     } finally {
