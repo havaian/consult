@@ -5,7 +5,8 @@
                 <!-- Logo and main navigation -->
                 <div class="flex items-center">
                     <!-- Logo -->
-                    <router-link to="/" class="flex items-center space-x-3">
+                    <a href='https://bolt.new/' target="_blank" rel="noopener noreferrer" class="flex items-center space-x-3">
+                    <!-- <router-link to="/" class="flex items-center space-x-3"> -->
                         <div class="bg-gradient-to-r from-legal-blue to-legal-teal rounded-xl p-2 shadow-lg">
                             <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -17,7 +18,8 @@
                                 class="bg-gradient-to-r from-legal-blue to-legal-teal bg-clip-text text-transparent">CONSULT</span><span
                                 class="text-legal-green">.COM</span>
                         </span>
-                    </router-link>
+                    <!-- </router-link> -->
+                    </a>
 
                     <!-- Desktop Navigation -->
                     <div class="hidden sm:ml-8 sm:flex sm:space-x-8">
