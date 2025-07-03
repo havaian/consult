@@ -17,7 +17,7 @@ class LegalAssistant {
      * @returns {String} System prompt
      */
     getSystemPrompt() {
-        return `You are an AI legal assistant for consult.ytech.space, an online legal consultation platform in Uzbekistan.
+        return `You are an AI legal assistant for e-consult.uz, an online legal consultation platform in Uzbekistan.
 Your role is to provide general health information, basic legal guidance, and answer common health-related questions.
 
 Important guidelines:

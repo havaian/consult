@@ -204,7 +204,7 @@ class NotificationService {
             console.log('- Subject:', subject);
 
             const mailOptions = {
-                from: `"consult.ytech.space" <${process.env.SMTP_FROM_EMAIL}>`,
+                from: `"e-consult.uz" <${process.env.SMTP_FROM_EMAIL}>`,
                 to,
                 subject,
                 text,
@@ -322,17 +322,17 @@ class NotificationService {
 
         const emailData = {
             to: email,
-            subject: 'Verify Your Email - consult.ytech.space',
+            subject: 'Verify Your Email - e-consult.uz',
             text: `Please verify your email by clicking on the following link: ${verificationLink}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a90e2;">consult.ytech.space Email Verification</h2>
-          <p>Thank you for registering with consult.ytech.space! Please verify your email address by clicking the button below:</p>
+          <h2 style="color: #4a90e2;">e-consult.uz Email Verification</h2>
+          <p>Thank you for registering with e-consult.uz! Please verify your email address by clicking the button below:</p>
           <a href="${verificationLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Verify Email</a>
           <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
           <p>${verificationLink}</p>
           <p>This link will expire in 24 hours.</p>
-          <p>If you didn't create an account with consult.ytech.space, please ignore this email.</p>
+          <p>If you didn't create an account with e-consult.uz, please ignore this email.</p>
         </div>
       `
         };
@@ -359,11 +359,11 @@ class NotificationService {
 
         const emailData = {
             to: email,
-            subject: 'Reset Your Password - consult.ytech.space',
+            subject: 'Reset Your Password - e-consult.uz',
             text: `You requested a password reset. Please click the following link to reset your password: ${resetLink}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #4a90e2;">consult.ytech.space Password Reset</h2>
+          <h2 style="color: #4a90e2;">e-consult.uz Password Reset</h2>
           <p>We received a request to reset your password. Click the button below to set a new password:</p>
           <a href="${resetLink}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Reset Password</a>
           <p>If the button doesn't work, you can also copy and paste the following link into your browser:</p>
@@ -407,7 +407,7 @@ class NotificationService {
             // Email to client
             const clientEmailData = {
                 to: client.email,
-                subject: 'Appointment Confirmation - consult.ytech.space',
+                subject: 'Appointment Confirmation - e-consult.uz',
                 text: `Your appointment with Dr. ${advisor.firstName} ${advisor.lastName} has been confirmed for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -418,7 +418,7 @@ class NotificationService {
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName} (${advisor.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your consult.ytech.space account.</p>
+            <p>You can view your appointment details and join the consultation by logging into your e-consult.uz account.</p>
           </div>
         `
             };
@@ -426,7 +426,7 @@ class NotificationService {
             // Email to advisor
             const advisorEmailData = {
                 to: advisor.email,
-                subject: 'New Appointment - consult.ytech.space',
+                subject: 'New Appointment - e-consult.uz',
                 text: `You have a new appointment with ${client.firstName} ${client.lastName} scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -437,7 +437,7 @@ class NotificationService {
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your consult.ytech.space account.</p>
+            <p>You can view appointment details and join the consultation by logging into your e-consult.uz account.</p>
           </div>
         `
             };
@@ -494,7 +494,7 @@ class NotificationService {
             // Email to client
             const clientEmailData = {
                 to: client.email,
-                subject: 'Appointment Canceled - consult.ytech.space',
+                subject: 'Appointment Canceled - e-consult.uz',
                 text: `Your appointment with Dr. ${advisor.firstName} ${advisor.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -505,7 +505,7 @@ class NotificationService {
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName} (${advisor.specializations})</p>
             </div>
-            <p>You can schedule a new appointment by logging into your consult.ytech.space account.</p>
+            <p>You can schedule a new appointment by logging into your e-consult.uz account.</p>
           </div>
         `
             };
@@ -513,7 +513,7 @@ class NotificationService {
             // Email to advisor
             const advisorEmailData = {
                 to: advisor.email,
-                subject: 'Appointment Canceled - consult.ytech.space',
+                subject: 'Appointment Canceled - e-consult.uz',
                 text: `Your appointment with ${client.firstName} ${client.lastName} scheduled for ${formattedDateTime} has been canceled.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -572,13 +572,13 @@ class NotificationService {
             // Email to client for feedback
             const clientEmailData = {
                 to: client.email,
-                subject: 'Appointment Completed - consult.ytech.space',
+                subject: 'Appointment Completed - e-consult.uz',
                 text: `Your appointment with Dr. ${advisor.firstName} ${advisor.lastName} has been completed. Please leave your feedback.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Appointment Completed</h2>
             <p>Your appointment with Dr. ${advisor.firstName} ${advisor.lastName} has been completed.</p>
-            <p>If any advices were provided, you can view them in your consult.ytech.space account.</p>
+            <p>If any advices were provided, you can view them in your e-consult.uz account.</p>
             <a href="${process.env.FRONTEND_URL}/appointments/feedback/${appointment._id}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Leave Feedback</a>
             <p>Your feedback helps us improve our services.</p>
           </div>
@@ -631,7 +631,7 @@ class NotificationService {
             // Email to client
             const clientEmailData = {
                 to: client.email,
-                subject: 'New Advices - consult.ytech.space',
+                subject: 'New Advices - e-consult.uz',
                 text: `Dr. ${advisor.firstName} ${advisor.lastName} has added advices to your recent appointment.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -640,7 +640,7 @@ class NotificationService {
             <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
               ${advicesHtml}
             </div>
-            <p>You can view these advices anytime by logging into your consult.ytech.space account.</p>
+            <p>You can view these advices anytime by logging into your e-consult.uz account.</p>
           </div>
         `
             };
@@ -652,7 +652,7 @@ class NotificationService {
             if (client.telegramId) {
                 const telegramData = {
                     chatId: client.telegramId,
-                    text: `💊 Dr. ${advisor.firstName} ${advisor.lastName} has added advices to your recent appointment. Check your email or consult.ytech.space account for details.`,
+                    text: `💊 Dr. ${advisor.firstName} ${advisor.lastName} has added advices to your recent appointment. Check your email or e-consult.uz account for details.`,
                     options: {
                         parse_mode: 'HTML'
                     }
@@ -685,7 +685,7 @@ class NotificationService {
             // Email to client
             const clientEmailData = {
                 to: client.email,
-                subject: 'Follow-up Appointment Scheduled - consult.ytech.space',
+                subject: 'Follow-up Appointment Scheduled - e-consult.uz',
                 text: `A follow-up appointment with Dr. ${advisor.firstName} ${advisor.lastName} has been scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -696,7 +696,7 @@ class NotificationService {
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName} (${advisor.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your consult.ytech.space account.</p>
+            <p>You can view your appointment details and join the consultation by logging into your e-consult.uz account.</p>
           </div>
         `
             };
@@ -704,7 +704,7 @@ class NotificationService {
             // Email to advisor
             const advisorEmailData = {
                 to: advisor.email,
-                subject: 'Follow-up Appointment Scheduled - consult.ytech.space',
+                subject: 'Follow-up Appointment Scheduled - e-consult.uz',
                 text: `A follow-up appointment with ${client.firstName} ${client.lastName} has been scheduled for ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -715,7 +715,7 @@ class NotificationService {
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your consult.ytech.space account.</p>
+            <p>You can view appointment details and join the consultation by logging into your e-consult.uz account.</p>
           </div>
         `
             };
@@ -772,7 +772,7 @@ class NotificationService {
             // Email to client
             const clientEmailData = {
                 to: client.email,
-                subject: 'Appointment Reminder - consult.ytech.space',
+                subject: 'Appointment Reminder - e-consult.uz',
                 text: `Reminder: Your appointment with Dr. ${advisor.firstName} ${advisor.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -783,7 +783,7 @@ class NotificationService {
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName} (${advisor.specializations})</p>
             </div>
-            <p>You can view your appointment details and join the consultation by logging into your consult.ytech.space account.</p>
+            <p>You can view your appointment details and join the consultation by logging into your e-consult.uz account.</p>
           </div>
         `
             };
@@ -791,7 +791,7 @@ class NotificationService {
             // Email to advisor
             const advisorEmailData = {
                 to: advisor.email,
-                subject: 'Appointment Reminder - consult.ytech.space',
+                subject: 'Appointment Reminder - e-consult.uz',
                 text: `Reminder: Your appointment with ${client.firstName} ${client.lastName} is scheduled for tomorrow at ${formattedDateTime}.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -802,7 +802,7 @@ class NotificationService {
               <p><strong>Consultation Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
               <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
             </div>
-            <p>You can view appointment details and join the consultation by logging into your consult.ytech.space account.</p>
+            <p>You can view appointment details and join the consultation by logging into your e-consult.uz account.</p>
           </div>
         `
             };
@@ -857,7 +857,7 @@ class NotificationService {
             // Email to client
             const clientEmailData = {
                 to: client.email,
-                subject: 'Your Consultation Starts Soon - consult.ytech.space',
+                subject: 'Your Consultation Starts Soon - e-consult.uz',
                 text: `Your consultation with Dr. ${advisor.firstName} ${advisor.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -872,7 +872,7 @@ class NotificationService {
             // Email to advisor
             const advisorEmailData = {
                 to: advisor.email,
-                subject: 'Consultation Starts Soon - consult.ytech.space',
+                subject: 'Consultation Starts Soon - e-consult.uz',
                 text: `Your consultation with ${client.firstName} ${client.lastName} starts in 15 minutes.`,
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -929,7 +929,7 @@ class NotificationService {
 
             const emailData = {
                 to: client.email,
-                subject: 'Payment Successful - consult.ytech.space',
+                subject: 'Payment Successful - e-consult.uz',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">Payment Successful</h2>
@@ -940,7 +940,7 @@ class NotificationService {
               <p><strong>Type:</strong> ${appointment.type}</p>
               <p><strong>Payment ID:</strong> ${paymentId}</p>
             </div>
-            <p>You can view your appointment details in your consult.ytech.space account.</p>
+            <p>You can view your appointment details in your e-consult.uz account.</p>
           </div>
         `
             };
@@ -962,7 +962,7 @@ class NotificationService {
 
             const emailData = {
                 to: advisor.email,
-                subject: 'New Appointment Confirmed - consult.ytech.space',
+                subject: 'New Appointment Confirmed - e-consult.uz',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a90e2;">New Appointment Confirmed</h2>
@@ -972,7 +972,7 @@ class NotificationService {
               <p><strong>Date & Time:</strong> ${formattedDate}</p>
               <p><strong>Type:</strong> ${appointment.type}</p>
             </div>
-            <p>Please log in to your consult.ytech.space account to view the appointment details.</p>
+            <p>Please log in to your e-consult.uz account to view the appointment details.</p>
           </div>
         `
             };
@@ -995,7 +995,7 @@ class NotificationService {
 
             const emailData = {
                 to: client.email,
-                subject: 'Payment Failed - consult.ytech.space',
+                subject: 'Payment Failed - e-consult.uz',
                 html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #e74c3c;">Payment Failed</h2>

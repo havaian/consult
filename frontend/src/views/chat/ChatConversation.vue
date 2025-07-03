@@ -58,10 +58,15 @@
                                 <div v-if="message.sender._id === authStore.user._id" class="ml-2">
                                     <div v-if="message.isRead" class="flex items-center space-x-0.5">
                                         <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
-                                        <svg class="w-4 h-4 text-gray-300 -ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                        <svg class="w-4 h-4 text-gray-300 -ml-1" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                     </div>
                                     <svg v-else class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
@@ -85,7 +90,7 @@
 
                 <!-- Typing Indicator -->
                 <div v-if="isTyping" class="flex items-center space-x-2 text-gray-500">
-                    <span>{{ recipientName }} is typing</span>
+                    <span>{{ t('chat.userIsTyping', { name: recipientName }) }}</span>
                     <div class="flex space-x-1">
                         <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                         <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s">
@@ -94,14 +99,22 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Error Message -->
+                <div v-if="error" class="flex justify-center mb-4">
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {{ error }}
+                    </div>
+                </div>
             </div>
 
             <!-- Input Area -->
             <div class="p-4 border-t border-gray-200">
                 <form @submit.prevent="sendMessage" class="flex space-x-2">
                     <input v-model="newMessage" @input="handleTyping" @keydown="handleKeyDown" type="text"
-                        class="input flex-1" placeholder="Type your message..." :disabled="loading || sending" />
-                    <button type="submit" class="btn-primary" :disabled="loading || sending || !newMessage.trim()">
+                        class="input flex-1" :placeholder="t('chat.typeMessage')" :disabled="loading || sending" />
+                    <button type="submit" class="btn-primary" :disabled="loading || sending || !newMessage.trim()"
+                        :title="t('chat.sendMessage')">
                         <svg v-if="!sending" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 19l9 2-9-18-9 18l9-2zm0 0v-8" />
@@ -125,12 +138,15 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 import { format } from 'date-fns'
-import axios from 'axios'
 import io from 'socket.io-client'
 
 const route = useRoute()
 const authStore = useAuthStore()
+const { t } = useI18n()
+const { api } = useApi()
 
 const messages = ref([])
 const conversation = ref(null)
@@ -140,6 +156,7 @@ const isTyping = ref(false)
 const socket = ref(null)
 const newMessage = ref('')
 const messagesContainer = ref(null)
+const error = ref('')
 
 // Online status and read receipts
 const recipientOnlineStatus = ref({ isOnline: false, lastSeen: null })
@@ -170,18 +187,18 @@ const recipientAvatar = computed(() => {
 
 const recipientStatus = computed(() => {
     if (recipientOnlineStatus.value.isOnline) {
-        return 'Online'
+        return t('chat.status.online')
     } else if (recipientOnlineStatus.value.lastSeen) {
         const lastSeenDate = new Date(recipientOnlineStatus.value.lastSeen)
         const now = new Date()
         const diffMinutes = Math.floor((now - lastSeenDate) / (1000 * 60))
 
-        if (diffMinutes < 1) return 'Last seen just now'
-        if (diffMinutes < 60) return `Last seen ${diffMinutes}m ago`
-        if (diffMinutes < 1440) return `Last seen ${Math.floor(diffMinutes / 60)}h ago`
-        return `Last seen ${Math.floor(diffMinutes / 1440)}d ago`
+        if (diffMinutes < 1) return t('chat.status.justNow')
+        if (diffMinutes < 60) return t('chat.status.minutesAgo', { minutes: diffMinutes })
+        if (diffMinutes < 1440) return t('chat.status.hoursAgo', { hours: Math.floor(diffMinutes / 60) })
+        return t('chat.status.daysAgo', { days: Math.floor(diffMinutes / 1440) })
     }
-    return 'Offline'
+    return t('chat.status.offline')
 })
 
 function formatSenderLabel(sender) {
@@ -245,13 +262,15 @@ function handleKeyDown(event) {
 async function fetchConversation() {
     try {
         loading.value = true
-        const response = await axios.get(`/api/chat/conversations/${route.params.id}`)
+        error.value = ''
+        const response = await api.get(`/chat/conversations/${route.params.id}`)
         conversation.value = response.data.conversation
         messages.value = response.data.messages
         await nextTick()
         scrollToBottom()
-    } catch (error) {
-        console.error('Error fetching conversation:', error)
+    } catch (err) {
+        console.error('Error fetching conversation:', err)
+        error.value = t('chat.errors.fetchConversation')
     } finally {
         loading.value = false
     }
@@ -272,12 +291,13 @@ async function sendMessage() {
 
     if (!socket.value || !socket.value.connected) {
         console.error('Socket not connected')
-        alert('Connection lost. Please refresh the page.')
+        error.value = t('chat.errors.connectionLost')
         return
     }
 
     try {
         sending.value = true
+        error.value = ''
 
         // Stop typing indicator
         if (isUserTyping.value) {
@@ -297,16 +317,16 @@ async function sendMessage() {
                 console.log('Message sent successfully')
             } else {
                 console.error('Failed to send message:', response)
-                alert('Failed to send message. Please try again.')
+                error.value = t('chat.errors.sendMessage')
             }
         })
 
         newMessage.value = ''
         await nextTick()
         scrollToBottom()
-    } catch (error) {
-        console.error('Error sending message:', error)
-        alert('Error sending message. Please try again.')
+    } catch (err) {
+        console.error('Error sending message:', err)
+        error.value = t('chat.errors.sendMessage')
     } finally {
         sending.value = false
     }
@@ -317,6 +337,7 @@ function initializeSocket() {
 
     if (!token) {
         console.error('No authentication token available')
+        error.value = t('chat.errors.noToken')
         return
     }
 
@@ -333,18 +354,24 @@ function initializeSocket() {
 
     socket.value.on('connect', () => {
         socket.value.emit('join-conversation', route.params.id)
+        error.value = '' // Clear any connection errors
     })
 
-    socket.value.on('connect_error', (error) => {
-        console.error('Socket connection error:', error)
+    socket.value.on('connect_error', (err) => {
+        console.error('Socket connection error:', err)
+        error.value = t('chat.errors.connectionError')
     })
 
     socket.value.on('disconnect', (reason) => {
         console.log('Socket disconnected:', reason)
+        if (reason === 'io server disconnect') {
+            error.value = t('chat.errors.disconnected')
+        }
     })
 
-    socket.value.on('error', (error) => {
-        console.error('Socket error:', error)
+    socket.value.on('error', (err) => {
+        console.error('Socket error:', err)
+        error.value = t('chat.errors.socketError')
     })
 
     socket.value.on('new-message', async (message) => {

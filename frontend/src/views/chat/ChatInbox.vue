@@ -3,7 +3,7 @@
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <!-- Header -->
             <div class="p-6 border-b border-gray-200">
-                <h1 class="text-2xl font-bold text-gray-900">Messages</h1>
+                <h1 class="text-2xl font-bold text-gray-900">{{ t('chat.inbox.title') }}</h1>
             </div>
 
             <!-- Conversation List -->
@@ -12,12 +12,12 @@
                     <div
                         class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
                     </div>
-                    <p class="mt-2 text-gray-600">Loading conversations...</p>
+                    <p class="mt-2 text-gray-600">{{ t('chat.inbox.loading') }}</p>
                 </div>
 
                 <template v-else>
                     <div v-if="conversations.length === 0" class="p-6 text-center text-gray-500">
-                        No conversations yet
+                        {{ t('chat.inbox.noConversations') }}
                     </div>
 
                     <router-link v-for="conversation in conversations" :key="conversation._id"
@@ -37,7 +37,7 @@
                                     </p>
                                 </div>
                                 <p class="mt-1 text-sm text-gray-500 truncate">
-                                    {{ conversation.lastMessage?.text || 'No messages yet' }}
+                                    {{ conversation.lastMessage?.text || t('chat.inbox.noMessages') }}
                                 </p>
                             </div>
                             <div v-if="conversation.unreadCount > 0"
@@ -55,10 +55,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 import { format } from 'date-fns'
-import axios from 'axios'
 
 const authStore = useAuthStore()
+const { t } = useI18n()
+const { api } = useApi()
 const conversations = ref([])
 const loading = ref(true)
 
@@ -67,7 +70,7 @@ function getOtherParticipant(conversation) {
 }
 
 function formatParticipantName(participant) {
-    if (!participant) return 'Unknown'
+    if (!participant) return t('chat.inbox.unknown')
     return participant.role === 'advisor' ?
         `${participant.firstName} ${participant.lastName}` :
         `${participant.firstName} ${participant.lastName}`
@@ -81,7 +84,7 @@ function formatTime(timestamp) {
 async function fetchConversations() {
     try {
         loading.value = true
-        const response = await axios.get('/api/chat/conversations')
+        const response = await api.get('/chat/conversations')
         conversations.value = response.data.conversations
     } catch (error) {
         console.error('Error fetching conversations:', error)

@@ -3,7 +3,7 @@
         <div class="max-w-md w-full text-center">
             <div v-if="loading" class="flex flex-col items-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent"></div>
-                <p class="mt-4 text-gray-600">Verifying payment...</p>
+                <p class="mt-4 text-gray-600">{{ t('payment.success.verifying') }}</p>
             </div>
 
             <template v-else>
@@ -15,21 +15,21 @@
                     </div>
 
                     <h2 class="text-3xl font-extrabold text-gray-900">
-                        Payment Successful!
+                        {{ t('payment.success.title') }}
                     </h2>
                     <p class="mt-2 text-sm text-gray-600">
-                        Your appointment has been confirmed and payment has been processed.
+                        {{ t('payment.success.description') }}
                     </p>
 
                     <div class="mt-8 space-y-4">
                         <router-link v-if="appointment"
                             :to="{ name: 'appointment-details', params: { id: appointment._id } }"
                             class="btn-primary w-full justify-center">
-                            View Appointment Details
+                            {{ t('payment.success.viewDetails') }}
                         </router-link>
 
                         <router-link :to="{ name: 'client-appointments' }" class="btn-secondary w-full justify-center">
-                            View All Appointments
+                            {{ t('payment.success.viewAll') }}
                         </router-link>
                     </div>
                 </div>
@@ -43,15 +43,15 @@
                     </div>
 
                     <h2 class="text-3xl font-extrabold text-gray-900">
-                        Payment Verification Failed
+                        {{ t('payment.success.verificationFailed') }}
                     </h2>
                     <p class="mt-2 text-sm text-gray-600">
-                        We couldn't verify your payment. Please contact support if you believe this is an error.
+                        {{ t('payment.success.verificationFailedDesc') }}
                     </p>
 
                     <div class="mt-8">
                         <router-link :to="{ name: 'client-appointments' }" class="btn-primary w-full justify-center">
-                            Return to Appointments
+                            {{ t('payment.success.returnToAppointments') }}
                         </router-link>
                     </div>
                 </div>
@@ -64,10 +64,12 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePaymentStore } from '@/stores/payment'
+import { useI18n } from '@/composables/useI18n'
 
 const route = useRoute()
 const router = useRouter()
 const paymentStore = usePaymentStore()
+const { t } = useI18n()
 
 const appointment = ref(null)
 const loading = ref(true)

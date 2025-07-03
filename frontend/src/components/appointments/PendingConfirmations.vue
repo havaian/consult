@@ -1,9 +1,11 @@
 <template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">Pending Confirmations</h1>
+            <h1 class="text-2xl font-bold text-gray-900">{{ t('appointments.pending.title') }}</h1>
             <div class="text-sm text-gray-500">
-                {{ pendingCount }} appointment{{ pendingCount !== 1 ? 's' : '' }} awaiting confirmation
+                {{ t('appointments.pending.countText', {
+                    count: pendingCount, appointments: pendingCount !== 1 ?
+                        t('appointments.pending.appointmentsPlural') : t('appointments.pending.appointmentsSingular') }) }}
             </div>
         </div>
 
@@ -11,7 +13,7 @@
         <div v-if="loading" class="text-center py-8">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
             </div>
-            <p class="mt-2 text-gray-600">Loading pending confirmations...</p>
+            <p class="mt-2 text-gray-600">{{ t('appointments.pending.loading') }}</p>
         </div>
 
         <!-- Empty State -->
@@ -22,8 +24,8 @@
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             </div>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No pending confirmations</h3>
-            <p class="mt-1 text-sm text-gray-500">All appointments have been processed.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ t('appointments.pending.noPendingTitle') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ t('appointments.pending.noPendingDesc') }}</p>
         </div>
 
         <!-- Appointments List -->
@@ -51,7 +53,9 @@
                                     {{ appointment.client.firstName }} {{ appointment.client.lastName }}
                                 </h3>
                                 <p class="text-sm text-gray-500">
-                                    Age: {{ calculateAge(appointment.client.dateOfBirth) }} years
+                                    {{ t('appointments.pending.ageText', {
+                                        age:
+                                            calculateAge(appointment.client.dateOfBirth) }) }}
                                 </p>
                             </div>
                         </div>
@@ -63,7 +67,9 @@
                                 {{ getUrgencyText(appointment.timeRemaining) }}
                             </span>
                             <span class="text-xs text-gray-500 mt-1">
-                                {{ formatTimeRemaining(appointment.timeRemaining) }} left
+                                {{ t('appointments.pending.timeLeft', {
+                                    time:
+                                        formatTimeRemaining(appointment.timeRemaining) }) }}
                             </span>
                         </div>
                     </div>
@@ -71,42 +77,44 @@
                     <!-- Appointment Details -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <div>
-                            <p class="text-sm text-gray-500">Appointment Date & Time</p>
+                            <p class="text-sm text-gray-500">{{ t('appointments.pending.appointmentDateTime') }}</p>
                             <p class="text-gray-900 font-medium">{{ formatDateTime(appointment.dateTime) }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Duration</p>
-                            <p class="text-gray-900">{{ appointment.duration || 30 }} minutes</p>
+                            <p class="text-sm text-gray-500">{{ t('appointments.pending.duration') }}</p>
+                            <p class="text-gray-900">{{ t('appointments.pending.minutesText', {
+                                minutes:
+                                appointment.duration || 30 }) }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Consultation Type</p>
+                            <p class="text-sm text-gray-500">{{ t('appointments.pending.consultationType') }}</p>
                             <p class="text-gray-900">
                                 {{ appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1) }}
                             </p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Payment Status</p>
+                            <p class="text-sm text-gray-500">{{ t('appointments.pending.paymentStatus') }}</p>
                             <span
                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Paid
+                                {{ t('appointments.pending.paid') }}
                             </span>
                         </div>
                     </div>
 
                     <!-- Short Description -->
                     <div class="mb-6">
-                        <p class="text-sm text-gray-500 mb-2">Short Description</p>
+                        <p class="text-sm text-gray-500 mb-2">{{ t('appointments.pending.shortDescription') }}</p>
                         <p class="text-gray-900 bg-gray-50 p-3 rounded-md">{{ appointment.shortDescription }}</p>
                     </div>
 
                     <!-- Client Contact Info -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-md">
                         <div v-if="appointment.client.email">
-                            <p class="text-sm text-gray-500">Email</p>
+                            <p class="text-sm text-gray-500">{{ t('profile.email') }}</p>
                             <p class="text-gray-900">{{ appointment.client.email }}</p>
                         </div>
                         <div v-if="appointment.client.phone">
-                            <p class="text-sm text-gray-500">Phone</p>
+                            <p class="text-sm text-gray-500">{{ t('profile.phone') }}</p>
                             <p class="text-gray-900">{{ appointment.client.phone }}</p>
                         </div>
                     </div>
@@ -120,9 +128,9 @@
                                 <div
                                     class="animate-spin -ml-1 mr-2 h-4 w-4 border-2 border-red-700 border-t-transparent rounded-full">
                                 </div>
-                                Processing...
+                                {{ t('appointments.pending.processing') }}
                             </span>
-                            <span v-else>Reject</span>
+                            <span v-else>{{ t('appointments.pending.reject') }}</span>
                         </button>
 
                         <button @click="confirmAppointment(appointment)"
@@ -132,9 +140,9 @@
                                 <div
                                     class="animate-spin -ml-1 mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full">
                                 </div>
-                                Confirming...
+                                {{ t('appointments.pending.confirming') }}
                             </span>
-                            <span v-else>Confirm Appointment</span>
+                            <span v-else>{{ t('appointments.pending.confirmAppointment') }}</span>
                         </button>
                     </div>
                 </div>
@@ -162,15 +170,16 @@
                         </svg>
                     </div>
                     <div class="mt-5 text-center">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Reject Appointment</h3>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">{{
+                            t('appointments.pending.modal.rejectTitle') }}</h3>
                         <div class="mt-2">
                             <p class="text-sm text-gray-500">
-                                Are you sure you want to reject this appointment? This action cannot be undone and the
-                                client will be notified.
+                                {{ t('appointments.pending.modal.rejectDescription') }}
                             </p>
                         </div>
                         <div class="mt-4">
-                            <textarea v-model="rejectionReason" placeholder="Optional: Provide a reason for rejection"
+                            <textarea v-model="rejectionReason"
+                                :placeholder="t('appointments.pending.modal.reasonPlaceholder')"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 rows="3"></textarea>
                         </div>
@@ -179,12 +188,12 @@
                 <div class="flex justify-end space-x-3 mt-5">
                     <button @click="closeRejectModal"
                         class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">
-                        Cancel
+                        {{ t('common.cancel') }}
                     </button>
                     <button @click="rejectAppointment" :disabled="processingRejection"
                         class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50">
-                        <span v-if="processingRejection">Rejecting...</span>
-                        <span v-else>Reject Appointment</span>
+                        <span v-if="processingRejection">{{ t('appointments.pending.modal.rejecting') }}</span>
+                        <span v-else>{{ t('appointments.pending.modal.rejectAppointment') }}</span>
                     </button>
                 </div>
             </div>
@@ -229,7 +238,7 @@ const calculateAge = (dateOfBirth) => {
 }
 
 const formatTimeRemaining = (timeRemaining) => {
-    if (!timeRemaining) return 'Unknown'
+    if (!timeRemaining) return t('appointments.pending.unknown')
     const { hours, minutes } = timeRemaining
     if (hours > 0) {
         return `${hours}h ${minutes}m`
@@ -238,13 +247,13 @@ const formatTimeRemaining = (timeRemaining) => {
 }
 
 const getUrgencyText = (timeRemaining) => {
-    if (!timeRemaining) return 'Unknown'
+    if (!timeRemaining) return t('appointments.pending.urgency.unknown')
     const totalMinutes = timeRemaining.hours * 60 + timeRemaining.minutes
 
-    if (totalMinutes <= 60) return 'URGENT'
-    if (totalMinutes <= 180) return 'HIGH'
-    if (totalMinutes <= 360) return 'MEDIUM'
-    return 'LOW'
+    if (totalMinutes <= 60) return t('appointments.pending.urgency.urgent')
+    if (totalMinutes <= 180) return t('appointments.pending.urgency.high')
+    if (totalMinutes <= 360) return t('appointments.pending.urgency.medium')
+    return t('appointments.pending.urgency.low')
 }
 
 const getUrgencyBorderClass = (timeRemaining) => {
@@ -276,44 +285,44 @@ async function fetchPendingConfirmations() {
             limit: 10
         }
 
-        const response = await api.get(`/api/appointments/pending-confirmation/advisor/${authStore.user._id}`, { params })
+        const response = await api.get(`/appointments/pending-confirmation/advisor/${authStore.user._id}`, { params })
         appointments.value = response.data.appointments
         totalPages.value = Math.ceil(response.data.pagination.total / response.data.pagination.limit)
     } catch (error) {
         console.error('Error fetching pending confirmations:', error)
         // Show user-friendly error message
-        alert('Failed to load pending confirmations. Please refresh the page.')
+        alert(t('appointments.pending.errors.loadFailed'))
     } finally {
         loading.value = false
     }
 }
 
 async function confirmAppointment(appointment) {
-    if (!confirm(`Confirm appointment with ${appointment.client.firstName} ${appointment.client.lastName}?`)) {
+    if (!confirm(t('appointments.pending.confirmPrompt', { name: `${appointment.client.firstName} ${appointment.client.lastName}` }))) {
         return
     }
 
     try {
         processingAppointments.value.add(appointment._id)
 
-        await api.post(`/api/appointments/${appointment._id}/confirm`)
+        await api.post(`/appointments/${appointment._id}/confirm`)
 
         // Remove from list after successful confirmation
         appointments.value = appointments.value.filter(app => app._id !== appointment._id)
 
         // Show success message
-        alert('Appointment confirmed successfully! The client has been notified.')
+        alert(t('appointments.pending.confirmSuccess'))
 
     } catch (error) {
         console.error('Error confirming appointment:', error)
 
         // Handle specific error cases
         if (error.response?.status === 400 && error.response.data?.message?.includes('deadline')) {
-            alert('This appointment confirmation has expired and has been automatically canceled.')
+            alert(t('appointments.pending.errors.expired'))
             // Remove from list since it's been canceled
             appointments.value = appointments.value.filter(app => app._id !== appointment._id)
         } else {
-            alert('Failed to confirm appointment. Please try again.')
+            alert(t('appointments.pending.errors.confirmFailed'))
         }
     } finally {
         processingAppointments.value.delete(appointment._id)
@@ -339,20 +348,20 @@ async function rejectAppointment() {
         processingRejection.value = true
 
         // Use the updateAppointmentStatus endpoint to cancel the appointment
-        await api.patch(`/api/appointments/${selectedAppointment.value._id}/status`, {
+        await api.patch(`/appointments/${selectedAppointment.value._id}/status`, {
             status: 'canceled',
-            cancellationReason: rejectionReason.value || 'Rejected by advisor'
+            cancellationReason: rejectionReason.value || t('appointments.pending.defaultRejectionReason')
         })
 
         // Remove from list after successful rejection
         appointments.value = appointments.value.filter(app => app._id !== selectedAppointment.value._id)
 
         closeRejectModal()
-        alert('Appointment rejected successfully. The client has been notified and refunded.')
+        alert(t('appointments.pending.rejectSuccess'))
 
     } catch (error) {
         console.error('Error rejecting appointment:', error)
-        alert('Failed to reject appointment. Please try again.')
+        alert(t('appointments.pending.errors.rejectFailed'))
     } finally {
         processingRejection.value = false
     }

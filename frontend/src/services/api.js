@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Create axios instance
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://e-consult.uz/api',
     timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ const apiService = {
     get: (url, config = {}) => api.get(url, config),
     post: (url, data, config = {}) => api.post(url, data, config),
     put: (url, data, config = {}) => api.put(url, data, config),
-    patch: (url, data, config = {}) => api.patch(url, data, config), 
+    patch: (url, data, config = {}) => api.patch(url, data, config),
     delete: (url, config = {}) => api.delete(url, config),
 
     // Auth methods

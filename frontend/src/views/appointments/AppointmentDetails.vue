@@ -59,7 +59,7 @@
                                     </p>
                                     <p class="text-sm text-gray-500">
                                         {{ t('user.age') }}: {{ calculateAge(appointment.client.dateOfBirth) }} {{
-                                        t('user.years') }}
+                                            t('user.years') }}
                                     </p>
                                 </div>
                             </div>
@@ -137,7 +137,7 @@
                     <div
                         v-if="appointment.status === 'completed' && appointment.followUp && appointment.followUp.recommended">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.followUpRecommendation')
-                            }}</h3>
+                        }}</h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -155,7 +155,8 @@
                                 <p class="text-sm font-medium text-indigo-800">
                                     {{ t('appointments.followUpScheduled', {
                                         dateTime:
-                                            formatDateTime(followUpAppointment.dateTime) }) }}
+                                            formatDateTime(followUpAppointment.dateTime)
+                                    }) }}
                                 </p>
                                 <div v-if="followUpAppointment.status === 'pending-payment'" class="mt-2">
                                     <button @click="proceedToPayment(followUpAppointment._id)"
@@ -279,7 +280,7 @@
                                         </button>
                                         <button type="submit" class="btn-primary" :disabled="submitting">
                                             {{ submitting ? t('appointments.scheduling') :
-                                            t('appointments.scheduleFollowUp') }}
+                                                t('appointments.scheduleFollowUp') }}
                                         </button>
                                     </div>
                                 </form>

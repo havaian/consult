@@ -8,21 +8,27 @@
             </div>
 
             <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                Payment Cancelled
+                {{ t('payment.cancel.title') }}
             </h2>
             <p class="mt-2 text-sm text-gray-600">
-                Your payment was not completed. No charges were made to your account.
+                {{ t('payment.cancel.description') }}
             </p>
 
             <div class="mt-8 space-y-4">
                 <router-link :to="{ name: 'client-appointments' }" class="btn-primary w-full justify-center">
-                    Return to Appointments
+                    {{ t('payment.cancel.returnToAppointments') }}
                 </router-link>
 
                 <router-link to="/" class="btn-secondary w-full justify-center">
-                    Go Home
+                    {{ t('payment.cancel.goHome') }}
                 </router-link>
             </div>
         </div>
     </div>
-</template> 
+</template>
+
+<script setup>
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
+</script>

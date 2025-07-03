@@ -2,25 +2,25 @@
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <div class="p-6">
-                <h1 class="text-2xl font-bold text-gray-900 mb-6">Edit Profile</h1>
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">{{ t('profile.edit.title') }}</h1>
 
                 <form @submit.prevent="handleSubmit" class="space-y-6">
                     <!-- Personal Information -->
                     <div>
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h2>
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">{{ t('profile.edit.personalInfo') }}</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="firstName" class="label">First Name</label>
+                                <label for="firstName" class="label">{{ t('profile.edit.firstName') }}</label>
                                 <input id="firstName" v-model="formData.firstName" type="text" class="input mt-1"
                                     required />
                             </div>
                             <div>
-                                <label for="lastName" class="label">Last Name</label>
+                                <label for="lastName" class="label">{{ t('profile.edit.lastName') }}</label>
                                 <input id="lastName" v-model="formData.lastName" type="text" class="input mt-1"
                                     required />
                             </div>
                             <div>
-                                <label for="phone" class="label">Phone</label>
+                                <label for="phone" class="label">{{ t('profile.phone') }}</label>
                                 <input id="phone" v-model="formData.phone" type="tel" class="input mt-1" required />
                             </div>
                         </div>
@@ -28,14 +28,14 @@
 
                     <!-- Location -->
                     <div>
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Location</h2>
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">{{ t('profile.location') }}</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="city" class="label">City</label>
+                                <label for="city" class="label">{{ t('profile.edit.city') }}</label>
                                 <input id="city" v-model="formData.address.city" type="text" class="input mt-1" />
                             </div>
                             <div>
-                                <label for="street" class="label">Street</label>
+                                <label for="street" class="label">{{ t('profile.edit.street') }}</label>
                                 <input id="street" v-model="formData.address.street" type="text" class="input mt-1" />
                             </div>
                         </div>
@@ -44,109 +44,113 @@
                     <!-- Advisor-specific fields -->
                     <template v-if="authStore.isAdvisor">
                         <div>
-                            <h2 class="text-lg font-medium text-gray-900 mb-4">Professional Information</h2>
+                            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ t('profile.professionalInfo') }}</h2>
 
                             <!-- Specializations -->
                             <div class="mb-4">
-                                <label class="label">Specializations</label>
+                                <label class="label">{{ t('profile.edit.specializations') }}</label>
                                 <div class="space-y-2">
                                     <div v-for="(spec, index) in formData.specializations" :key="index"
                                         class="flex gap-2">
                                         <select v-model="formData.specializations[index]" class="input flex-1">
-                                            <option value="">Select Specialization</option>
-                                            <option v-for="spec in availableSpecializations" :key="spec" :value="spec">{{ spec }}
+                                            <option value="">{{ t('profile.edit.selectSpecialization') }}</option>
+                                            <option v-for="spec in availableSpecializations" :key="spec" :value="spec">
+                                                {{ spec }}
                                             </option>
                                         </select>
                                         <button type="button" @click="removeSpecialization(index)"
                                             class="px-2 py-1 text-red-600 hover:text-red-800">
-                                            Remove
+                                            {{ t('common.remove') }}
                                         </button>
                                     </div>
                                     <button type="button" @click="addSpecialization"
-                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-800">
-                                        + Add Another Specialization
+                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent hover:text-indigo-800">
+                                        {{ t('profile.edit.addSpecialization') }}
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Education -->
                             <div class="mb-4">
-                                <label class="label">Education</label>
+                                <label class="label">{{ t('profile.education') }}</label>
                                 <div class="space-y-2">
                                     <div v-for="(edu, index) in formData.education" :key="index"
                                         class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                        <input v-model="edu.degree" type="text" class="input" placeholder="Degree" />
+                                        <input v-model="edu.degree" type="text" class="input"
+                                            :placeholder="t('profile.edit.degree')" />
                                         <input v-model="edu.institution" type="text" class="input"
-                                            placeholder="Institution" />
+                                            :placeholder="t('profile.edit.institution')" />
                                         <div class="flex gap-2">
                                             <input v-model.number="edu.year" type="number" class="input"
-                                                placeholder="Year" />
+                                                :placeholder="t('profile.edit.year')" />
                                             <button type="button" @click="removeEducation(index)"
                                                 class="px-2 py-1 text-red-600 hover:text-red-800">
-                                                Remove
+                                                {{ t('common.remove') }}
                                             </button>
                                         </div>
                                     </div>
                                     <button type="button" @click="addEducation"
-                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-800">
-                                        + Add Education
+                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent hover:text-indigo-800">
+                                        {{ t('profile.edit.addEducation') }}
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Certifications -->
                             <div class="mb-4">
-                                <label class="label">Certifications</label>
+                                <label class="label">{{ t('profile.certification') }}</label>
                                 <div class="space-y-2">
                                     <div v-for="(cert, index) in formData.certifications" :key="index"
                                         class="grid grid-cols-1 md:grid-cols-3 gap-2">
                                         <input v-model="cert.name" type="text" class="input"
-                                            placeholder="Certificate Name" />
+                                            :placeholder="t('profile.edit.certificateName')" />
                                         <input v-model="cert.issuer" type="text" class="input"
-                                            placeholder="Issuing Organization" />
+                                            :placeholder="t('profile.edit.issuingOrganization')" />
                                         <div class="flex gap-2">
                                             <input v-model.number="cert.year" type="number" class="input"
-                                                placeholder="Year" />
+                                                :placeholder="t('profile.edit.year')" />
                                             <button type="button" @click="removeCertification(index)"
                                                 class="px-2 py-1 text-red-600 hover:text-red-800">
-                                                Remove
+                                                {{ t('common.remove') }}
                                             </button>
                                         </div>
                                     </div>
                                     <button type="button" @click="addCertification"
-                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-800">
-                                        + Add Certification
+                                        class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent hover:text-indigo-800">
+                                        {{ t('profile.edit.addCertification') }}
                                     </button>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label for="consultationFee" class="label">Consultation Fee (UZS)</label>
+                                    <label for="consultationFee" class="label">{{ t('profile.edit.consultationFeeUZS')
+                                    }}</label>
                                     <input id="consultationFee" v-model.number="formData.consultationFee" type="number"
                                         min="0" class="input mt-1" required />
                                 </div>
                                 <div>
-                                    <label for="experience" class="label">Years of Experience</label>
+                                    <label for="experience" class="label">{{ t('profile.edit.yearsOfExperience')
+                                    }}</label>
                                     <input id="experience" v-model.number="formData.experience" type="number" min="0"
                                         class="input mt-1" required />
                                 </div>
                             </div>
 
                             <div class="mt-4">
-                                <label for="languages" class="label">Languages</label>
+                                <label for="languages" class="label">{{ t('profile.edit.languages') }}</label>
                                 <input id="languages" v-model="languagesInput" type="text" class="input mt-1"
-                                    placeholder="English, Russian, Uzbek (comma separated)" />
+                                    :placeholder="t('profile.edit.languagesPlaceholder')" />
                             </div>
 
                             <div class="mt-4">
-                                <label for="bio" class="label">Bio</label>
+                                <label for="bio" class="label">{{ t('profile.edit.bio') }}</label>
                                 <textarea id="bio" v-model="formData.bio" rows="4" class="input mt-1"></textarea>
                             </div>
 
                             <!-- Availability -->
                             <div class="mt-4">
-                                <label class="label">Availability</label>
+                                <label class="label">{{ t('profile.availability') }}</label>
                                 <div class="space-y-2">
                                     <div v-for="day in formData.availability" :key="day.dayOfWeek"
                                         class="grid grid-cols-4 gap-4 items-center">
@@ -167,31 +171,34 @@
                     <!-- Client-specific fields -->
                     <template v-else>
                         <div>
-                            <h2 class="text-lg font-medium text-gray-900 mb-4">Legal Information</h2>
+                            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ t('profile.edit.legalInfo') }}</h2>
                             <div class="space-y-4">
                                 <div>
-                                    <label for="legalHistory" class="label">Legal History</label>
+                                    <label for="legalHistory" class="label">{{ t('profile.client.legalHistory')
+                                    }}</label>
                                     <input id="legalHistory" v-model="legalHistoryInput" type="text" class="input mt-1"
-                                        placeholder="Separate with commas" />
+                                        :placeholder="t('profile.edit.separateWithCommas')" />
                                 </div>
                             </div>
                         </div>
 
                         <div>
-                            <h2 class="text-lg font-medium text-gray-900 mb-4">Emergency Contact</h2>
+                            <h2 class="text-lg font-medium text-gray-900 mb-4">{{ t('profile.client.emergencyContact')
+                            }}</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label for="emergencyName" class="label">Name</label>
+                                    <label for="emergencyName" class="label">{{ t('profile.client.name') }}</label>
                                     <input id="emergencyName" v-model="formData.emergencyContact.name" type="text"
                                         class="input mt-1" />
                                 </div>
                                 <div>
-                                    <label for="emergencyPhone" class="label">Phone</label>
+                                    <label for="emergencyPhone" class="label">{{ t('profile.phone') }}</label>
                                     <input id="emergencyPhone" v-model="formData.emergencyContact.phone" type="tel"
                                         class="input mt-1" />
                                 </div>
                                 <div>
-                                    <label for="emergencyRelationship" class="label">Relationship</label>
+                                    <label for="emergencyRelationship" class="label">{{ t('profile.client.relationship')
+                                    }}</label>
                                     <input id="emergencyRelationship" v-model="formData.emergencyContact.relationship"
                                         type="text" class="input mt-1" />
                                 </div>
@@ -202,10 +209,10 @@
                     <div class="flex justify-end space-x-4">
                         <router-link :to="{ name: authStore.isAdvisor ? 'advisor-profile' : 'client-profile' }"
                             class="btn-secondary">
-                            Cancel
+                            {{ t('common.cancel') }}
                         </router-link>
                         <button type="submit" class="btn-primary" :disabled="loading">
-                            {{ loading ? 'Saving...' : 'Save Changes' }}
+                            {{ loading ? t('profile.edit.saving') : t('profile.edit.saveChanges') }}
                         </button>
                     </div>
                 </form>
@@ -218,10 +225,13 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import axios from 'axios'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
+const { api } = useApi()
 const loading = ref(false)
 
 // Replace the hardcoded specializations with a ref to be filled from API
@@ -289,19 +299,27 @@ const removeCertification = (index) => {
 }
 
 const formatDay = (dayOfWeek) => {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    const days = [
+        t('profile.days.monday'),
+        t('profile.days.tuesday'),
+        t('profile.days.wednesday'),
+        t('profile.days.thursday'),
+        t('profile.days.friday'),
+        t('profile.days.saturday'),
+        t('profile.days.sunday')
+    ]
     return days[dayOfWeek - 1]
 }
 
 // Added function to fetch specializations from the API
 async function fetchSpecializations() {
     try {
-        const response = await axios.get('/api/specializations')
+        const response = await api.get('/specializations')
         availableSpecializations.value = response.data.specializations.map(s => s.name)
     } catch (error) {
         console.error('Error fetching specializations:', error)
         // Set some defaults in case API call fails
-        availableSpecializations.value = [   
+        availableSpecializations.value = [
             'Corporate Law',
             'Family Law',
             'Criminal Defense',
@@ -318,7 +336,7 @@ async function fetchSpecializations() {
 
 async function fetchUserProfile() {
     try {
-        const response = await axios.get('/api/users/me')
+        const response = await api.get('/users/me')
         const user = response.data.user
 
         // Update form data
@@ -329,10 +347,10 @@ async function fetchUserProfile() {
 
         if (authStore.isAdvisor) {
             // Handle specializations properly as an array
-            formData.specializations = Array.isArray(user.specializations) ? 
-                user.specializations : 
+            formData.specializations = Array.isArray(user.specializations) ?
+                user.specializations :
                 (user.specialization ? [user.specialization] : [])
-                
+
             formData.education = user.education || []
             formData.certifications = user.certifications || []
             formData.consultationFee = user.consultationFee || 0
@@ -382,7 +400,7 @@ async function handleSubmit() {
             updateData.emergencyContact = formData.emergencyContact
         }
 
-        await axios.patch('/api/users/me', updateData)
+        await api.patch('/users/me', updateData)
         router.push({ name: authStore.isAdvisor ? 'advisor-profile' : 'client-profile' })
     } catch (error) {
         console.error('Error updating profile:', error)

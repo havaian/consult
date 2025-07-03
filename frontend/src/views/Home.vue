@@ -11,8 +11,9 @@
           </svg>
         </div>
         <div class="absolute top-32 right-20 float-legal opacity-15" style="animation-delay: -1s;">
-          <svg class="h-20 w-20 text-royal-gold-light" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
-            <path d="M2 12h3l2-6 2 12 2-9 2 6 2-3h7"/>
+          <svg class="h-20 w-20 text-royal-gold-light" fill="none" stroke="currentColor" stroke-width="1"
+            viewBox="0 0 24 24">
+            <path d="M2 12h3l2-6 2 12 2-9 2 6 2-3h7" />
           </svg>
         </div>
         <div class="absolute bottom-32 left-32 float-legal opacity-10" style="animation-delay: -2s;">
@@ -39,9 +40,8 @@
             </div>
           </div>
           <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-3">
-            CONSULT.<span
-              class="bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent">YTECH</span><span
-              class="text-royal-gold-light">.SPACE</span>
+            E-<span class="bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent">E</span><span
+              class="text-royal-gold-light">.CONSULT</span>
           </h1>
           <p class="text-xl text-gray-700 font-medium">Your Legal Issues, Our Expert Solutions</p>
         </div>
@@ -59,7 +59,7 @@
             </span>
           </h2>
           <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-8">
-            Connect with qualified legal advisors online for consultations, legal advice, and professional guidance 
+            Connect with qualified legal advisors online for consultations, legal advice, and professional guidance
             from the comfort of your home.
           </p>
 
@@ -105,7 +105,8 @@
           </div>
 
           <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 text-center card-hover shadow-lg">
-            <div class="bg-gradient-to-r from-royal-gold-light to-emerald-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
+            <div
+              class="bg-gradient-to-r from-royal-gold-light to-emerald-500 rounded-2xl p-4 inline-flex mb-6 shadow-lg">
               <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />

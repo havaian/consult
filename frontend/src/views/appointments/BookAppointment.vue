@@ -1,311 +1,389 @@
 <template>
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">{{ t('appointments.pending.title') }}</h1>
+            <div class="text-sm text-gray-500">
+                {{ t('appointments.pending.countText', {
+                    count: pendingCount, appointments: pendingCount !== 1 ?
+                        t('appointments.pending.appointmentsPlural') : t('appointments.pending.appointmentsSingular') }) }}
+            </div>
+        </div>
+
+        <!-- Loading State -->
         <div v-if="loading" class="text-center py-8">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
             </div>
-            <p class="mt-2 text-gray-600">{{ t('common.loading') }}</p>
+            <p class="mt-2 text-gray-600">{{ t('appointments.pending.loading') }}</p>
         </div>
 
-        <template v-else-if="advisor">
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+        <!-- Empty State -->
+        <div v-else-if="!loading && appointments.length === 0" class="text-center py-12">
+            <div class="mx-auto h-12 w-12 text-gray-400">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ t('appointments.pending.noPendingTitle') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ t('appointments.pending.noPendingDesc') }}</p>
+        </div>
+
+        <!-- Appointments List -->
+        <div v-else class="space-y-6">
+            <div v-for="appointment in appointments" :key="appointment._id"
+                class="bg-white shadow rounded-lg overflow-hidden"
+                :class="getUrgencyBorderClass(appointment.timeRemaining)">
                 <div class="p-6">
-                    <h1 class="text-2xl font-bold text-gray-900">
-                        {{ t('appointments.bookAppointmentWith', {
-                            title: 'Dr.', firstName: advisor.firstName, lastName:
-                        advisor.lastName }) }}
-                    </h1>
-                    <div class="mt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
-                        <span v-for="spec in advisor.specializations" :key="spec"
-                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                            {{ spec }}
-                        </span>
+                    <!-- Header with urgency indicator -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <img v-if="appointment.client.profilePicture" :src="appointment.client.profilePicture"
+                                    :alt="`${appointment.client.firstName} ${appointment.client.lastName}`"
+                                    class="h-10 w-10 rounded-full object-cover" />
+                                <div v-else class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                    <span class="text-sm font-medium text-gray-700">
+                                        {{ appointment.client.firstName.charAt(0) }}{{
+                                            appointment.client.lastName.charAt(0) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">
+                                    {{ appointment.client.firstName }} {{ appointment.client.lastName }}
+                                </h3>
+                                <p class="text-sm text-gray-500">
+                                    {{ t('appointments.pending.ageText', {
+                                        age:
+                                            calculateAge(appointment.client.dateOfBirth) }) }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Urgency Badge -->
+                        <div class="flex flex-col items-end">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                :class="getUrgencyBadgeClass(appointment.timeRemaining)">
+                                {{ getUrgencyText(appointment.timeRemaining) }}
+                            </span>
+                            <span class="text-xs text-gray-500 mt-1">
+                                {{ t('appointments.pending.timeLeft', {
+                                    time:
+                                        formatTimeRemaining(appointment.timeRemaining) }) }}
+                            </span>
+                        </div>
                     </div>
 
-                    <form @submit.prevent="handleSubmit" class="mt-6 space-y-6">
-                        <!-- Date Selection -->
+                    <!-- Appointment Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <div>
-                            <label for="date" class="label">{{ t('appointments.selectDate') }}</label>
-                            <input id="date" v-model="formData.date" type="date" :min="minDate" :max="maxDate"
-                                class="input mt-1" required @change="fetchAvailableSlots"
-                                :class="{ 'border-red-500': validationErrors.date }" />
-                            <p v-if="validationErrors.date" class="mt-1 text-sm text-red-600">
-                                {{ validationErrors.date }}
-                            </p>
+                            <p class="text-sm text-gray-500">{{ t('appointments.pending.appointmentDateTime') }}</p>
+                            <p class="text-gray-900 font-medium">{{ formatDateTime(appointment.dateTime) }}</p>
                         </div>
-
-                        <!-- Time Slots -->
-                        <div v-if="formData.date">
-                            <label class="label">{{ t('appointments.availableTimeSlots') }}</label>
-                            <div class="mt-2 grid grid-cols-3 gap-3">
-                                <button v-for="slot in availableSlots" :key="slot.start" type="button"
-                                    class="btn-secondary"
-                                    :class="{ 'ring-2 ring-indigo-500': formData.time === slot.start }"
-                                    @click="formData.time = slot.start">
-                                    {{ formatTimeDisplay(slot.start) }}
-                                </button>
-                            </div>
-                            <p v-if="availableSlots.length === 0" class="mt-2 text-sm text-gray-500">
-                                {{ t('appointments.noAvailableSlots') }}
-                            </p>
-                            <p v-if="validationErrors.time" class="mt-1 text-sm text-red-600">
-                                {{ validationErrors.time }}
-                            </p>
-                        </div>
-
-                        <!-- Consultation Type -->
                         <div>
-                            <label class="label">{{ t('appointments.consultationType') }}</label>
-                            <div class="mt-2 grid grid-cols-3 gap-3">
-                                <button v-for="type in consultationTypes" :key="type.value" type="button"
-                                    class="btn-secondary" :class="{
-                                        'ring-2 ring-indigo-500': formData.type === type.value,
-                                        'border-red-500': validationErrors.type
-                                    }" @click="formData.type = type.value">
-                                    {{ t(`appointments.types.${type.value}`) }}
-                                </button>
-                            </div>
-                            <p v-if="validationErrors.type" class="mt-1 text-sm text-red-600">
-                                {{ validationErrors.type }}
-                            </p>
+                            <p class="text-sm text-gray-500">{{ t('appointments.pending.duration') }}</p>
+                            <p class="text-gray-900">{{ t('appointments.pending.minutesText', {
+                                minutes:
+                                appointment.duration || 30 }) }}</p>
                         </div>
-
-                        <!-- Short description -->
                         <div>
-                            <label for="description" class="label">{{ t('appointments.shortDescription') }}</label>
-                            <textarea id="description" v-model="formData.shortDescription" rows="3" class="input mt-1"
-                                required :class="{ 'border-red-500': validationErrors.shortDescription }"
-                                :placeholder="t('appointments.descriptionPlaceholder')"></textarea>
-                            <p v-if="validationErrors.shortDescription" class="mt-1 text-sm text-red-600">
-                                {{ validationErrors.shortDescription }}
+                            <p class="text-sm text-gray-500">{{ t('appointments.pending.consultationType') }}</p>
+                            <p class="text-gray-900">
+                                {{ appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1) }}
                             </p>
                         </div>
-
-                        <!-- Fee Information -->
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-lg font-medium text-gray-900">{{ t('appointments.consultationFee') }}</h3>
-                            <p class="mt-1 text-gray-600">
-                                {{ formatFee() }} UZS
-                            </p>
-                            <p class="mt-2 text-sm text-gray-500">
-                                {{ t('appointments.paymentProcessedSecurely') }}
-                            </p>
-                        </div>
-
                         <div>
-                            <button type="submit" class="btn-primary w-full" :disabled="submitting">
-                                {{ submitting ? t('appointments.processing') : t('appointments.proceedToPayment') }}
-                            </button>
+                            <p class="text-sm text-gray-500">{{ t('appointments.pending.paymentStatus') }}</p>
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                {{ t('appointments.pending.paid') }}
+                            </span>
                         </div>
+                    </div>
 
-                        <div v-if="error" class="text-sm text-center text-red-600">
-                            {{ error }}
+                    <!-- Short Description -->
+                    <div class="mb-6">
+                        <p class="text-sm text-gray-500 mb-2">{{ t('appointments.pending.shortDescription') }}</p>
+                        <p class="text-gray-900 bg-gray-50 p-3 rounded-md">{{ appointment.shortDescription }}</p>
+                    </div>
+
+                    <!-- Client Contact Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-md">
+                        <div v-if="appointment.client.email">
+                            <p class="text-sm text-gray-500">{{ t('profile.email') }}</p>
+                            <p class="text-gray-900">{{ appointment.client.email }}</p>
                         </div>
-                    </form>
+                        <div v-if="appointment.client.phone">
+                            <p class="text-sm text-gray-500">{{ t('profile.phone') }}</p>
+                            <p class="text-gray-900">{{ appointment.client.phone }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end space-x-4">
+                        <button @click="showRejectModal(appointment)"
+                            :disabled="processingAppointments.has(appointment._id)"
+                            class="px-4 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <span v-if="processingAppointments.has(appointment._id)" class="flex items-center">
+                                <div
+                                    class="animate-spin -ml-1 mr-2 h-4 w-4 border-2 border-red-700 border-t-transparent rounded-full">
+                                </div>
+                                {{ t('appointments.pending.processing') }}
+                            </span>
+                            <span v-else>{{ t('appointments.pending.reject') }}</span>
+                        </button>
+
+                        <button @click="confirmAppointment(appointment)"
+                            :disabled="processingAppointments.has(appointment._id)"
+                            class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <span v-if="processingAppointments.has(appointment._id)" class="flex items-center">
+                                <div
+                                    class="animate-spin -ml-1 mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full">
+                                </div>
+                                {{ t('appointments.pending.confirming') }}
+                            </span>
+                            <span v-else>{{ t('appointments.pending.confirmAppointment') }}</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </template>
+        </div>
 
-        <div v-else class="text-center py-8">
-            <p class="text-gray-600">{{ t('advisors.advisorNotFound') }}</p>
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="flex justify-center space-x-2 mt-8">
+            <button v-for="page in totalPages" :key="page" @click="handlePageChange(page)"
+                class="px-3 py-2 border rounded-md"
+                :class="currentPage === page ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'">
+                {{ page }}
+            </button>
+        </div>
+
+        <!-- Reject Confirmation Modal -->
+        <div v-if="showRejectModalFlag"
+            class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <div class="mt-5 text-center">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">{{
+                            t('appointments.pending.modal.rejectTitle') }}</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">
+                                {{ t('appointments.pending.modal.rejectDescription') }}
+                            </p>
+                        </div>
+                        <div class="mt-4">
+                            <textarea v-model="rejectionReason"
+                                :placeholder="t('appointments.pending.modal.reasonPlaceholder')"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-5">
+                    <button @click="closeRejectModal"
+                        class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">
+                        {{ t('common.cancel') }}
+                    </button>
+                    <button @click="rejectAppointment" :disabled="processingRejection"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50">
+                        <span v-if="processingRejection">{{ t('appointments.pending.modal.rejecting') }}</span>
+                        <span v-else>{{ t('appointments.pending.modal.rejectAppointment') }}</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { format, addDays, parseISO, subMinutes, addMinutes, isWithinInterval } from 'date-fns'
-import { usePaymentStore } from '@/stores/payment'
-import { useI18n } from '@/composables/useI18n'
-import { useApi } from '@/composables/useApi'
+import { ref, reactive, onMounted, computed, onBeforeUnmount } from 'vue'
+import { format, parseISO, differenceInYears } from 'date-fns'
 
-const route = useRoute()
-const router = useRouter()
-const paymentStore = usePaymentStore()
-const { t } = useI18n()
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
+
+import { useApi } from '../../composables/useApi';
 const { api } = useApi()
 
-const advisor = ref(null)
-const loading = ref(true)
-const submitting = ref(false)
-const error = ref('')
-const availableSlots = ref([])
-const validationErrors = reactive({
-    date: '',
-    time: '',
-    type: '',
-    shortDescription: ''
-})
+import { useI18n } from '@/composables/useI18n'
+const { t } = useI18n()
 
-const consultationTypes = [
-    { value: 'video', label: t('appointments.types.video') },
-    { value: 'phone', label: t('appointments.types.phone') },
-    { value: 'online', label: t('appointments.types.online') }
-]
+// Reactive data
+const appointments = ref([])
+const loading = ref(false)
+const currentPage = ref(1)
+const totalPages = ref(1)
+const processingAppointments = ref(new Set())
+const showRejectModalFlag = ref(false)
+const selectedAppointment = ref(null)
+const rejectionReason = ref('')
+const processingRejection = ref(false)
 
-const formData = reactive({
-    date: '',
-    time: '',
-    type: 'video',
-    shortDescription: ''
-})
+// Computed properties
+const pendingCount = computed(() => appointments.value.length)
 
-// Fixed to use UTC+5 timezone
-const minDate = computed(() => {
-    const now = new Date()
-    const utc5Offset = 5 * 60 // UTC+5 in minutes
-    const utc5Date = new Date(now.getTime() + (utc5Offset * 60 * 1000))
-    return format(utc5Date, 'yyyy-MM-dd')
-})
+// Utility functions
+const formatDateTime = (dateTime) => {
+    return format(parseISO(dateTime), 'MMM d, yyyy h:mm a')
+}
 
-const maxDate = computed(() => {
-    const now = new Date()
-    const utc5Offset = 5 * 60 // UTC+5 in minutes
-    const utc5Date = new Date(now.getTime() + (utc5Offset * 60 * 1000))
-    const maxDate = addDays(utc5Date, 30)
-    return format(maxDate, 'yyyy-MM-dd')
-})
+const calculateAge = (dateOfBirth) => {
+    return differenceInYears(new Date(), parseISO(dateOfBirth))
+}
 
-// Safe formatting function for currency
-const formatCurrency = (amount) => {
-    if (amount === undefined || amount === null) {
-        return '0'
+const formatTimeRemaining = (timeRemaining) => {
+    if (!timeRemaining) return t('appointments.pending.unknown')
+    const { hours, minutes } = timeRemaining
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`
     }
-    const numAmount = Number(amount)
-    if (isNaN(numAmount)) {
-        console.error('Invalid fee amount:', amount)
-        return '0'
-    }
-    return new Intl.NumberFormat('uz-UZ').format(numAmount)
+    return `${minutes}m`
 }
 
-// Function to safely format the advisor's fee
-const formatFee = () => {
-    if (!advisor.value) return '0'
-    return formatCurrency(advisor.value.consultationFee)
+const getUrgencyText = (timeRemaining) => {
+    if (!timeRemaining) return t('appointments.pending.urgency.unknown')
+    const totalMinutes = timeRemaining.hours * 60 + timeRemaining.minutes
+
+    if (totalMinutes <= 60) return t('appointments.pending.urgency.urgent')
+    if (totalMinutes <= 180) return t('appointments.pending.urgency.high')
+    if (totalMinutes <= 360) return t('appointments.pending.urgency.medium')
+    return t('appointments.pending.urgency.low')
 }
 
-// Fixed to display UTC+5 time correctly
-const formatTimeDisplay = (timeString) => {
-    try {
-        const timeDate = new Date(timeString)
-        const utc5Time = new Date(timeDate.getTime() + 0)
+const getUrgencyBorderClass = (timeRemaining) => {
+    if (!timeRemaining) return 'border-gray-300'
+    const totalMinutes = timeRemaining.hours * 60 + timeRemaining.minutes
 
-        const hours = utc5Time.getUTCHours()
-        const minutes = utc5Time.getUTCMinutes()
-
-        const period = hours >= 12 ? 'PM' : 'AM'
-        const displayHours = hours % 12 || 12
-        const displayMinutes = minutes.toString().padStart(2, '0')
-
-        return `${displayHours}:${displayMinutes} ${period}`
-    } catch (error) {
-        console.error('Error formatting time:', error)
-        return timeString
-    }
+    if (totalMinutes <= 60) return 'border-red-500'
+    if (totalMinutes <= 180) return 'border-orange-500'
+    if (totalMinutes <= 360) return 'border-yellow-500'
+    return 'border-green-500'
 }
 
-const isWithinJoinWindow = (dateTime) => {
-    const appointmentTime = parseISO(dateTime)
-    const now = new Date()
-    return isWithinInterval(now, {
-        start: subMinutes(appointmentTime, 5),
-        end: addMinutes(appointmentTime, 30)
-    })
+const getUrgencyBadgeClass = (timeRemaining) => {
+    if (!timeRemaining) return 'bg-gray-100 text-gray-800'
+    const totalMinutes = timeRemaining.hours * 60 + timeRemaining.minutes
+
+    if (totalMinutes <= 60) return 'bg-red-100 text-red-800'
+    if (totalMinutes <= 180) return 'bg-orange-100 text-orange-800'
+    if (totalMinutes <= 360) return 'bg-yellow-100 text-yellow-800'
+    return 'bg-green-100 text-green-800'
 }
 
-async function fetchAdvisorProfile() {
+// API functions
+async function fetchPendingConfirmations() {
     try {
         loading.value = true
-        const response = await api.get(`/users/advisors/${route.params.advisorId}`)
-        advisor.value = response.data.advisor
+        const params = {
+            page: currentPage.value,
+            limit: 10
+        }
+
+        const response = await api.get(`/appointments/pending-confirmation/advisor/${authStore.user._id}`, { params })
+        appointments.value = response.data.appointments
+        totalPages.value = Math.ceil(response.data.pagination.total / response.data.pagination.limit)
     } catch (error) {
-        console.error('Error fetching advisor profile:', error)
+        console.error('Error fetching pending confirmations:', error)
+        // Show user-friendly error message
+        alert(t('appointments.pending.errors.loadFailed'))
     } finally {
         loading.value = false
     }
 }
 
-async function fetchAvailableSlots() {
-    try {
-        const response = await api.get(`/appointments/availability/${route.params.advisorId}`, {
-            params: { date: formData.date }
-        })
-        availableSlots.value = response.data.availableSlots.map(slot => ({
-            ...slot,
-            start: slot.start
-        }))
-
-        formData.time = ''
-        validationErrors.time = ''
-    } catch (error) {
-        console.error('Error fetching available slots:', error)
-        availableSlots.value = []
-    }
-}
-
-function validateForm() {
-    Object.keys(validationErrors).forEach(key => {
-        validationErrors[key] = ''
-    })
-
-    let isValid = true
-
-    if (!formData.date) {
-        validationErrors.date = t('appointments.validation.selectDate')
-        isValid = false
-    }
-
-    if (!formData.time) {
-        validationErrors.time = t('appointments.validation.selectTime')
-        isValid = false
-    }
-
-    if (!formData.type) {
-        validationErrors.type = t('appointments.validation.selectType')
-        isValid = false
-    }
-
-    if (!formData.shortDescription.trim()) {
-        validationErrors.shortDescription = t('appointments.validation.provideDescription')
-        isValid = false
-    }
-
-    return isValid
-}
-
-async function handleSubmit() {
-    if (!validateForm()) {
+async function confirmAppointment(appointment) {
+    if (!confirm(t('appointments.pending.confirmPrompt', { name: `${appointment.client.firstName} ${appointment.client.lastName}` }))) {
         return
     }
 
     try {
-        submitting.value = true
-        error.value = ''
+        processingAppointments.value.add(appointment._id)
 
-        const selectedDateTime = formData.time
-        const appointmentTime = new Date(selectedDateTime)
-        const utc5AdjustedTime = new Date(appointmentTime.getTime() - (5 * 60 * 60 * 1000))
+        await api.post(`/appointments/${appointment._id}/confirm`)
 
-        const appointmentData = {
-            advisorId: route.params.advisorId,
-            dateTime: utc5AdjustedTime.toISOString(),
-            type: formData.type,
-            shortDescription: formData.shortDescription
+        // Remove from list after successful confirmation
+        appointments.value = appointments.value.filter(app => app._id !== appointment._id)
+
+        // Show success message
+        alert(t('appointments.pending.confirmSuccess'))
+
+    } catch (error) {
+        console.error('Error confirming appointment:', error)
+
+        // Handle specific error cases
+        if (error.response?.status === 400 && error.response.data?.message?.includes('deadline')) {
+            alert(t('appointments.pending.errors.expired'))
+            // Remove from list since it's been canceled
+            appointments.value = appointments.value.filter(app => app._id !== appointment._id)
+        } else {
+            alert(t('appointments.pending.errors.confirmFailed'))
         }
-
-        const response = await api.post('/appointments', appointmentData)
-        await paymentStore.createCheckoutSession(response.data.appointment._id)
-
-    } catch (err) {
-        console.error('Error booking appointment:', err)
-        error.value = err.response?.data?.message || t('appointments.bookingFailed')
     } finally {
-        submitting.value = false
+        processingAppointments.value.delete(appointment._id)
     }
 }
 
+function showRejectModal(appointment) {
+    selectedAppointment.value = appointment
+    showRejectModalFlag.value = true
+    rejectionReason.value = ''
+}
+
+function closeRejectModal() {
+    showRejectModalFlag.value = false
+    selectedAppointment.value = null
+    rejectionReason.value = ''
+}
+
+async function rejectAppointment() {
+    if (!selectedAppointment.value) return
+
+    try {
+        processingRejection.value = true
+
+        // Use the updateAppointmentStatus endpoint to cancel the appointment
+        await api.patch(`/appointments/${selectedAppointment.value._id}/status`, {
+            status: 'canceled',
+            cancellationReason: rejectionReason.value || t('appointments.pending.defaultRejectionReason')
+        })
+
+        // Remove from list after successful rejection
+        appointments.value = appointments.value.filter(app => app._id !== selectedAppointment.value._id)
+
+        closeRejectModal()
+        alert(t('appointments.pending.rejectSuccess'))
+
+    } catch (error) {
+        console.error('Error rejecting appointment:', error)
+        alert(t('appointments.pending.errors.rejectFailed'))
+    } finally {
+        processingRejection.value = false
+    }
+}
+
+function handlePageChange(page) {
+    currentPage.value = page
+    fetchPendingConfirmations()
+}
+
+// Lifecycle
 onMounted(() => {
-    fetchAdvisorProfile()
+    fetchPendingConfirmations()
+
+    // Auto-refresh every 2 minutes to keep data current
+    const refreshInterval = setInterval(() => {
+        fetchPendingConfirmations()
+    }, 120000) // 2 minutes
+
+    // Clean up interval on component unmount
+    onBeforeUnmount(() => {
+        clearInterval(refreshInterval)
+    })
 })
 </script>
