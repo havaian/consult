@@ -3,7 +3,7 @@
         <div v-if="loading" class="text-center py-8">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
             </div>
-            <p class="mt-2 text-gray-600">Loading advisor profile...</p>
+            <p class="mt-2 text-gray-600">{{ t('advisors.loadingProfile') }}</p>
         </div>
 
         <template v-else-if="advisor">
@@ -29,7 +29,7 @@
                             <div class="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start">
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                                    {{ advisor.experience }} years experience
+                                    {{ t('advisors.experienceYears', { years: advisor.experience }) }}
                                 </span>
                                 <span v-for="lang in advisor.languages" :key="lang"
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
@@ -44,7 +44,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
-                                Chat with Advisor
+                                {{ t('advisors.chatWithAdvisor') }}
                             </button>
                         </div>
 
@@ -52,7 +52,7 @@
                             <router-link v-if="authStore.isClient"
                                 :to="{ name: 'book-appointment', params: { advisorId: advisor._id } }"
                                 class="btn-primary">
-                                Book Appointment
+                                {{ t('advisors.bookAppointment') }}
                             </router-link>
                         </div>
                     </div>
@@ -61,55 +61,56 @@
                 <!-- Details -->
                 <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">About</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ t('advisors.about') }}</h2>
                         <p class="text-gray-600">{{ decodedBio }}</p>
 
-                        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Education</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">{{ t('advisors.education') }}</h3>
                         <ul class="space-y-2">
                             <li v-for="edu in advisor.education" :key="edu.degree" class="text-gray-600">
                                 {{ edu.degree }} - {{ edu.institution }} ({{ edu.year }})
                             </li>
                             <li v-if="!advisor.education || advisor.education.length === 0" class="text-gray-500">
-                                No education information provided.
+                                {{ t('advisors.noEducationInfo') }}
                             </li>
                         </ul>
 
-                        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Certification</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">{{ t('advisors.certification') }}</h3>
                         <ul class="space-y-2">
                             <li v-for="cert in advisor.certifications" :key="cert.issuer" class="text-gray-600">
                                 {{ cert.issuer }} - {{ cert.name }} ({{ cert.year }})
                             </li>
                             <li v-if="!advisor.certifications || advisor.certifications.length === 0"
                                 class="text-gray-500">
-                                No certification information provided.
+                                {{ t('advisors.noCertificationInfo') }}
                             </li>
                         </ul>
                     </div>
 
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Consultation Details</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ t('advisors.consultationDetails') }}
+                        </h2>
                         <div class="space-y-4">
                             <div>
-                                <h3 class="font-medium text-gray-900">Fee</h3>
+                                <h3 class="font-medium text-gray-900">{{ t('advisors.fee') }}</h3>
                                 <p class="text-gray-600">
                                     {{ formatConsultationFee }}
                                 </p>
                             </div>
 
                             <div>
-                                <h3 class="font-medium text-gray-900">Available Days</h3>
+                                <h3 class="font-medium text-gray-900">{{ t('advisors.availableDays') }}</h3>
                                 <ul class="mt-2 space-y-2">
                                     <li v-for="day in availableDays" :key="day.dayOfWeek" class="text-gray-600">
                                         {{ formatDay(day.dayOfWeek) }}: {{ day.startTime }} - {{ day.endTime }}
                                     </li>
                                     <li v-if="availableDays.length === 0" class="text-gray-500">
-                                        No availability information provided.
+                                        {{ t('advisors.noAvailabilityInfo') }}
                                     </li>
                                 </ul>
                             </div>
 
                             <div>
-                                <h3 class="font-medium text-gray-900">Location</h3>
+                                <h3 class="font-medium text-gray-900">{{ t('advisors.location') }}</h3>
                                 <p class="text-gray-600">
                                     {{ formattedAddress }}
                                 </p>
@@ -120,9 +121,9 @@
 
                 <!-- Reviews -->
                 <div class="p-6 sm:p-8 border-t border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Client Reviews</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ t('advisors.clientReviews') }}</h2>
                     <div v-if="reviews.length === 0" class="text-gray-600">
-                        No reviews yet.
+                        {{ t('advisors.noReviewsYet') }}
                     </div>
                     <div v-else class="space-y-6">
                         <div v-for="review in reviews" :key="review._id"
@@ -146,7 +147,7 @@
                             </div>
                             <div v-if="review.advisorResponse" class="mt-4 ml-6 p-4 bg-gray-50 rounded-lg">
                                 <p class="text-sm text-gray-900">
-                                    <span class="font-medium">Advisor's response:</span>
+                                    <span class="font-medium">{{ t('advisors.advisorResponse') }}:</span>
                                     {{ review.advisorResponse.text }}
                                 </p>
                                 <p class="mt-1 text-xs text-gray-500">
@@ -160,25 +161,37 @@
         </template>
 
         <div v-else class="text-center py-8">
-            <p class="text-gray-600">Advisor not found.</p>
+            <p class="text-gray-600">{{ t('advisors.advisorNotFound') }}</p>
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 import { format } from 'date-fns'
-import axios from 'axios'
+import { enUS, ru } from 'date-fns/locale'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
+const { t, locale } = useI18n()
+const { api } = useApi()
 
 const advisor = ref(null)
 const reviews = ref([])
 const loading = ref(true)
 const hasUpcomingAppointment = ref(false)
+
+// Locale mapping for date-fns
+const localeMap = {
+    en: enUS,
+    ru: ru,
+    uz: enUS // Uzbek fallback to English
+}
 
 const availableDays = computed(() => {
     if (!advisor.value?.availability) return []
@@ -187,7 +200,7 @@ const availableDays = computed(() => {
 
 // Computed property for decoded bio
 const decodedBio = computed(() => {
-    if (!advisor.value?.bio) return 'No bio provided.'
+    if (!advisor.value?.bio) return t('advisors.noBioProvided')
 
     // Create a temporary DOM element to decode HTML entities
     const textarea = document.createElement('textarea')
@@ -199,7 +212,7 @@ const decodedBio = computed(() => {
 const formatConsultationFee = computed(() => {
     const fee = advisor.value?.consultationFee
 
-    if (!fee) return 'Consultation fee not specified'
+    if (!fee) return t('advisors.feeNotSpecified')
 
     // If fee is an object with amount property
     if (typeof fee === 'object' && fee !== null && 'amount' in fee) {
@@ -210,14 +223,14 @@ const formatConsultationFee = computed(() => {
         return `${new Intl.NumberFormat('uz-UZ').format(fee)} UZS`
     }
 
-    return 'Consultation fee not specified'
+    return t('advisors.feeNotSpecified')
 })
 
 // Computed property for formatted address
 const formattedAddress = computed(() => {
     const address = advisor.value?.address
 
-    if (!address) return 'Address not provided'
+    if (!address) return t('advisors.addressNotProvided')
 
     const parts = []
     if (address.street) parts.push(address.street)
@@ -226,28 +239,37 @@ const formattedAddress = computed(() => {
     if (address.zipCode) parts.push(address.zipCode)
     if (address.country) parts.push(address.country)
 
-    return parts.length > 0 ? parts.join(', ') : 'Address not provided'
+    return parts.length > 0 ? parts.join(', ') : t('advisors.addressNotProvided')
 })
 
 const formatDay = (dayOfWeek) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const days = [
+        t('advisors.days.sunday'),
+        t('advisors.days.monday'),
+        t('advisors.days.tuesday'),
+        t('advisors.days.wednesday'),
+        t('advisors.days.thursday'),
+        t('advisors.days.friday'),
+        t('advisors.days.saturday')
+    ]
     return days[dayOfWeek]
 }
 
 const formatDate = (date) => {
     if (!date) return ''
-    return format(new Date(date), 'MMM d, yyyy')
+    const currentLocale = localeMap[locale.value] || enUS
+    return format(new Date(date), 'MMM d, yyyy', { locale: currentLocale })
 }
 
 async function fetchAdvisorProfile() {
     try {
         loading.value = true
-        const response = await axios.get(`/api/users/advisors/${route.params.id}`)
+        const response = await api.get(`/users/advisors/${route.params.id}`)
         advisor.value = response.data.advisor
 
         // Fetch reviews
         try {
-            const reviewsResponse = await axios.get(`/api/reviews/advisor/${route.params.id}`)
+            const reviewsResponse = await api.get(`/reviews/advisor/${route.params.id}`)
             reviews.value = reviewsResponse.data.reviews
         } catch (reviewError) {
             console.error('Error fetching reviews:', reviewError)
@@ -264,7 +286,7 @@ async function checkUpcomingAppointments() {
     if (!authStore.isAuthenticated || !authStore.isClient) return
 
     try {
-        const response = await axios.get(`/api/appointments/client/${authStore.user._id}`, {
+        const response = await api.get(`/appointments/client/${authStore.user._id}`, {
             params: { status: 'scheduled', advisorId: advisor.value._id }
         })
         hasUpcomingAppointment.value = response.data.appointments.length > 0
@@ -275,7 +297,7 @@ async function checkUpcomingAppointments() {
 
 async function startChat() {
     try {
-        const response = await axios.post('/api/chat/conversations', {
+        const response = await api.post('/chat/conversations', {
             participantId: advisor.value._id
         })
 

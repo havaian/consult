@@ -1,8 +1,8 @@
 <template>
     <form @submit.prevent="handleSubmit" class="flex space-x-2">
-        <input v-model="message" type="text" class="input flex-1" placeholder="Type your message..."
+        <input v-model="message" type="text" class="input flex-1" :placeholder="t('chat.typeMessage')"
             :disabled="disabled" @keydown.enter="handleSubmit" />
-        <button type="submit" class="btn-primary" :disabled="disabled || !message.trim()">
+        <button type="submit" class="btn-primary" :disabled="disabled || !message.trim()" :title="t('chat.send')">
             <svg v-if="!loading" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -19,6 +19,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
     disabled: {

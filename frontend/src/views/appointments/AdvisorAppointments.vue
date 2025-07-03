@@ -1,6 +1,6 @@
 <template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 class="text-2xl font-bold text-gray-900 mb-8">My Schedule</h1>
+        <h1 class="text-2xl font-bold text-gray-900 mb-8">{{ t('appointments.mySchedule') }}</h1>
 
         <!-- Tab Navigation -->
         <div class="border-b border-gray-200 mb-8">
@@ -11,7 +11,7 @@
                         ? 'border-indigo-500 text-indigo-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 ]">
-                    Pending Confirmations
+                    {{ t('appointments.pendingConfirmations') }}
                     <span v-if="pendingCount > 0" class="ml-2 bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">
                         {{ pendingCount }}
                     </span>
@@ -22,7 +22,7 @@
                         ? 'border-indigo-500 text-indigo-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 ]">
-                    Scheduled Appointments
+                    {{ t('appointments.scheduledAppointments') }}
                 </button>
             </nav>
         </div>
@@ -38,18 +38,18 @@
             <div class="bg-white shadow rounded-lg p-6 mb-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label for="date" class="label">Date</label>
+                        <label for="date" class="label">{{ t('appointments.date') }}</label>
                         <input id="date" v-model="filters.date" type="date" class="input mt-1"
                             @change="fetchAppointments" />
                     </div>
                     <div>
-                        <label for="status" class="label">Status</label>
+                        <label for="status" class="label">{{ t('appointments.status') }}</label>
                         <select id="status" v-model="filters.status" class="input mt-1" @change="fetchAppointments">
-                            <option value="">All Status</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="completed">Completed</option>
-                            <option value="canceled">Canceled</option>
-                            <option value="no-show">No Show</option>
+                            <option value="">{{ t('appointments.allStatus') }}</option>
+                            <option value="scheduled">{{ t('appointments.scheduled') }}</option>
+                            <option value="completed">{{ t('appointments.completed') }}</option>
+                            <option value="canceled">{{ t('appointments.cancelled') }}</option>
+                            <option value="no-show">{{ t('appointments.noShow') }}</option>
                         </select>
                     </div>
                 </div>
@@ -61,12 +61,12 @@
                     <div
                         class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
                     </div>
-                    <p class="mt-2 text-gray-600">Loading appointments...</p>
+                    <p class="mt-2 text-gray-600">{{ t('appointments.loadingAppointments') }}</p>
                 </div>
 
                 <template v-else>
                     <div v-if="appointments.length === 0" class="text-center py-8">
-                        <p class="text-gray-600">No appointments found.</p>
+                        <p class="text-gray-600">{{ t('appointments.noAppointmentsFound') }}</p>
                     </div>
 
                     <div v-else class="space-y-4">
@@ -84,7 +84,7 @@
                                                 class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
                                                 <span class="text-sm font-medium text-gray-700">
                                                     {{ appointment.client.firstName.charAt(0) }}{{
-                                                    appointment.client.lastName.charAt(0) }}
+                                                        appointment.client.lastName.charAt(0) }}
                                                 </span>
                                             </div>
                                         </div>
@@ -93,7 +93,8 @@
                                                 {{ appointment.client.firstName }} {{ appointment.client.lastName }}
                                             </h3>
                                             <p class="text-sm text-gray-500">
-                                                Age: {{ calculateAge(appointment.client.dateOfBirth) }} years
+                                                {{ t('user.age') }}: {{ calculateAge(appointment.client.dateOfBirth) }}
+                                                {{ t('user.years') }}
                                             </p>
                                         </div>
                                     </div>
@@ -101,25 +102,23 @@
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                                             :class="getStatusClass(appointment.status)">
-                                            {{ appointment.status.charAt(0).toUpperCase() +
-                                            appointment.status.slice(1).replace('-', ' ') }}
+                                            {{ getStatusText(appointment.status) }}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
-                                        <p class="text-sm text-gray-500">Date & Time</p>
+                                        <p class="text-sm text-gray-500">{{ t('appointments.dateTime') }}</p>
                                         <p class="text-gray-900 font-medium">{{ formatDateTime(appointment.dateTime) }}
                                         </p>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">Consultation Type</p>
-                                        <p class="text-gray-900">{{ appointment.type.charAt(0).toUpperCase() +
-                                            appointment.type.slice(1) }}</p>
+                                        <p class="text-sm text-gray-500">{{ t('appointments.consultationType') }}</p>
+                                        <p class="text-gray-900">{{ t(`appointments.types.${appointment.type}`) }}</p>
                                     </div>
                                     <div class="md:col-span-2">
-                                        <p class="text-sm text-gray-500">Short Description</p>
+                                        <p class="text-sm text-gray-500">{{ t('appointments.shortDescription') }}</p>
                                         <p class="text-gray-900">{{ appointment.shortDescription }}</p>
                                     </div>
                                 </div>
@@ -127,17 +126,17 @@
                                 <div class="mt-6 flex justify-end space-x-4">
                                     <router-link :to="{ name: 'appointment-details', params: { id: appointment._id } }"
                                         class="btn-secondary">
-                                        View Details
+                                        {{ t('appointments.viewDetails') }}
                                     </router-link>
                                     <button v-if="appointment.status === 'scheduled'"
                                         class="btn-secondary text-red-600 hover:text-red-700"
                                         @click="markAsNoShow(appointment._id)">
-                                        Mark as No-Show
+                                        {{ t('appointments.markAsNoShow') }}
                                     </button>
                                     <button
                                         v-if="appointment.status === 'scheduled' && isWithinJoinWindow(appointment.dateTime)"
                                         class="btn-primary" @click="joinConsultation(appointment._id)">
-                                        Start Consultation
+                                        {{ t('appointments.startConsultation') }}
                                     </button>
                                 </div>
                             </div>
@@ -162,12 +161,15 @@
 import { ref, reactive, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 import { format, parseISO, differenceInYears, isWithinInterval, subMinutes, addMinutes } from 'date-fns'
-import axios from 'axios'
 import PendingConfirmations from '@/components/appointments/PendingConfirmations.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
+const { api } = useApi()
 
 // Reactive data
 const activeTab = ref('pending') // Start with pending tab to highlight urgent items
@@ -210,6 +212,18 @@ const getStatusClass = (status) => {
     return classes[status] || 'bg-gray-100 text-gray-800'
 }
 
+const getStatusText = (status) => {
+    const statusMap = {
+        'scheduled': 'appointments.scheduled',
+        'completed': 'appointments.completed',
+        'canceled': 'appointments.cancelled',
+        'no-show': 'appointments.noShow',
+        'pending-advisor-confirmation': 'appointments.pendingConfirmation'
+    }
+
+    return statusMap[status] ? t(statusMap[status]) : status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')
+}
+
 // API functions
 async function fetchAppointments() {
     try {
@@ -220,7 +234,7 @@ async function fetchAppointments() {
             ...filters
         }
 
-        const response = await axios.get(`/api/appointments/advisor/${authStore.user._id}`, { params })
+        const response = await api.get(`/appointments/advisor/${authStore.user._id}`, { params })
         appointments.value = response.data.appointments
         totalPages.value = Math.ceil(response.data.pagination.total / response.data.pagination.limit)
     } catch (error) {
@@ -232,7 +246,7 @@ async function fetchAppointments() {
 
 async function fetchPendingCount() {
     try {
-        const response = await axios.get(`/api/appointments/pending-confirmation/advisor/${authStore.user._id}`, {
+        const response = await api.get(`/appointments/pending-confirmation/advisor/${authStore.user._id}`, {
             params: { limit: 1 } // Just get count, not all data
         })
         pendingCount.value = response.data.pagination.total
@@ -243,10 +257,10 @@ async function fetchPendingCount() {
 }
 
 async function markAsNoShow(appointmentId) {
-    if (!confirm('Are you sure you want to mark this appointment as no-show?')) return
+    if (!confirm(t('appointments.markAsNoShowConfirm'))) return
 
     try {
-        await axios.patch(`/api/appointments/${appointmentId}/status`, {
+        await api.patch(`/appointments/${appointmentId}/status`, {
             status: 'no-show'
         })
         await fetchAppointments()
@@ -257,7 +271,7 @@ async function markAsNoShow(appointmentId) {
 
 async function joinConsultation(appointmentId) {
     try {
-        const response = await axios.get(`/api/consultations/${appointmentId}/join`)
+        const response = await api.get(`/consultations/${appointmentId}/join`)
         if (response.data.consultation) {
             router.push({
                 name: 'consultation-room',

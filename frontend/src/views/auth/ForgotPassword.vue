@@ -3,22 +3,22 @@
         <div class="max-w-md w-full space-y-8">
             <div v-if="!success">
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Forgot your password?
+                    {{ t('auth.forgotPasswordTitle') }}
                 </h2>
                 <p class="mt-2 text-center text-sm text-gray-600">
-                    Enter your email address and we'll send you a link to reset your password.
+                    {{ t('auth.forgotPasswordDescription') }}
                 </p>
 
                 <form class="mt-8 space-y-6" @submit.prevent="handleSubmit">
                     <div>
-                        <label for="email" class="sr-only">Email address</label>
+                        <label for="email" class="sr-only">{{ t('auth.email') }}</label>
                         <input id="email" v-model="email" name="email" type="email" required class="input rounded-md"
-                            placeholder="Email address" />
+                            :placeholder="t('auth.emailAddress')" />
                     </div>
 
                     <div>
                         <button type="submit" class="btn-primary w-full" :disabled="loading">
-                            {{ loading ? 'Sending...' : 'Send Reset Link' }}
+                            {{ loading ? t('auth.sending') : t('auth.sendResetLink') }}
                         </button>
                     </div>
 
@@ -28,8 +28,9 @@
                 </form>
 
                 <div class="text-sm text-center">
-                    <router-link to="/login" class="font-medium bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-500">
-                        Back to login
+                    <router-link to="/login"
+                        class="font-medium bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-500">
+                        {{ t('auth.backToLogin') }}
                     </router-link>
                 </div>
             </div>
@@ -42,15 +43,15 @@
                 </div>
 
                 <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                    Check your email
+                    {{ t('auth.checkYourEmail') }}
                 </h2>
                 <p class="mt-2 text-sm text-gray-600">
-                    We've sent password reset instructions to {{ email }}
+                    {{ t('auth.resetInstructionsSent', { email: email }) }}
                 </p>
 
                 <div class="mt-8 space-y-4">
                     <router-link to="/login" class="btn-primary w-full inline-block text-center">
-                        Return to Login
+                        {{ t('auth.returnToLogin') }}
                     </router-link>
                 </div>
             </div>
@@ -60,7 +61,11 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
+
+const { t } = useI18n()
+const { api } = useApi()
 
 const email = ref('')
 const loading = ref(false)
@@ -72,10 +77,10 @@ async function handleSubmit() {
         loading.value = true
         error.value = ''
 
-        await axios.post('/api/users/forgot-password', { email: email.value })
+        await api.post('/users/forgot-password', { email: email.value })
         success.value = true
     } catch (err) {
-        error.value = err.response?.data?.message || 'Failed to process request'
+        error.value = err.response?.data?.message || t('auth.forgotPasswordFailed')
     } finally {
         loading.value = false
     }

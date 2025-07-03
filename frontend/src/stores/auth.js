@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
+import { useApi } from '../composables/useApi';
 
 export const useAuthStore = defineStore('auth', () => {
   // Initialize state from localStorage
@@ -13,26 +13,26 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function login(email, password) {
     try {
-      const response = await axios.post('/api/users/login', { email, password })
-      token.value = response.data.token
-      user.value = response.data.user
+      const response = await useApi.login({ email, password })
+      token.value = response.token
+      user.value = response.user
 
       // Persist to localStorage
       localStorage.setItem('token', token.value)
       localStorage.setItem('user', JSON.stringify(user.value))
 
-      return response.data
+      return response
     } catch (error) {
-      throw error.response?.data || error.message
+      throw error.response || error.message
     }
   }
 
   async function register(userData) {
     try {
-      const response = await axios.post('/api/users/register', userData)
-      return response.data
+      const response = await useApi.register('/api/users/register', userData)
+      return response
     } catch (error) {
-      throw error.response?.data || error.message
+      throw error.response || error.message
     }
   }
 

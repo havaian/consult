@@ -42,7 +42,7 @@
                                 <div v-else class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
                                     <span class="text-sm font-medium text-gray-700">
                                         {{ appointment.client.firstName.charAt(0) }}{{
-                                        appointment.client.lastName.charAt(0) }}
+                                            appointment.client.lastName.charAt(0) }}
                                     </span>
                                 </div>
                             </div>
@@ -194,11 +194,16 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed, onBeforeUnmount } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 import { format, parseISO, differenceInYears } from 'date-fns'
-import axios from 'axios'
 
+import { useAuthStore } from '@/stores/auth'
 const authStore = useAuthStore()
+
+import { useApi } from '../../composables/useApi';
+const { api } = useApi()
+
+import { useI18n } from '@/composables/useI18n'
+const { t } = useI18n()
 
 // Reactive data
 const appointments = ref([])
@@ -271,7 +276,7 @@ async function fetchPendingConfirmations() {
             limit: 10
         }
 
-        const response = await axios.get(`/api/appointments/pending-confirmation/advisor/${authStore.user._id}`, { params })
+        const response = await api.get(`/api/appointments/pending-confirmation/advisor/${authStore.user._id}`, { params })
         appointments.value = response.data.appointments
         totalPages.value = Math.ceil(response.data.pagination.total / response.data.pagination.limit)
     } catch (error) {
@@ -291,7 +296,7 @@ async function confirmAppointment(appointment) {
     try {
         processingAppointments.value.add(appointment._id)
 
-        await axios.post(`/api/appointments/${appointment._id}/confirm`)
+        await api.post(`/api/appointments/${appointment._id}/confirm`)
 
         // Remove from list after successful confirmation
         appointments.value = appointments.value.filter(app => app._id !== appointment._id)
@@ -334,7 +339,7 @@ async function rejectAppointment() {
         processingRejection.value = true
 
         // Use the updateAppointmentStatus endpoint to cancel the appointment
-        await axios.patch(`/api/appointments/${selectedAppointment.value._id}/status`, {
+        await api.patch(`/api/appointments/${selectedAppointment.value._id}/status`, {
             status: 'canceled',
             cancellationReason: rejectionReason.value || 'Rejected by advisor'
         })

@@ -1,0 +1,16 @@
+{
+  "name": "@econsult/localization",
+  "version": "1.0.0",
+  "description": "Shared localization package for E-Consult frontend and backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "localization",
+    "i18n",
+    "econsult"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

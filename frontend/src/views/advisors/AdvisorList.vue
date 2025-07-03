@@ -5,23 +5,23 @@
       <div class="bg-white shadow rounded-lg p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label for="search" class="label">Search by name</label>
-            <input id="search" v-model="filters.name" type="text" class="input mt-1" placeholder="Search advisors..."
-              @input="handleSearch" />
+            <label for="search" class="label">{{ t('advisors.searchByName') }}</label>
+            <input id="search" v-model="filters.name" type="text" class="input mt-1"
+              :placeholder="t('advisors.searchPlaceholder')" @input="handleSearch" />
           </div>
           <div>
-            <label for="specializations" class="label">Specialization</label>
+            <label for="specializations" class="label">{{ t('advisors.specialization') }}</label>
             <select id="specializations" v-model="filters.specializations" class="input mt-1" @change="handleSearch">
-              <option value="">All Specializations</option>
+              <option value="">{{ t('advisors.allSpecializations') }}</option>
               <option v-for="spec in specializations" :key="spec" :value="spec">
                 {{ spec }}
               </option>
             </select>
           </div>
           <div>
-            <label for="city" class="label">City</label>
+            <label for="city" class="label">{{ t('advisors.city') }}</label>
             <select id="city" v-model="filters.city" class="input mt-1" @change="handleSearch">
-              <option value="">All Cities</option>
+              <option value="">{{ t('advisors.allCities') }}</option>
               <option v-for="city in cities" :key="city" :value="city">
                 {{ city }}
               </option>
@@ -35,12 +35,12 @@
         <div v-if="loading" class="text-center py-8">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
           </div>
-          <p class="mt-2 text-gray-600">Loading advisors...</p>
+          <p class="mt-2 text-gray-600">{{ t('advisors.loadingAdvisors') }}</p>
         </div>
 
         <template v-else>
           <div v-if="advisors.length === 0" class="text-center py-8">
-            <p class="text-gray-600">No advisors found matching your criteria.</p>
+            <p class="text-gray-600">{{ t('advisors.noAdvisorsFound') }}</p>
           </div>
 
           <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -64,23 +64,23 @@
 
                 <div class="mt-4 space-y-2">
                   <p class="text-sm">
-                    <span class="font-medium">Experience:</span>
-                    {{ advisor.experience }} years
+                    <span class="font-medium">{{ t('advisors.experience') }}:</span>
+                    {{ t('advisors.experienceYears', { years: advisor.experience }) }}
                   </p>
                   <p class="text-sm">
-                    <span class="font-medium">Consultation Fee:</span>
+                    <span class="font-medium">{{ t('advisors.consultationFee') }}:</span>
                     {{ formatCurrency(advisor.consultationFee) }} {{ advisor.consultationFee.currency || 'UZS' }}
                   </p>
                   <p class="text-sm">
-                    <span class="font-medium">Languages:</span>
-                    {{ advisor.languages?.join(', ') || 'Not specified' }}
+                    <span class="font-medium">{{ t('advisors.languages') }}:</span>
+                    {{ advisor.languages?.join(', ') || t('advisors.notSpecified') }}
                   </p>
                 </div>
 
                 <div class="mt-6">
                   <router-link :to="{ name: 'advisor-profile-view', params: { id: advisor._id } }"
                     class="btn-primary w-full justify-center">
-                    View Profile
+                    {{ t('advisors.viewProfile') }}
                   </router-link>
                 </div>
               </div>
@@ -102,33 +102,36 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 
+const { t } = useI18n()
+const { api } = useApi()
 const router = useRouter()
 
 const specializations = ref([])
 
 async function fetchSpecializations() {
-    try {
-        const response = await axios.get('/api/specializations')
-        specializations.value = response.data.specializations.map(s => s.name)
-    } catch (error) {
-        console.error('Error fetching specializations:', error)
-        // Set some defaults in case API call fails
-        specializations.value = [
-            'Corporate Law',
-            'Family Law',
-            'Criminal Defense',
-            'Real Estate Law',
-            'Employment Law',
-            'Immigration Law',
-            'Personal Injury',
-            'Intellectual Property',
-            'Tax Law',
-            'General Legal Advice',
-        ]
-    }
+  try {
+    const response = await api.get('/specializations')
+    specializations.value = response.data.specializations.map(s => s.name)
+  } catch (error) {
+    console.error('Error fetching specializations:', error)
+    // Set some defaults in case API call fails
+    specializations.value = [
+      'Corporate Law',
+      'Family Law',
+      'Criminal Defense',
+      'Real Estate Law',
+      'Employment Law',
+      'Immigration Law',
+      'Personal Injury',
+      'Intellectual Property',
+      'Tax Law',
+      'General Legal Advice',
+    ]
+  }
 }
 
 const cities = [
@@ -163,7 +166,7 @@ async function fetchAdvisors() {
       ...filters
     }
 
-    const response = await axios.get('/api/users/advisors', { params })
+    const response = await api.get('/users/advisors', { params })
     advisors.value = response.data.advisors
     totalPages.value = Math.ceil(response.data.pagination.total / response.data.pagination.limit)
   } catch (error) {

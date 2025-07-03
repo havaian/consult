@@ -2,7 +2,8 @@
     <div class="flex mb-4" :class="message.sender === 'user' ? 'justify-end' : 'justify-start'">
         <!-- Avatar for non-user messages -->
         <div v-if="message.sender !== 'user'" class="flex-shrink-0 mr-3">
-            <img :src="senderAvatar" :alt="senderName" class="h-10 w-10 rounded-full object-cover" />
+            <img :src="senderAvatar" :alt="senderName || t('chat.advisor')"
+                class="h-10 w-10 rounded-full object-cover" />
         </div>
 
         <!-- Message Bubble -->
@@ -27,8 +28,12 @@
 <script setup>
 import { computed } from 'vue'
 import { format } from 'date-fns'
+import { enUS, ru, uz } from 'date-fns/locale'
 import sanitizeHtml from 'sanitize-html'
 import { marked } from 'marked'
+import { useI18n } from '@/composables/useI18n'
+
+const { t, locale } = useI18n()
 
 const props = defineProps({
     message: {
@@ -48,6 +53,13 @@ const props = defineProps({
         default: '/images/user-placeholder.jpg'
     }
 })
+
+// Locale mapping for date-fns
+const localeMap = {
+    en: enUS,
+    ru: ru,
+    uz: enUS // Uzbek fallback to English as date-fns doesn't have Uzbek locale
+}
 
 const formattedMessage = computed(() => {
     if (!props.message.text) return ''
@@ -81,6 +93,7 @@ const formattedMessage = computed(() => {
 })
 
 const formatTime = (timestamp) => {
-    return format(new Date(timestamp), 'h:mm a')
+    const currentLocale = localeMap[locale.value] || enUS
+    return format(new Date(timestamp), 'h:mm a', { locale: currentLocale })
 }
 </script>

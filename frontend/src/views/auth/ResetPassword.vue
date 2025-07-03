@@ -3,10 +3,10 @@
         <div class="max-w-md w-full space-y-8">
             <div>
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Reset your password
+                    {{ t('auth.resetPasswordTitle') }}
                 </h2>
                 <p class="mt-2 text-center text-sm text-gray-600">
-                    Please enter your new password.
+                    {{ t('auth.resetPasswordDescription') }}
                 </p>
             </div>
 
@@ -14,12 +14,14 @@
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
                         </svg>
                     </div>
                     <div class="ml-3">
                         <p class="text-sm font-medium text-green-800">
-                            Password reset successful! You can now login with your new password.
+                            {{ t('auth.passwordResetSuccessful') }}
                         </p>
                     </div>
                 </div>
@@ -28,20 +30,35 @@
             <form v-if="!success" class="mt-8 space-y-6" @submit.prevent="handleSubmit">
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div>
-                        <label for="password" class="sr-only">New password</label>
+                        <label for="password" class="sr-only">{{ t('auth.newPassword') }}</label>
                         <input id="password" v-model="password" name="password" type="password" required
-                            class="input rounded-t-md" placeholder="New password" />
+                            class="input rounded-t-md" :placeholder="t('auth.newPassword')" />
                     </div>
                     <div>
-                        <label for="confirmPassword" class="sr-only">Confirm password</label>
+                        <label for="confirmPassword" class="sr-only">{{ t('auth.confirmPassword') }}</label>
                         <input id="confirmPassword" v-model="confirmPassword" name="confirmPassword" type="password"
-                            required class="input rounded-b-md" placeholder="Confirm password" />
+                            required class="input rounded-b-md" :placeholder="t('auth.confirmPassword')" />
                     </div>
+                </div>
+
+                <!-- Password requirements -->
+                <div class="text-sm text-gray-600">
+                    <p>{{ t('auth.passwordRequirements') }}</p>
+                    <ul class="mt-1 list-disc list-inside space-y-1">
+                        <li
+                            :class="{ 'text-green-600': password.length >= 8, 'text-red-600': password.length > 0 && password.length < 8 }">
+                            {{ t('auth.passwordMinLength') }}
+                        </li>
+                        <li
+                            :class="{ 'text-green-600': password === confirmPassword && password.length > 0, 'text-red-600': confirmPassword.length > 0 && password !== confirmPassword }">
+                            {{ t('auth.passwordsMatch') }}
+                        </li>
+                    </ul>
                 </div>
 
                 <div>
                     <button type="submit" class="btn-primary w-full" :disabled="loading || !isValid">
-                        {{ loading ? 'Resetting...' : 'Reset Password' }}
+                        {{ loading ? t('auth.resetting') : t('auth.resetPassword') }}
                     </button>
                 </div>
 
@@ -49,7 +66,9 @@
                     <div class="flex">
                         <div class="flex-shrink-0">
                             <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                    clip-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="ml-3">
@@ -62,8 +81,9 @@
             </form>
 
             <div class="text-sm text-center">
-                <router-link to="/login" class="font-medium bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-500">
-                    Back to login
+                <router-link to="/login"
+                    class="font-medium bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-500">
+                    {{ t('auth.backToLogin') }}
                 </router-link>
             </div>
         </div>
@@ -73,10 +93,13 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
+const { api } = useApi()
 
 const password = ref('')
 const confirmPassword = ref('')
@@ -91,25 +114,25 @@ const isValid = computed(() => {
 async function handleSubmit() {
     try {
         if (!isValid.value) {
-            error.value = 'Passwords must match and be at least 8 characters long'
+            error.value = t('auth.passwordValidationError')
             return
         }
 
         loading.value = true
         error.value = ''
 
-        await axios.post(`/api/users/reset-password/${route.params.token}`, {
+        await api.post(`/users/reset-password/${route.params.token}`, {
             password: password.value
         })
 
         success.value = true
-        
+
         // Redirect to login after 3 seconds
         setTimeout(() => {
             router.push('/login')
         }, 3000)
     } catch (err) {
-        error.value = err.response?.data?.message || 'Failed to reset password'
+        error.value = err.response?.data?.message || t('auth.resetPasswordFailed')
         success.value = false
     } finally {
         loading.value = false

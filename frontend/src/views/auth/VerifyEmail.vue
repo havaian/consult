@@ -3,7 +3,7 @@
         <div class="max-w-md w-full text-center">
             <div v-if="loading" class="flex flex-col items-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent"></div>
-                <p class="mt-4 text-gray-600">Verifying your email...</p>
+                <p class="mt-4 text-gray-600">{{ t('auth.verifyingEmail') }}</p>
             </div>
 
             <template v-else>
@@ -15,15 +15,15 @@
                     </div>
 
                     <h2 class="text-3xl font-extrabold text-gray-900">
-                        Email Verified!
+                        {{ t('auth.emailVerified') }}
                     </h2>
                     <p class="mt-2 text-sm text-gray-600">
-                        Your email has been verified successfully. You can now log in to your account.
+                        {{ t('auth.emailVerifiedDescription') }}
                     </p>
 
                     <div class="mt-8">
                         <router-link to="/login" class="btn-primary w-full justify-center">
-                            Go to Login
+                            {{ t('auth.goToLogin') }}
                         </router-link>
                     </div>
                 </div>
@@ -37,15 +37,18 @@
                     </div>
 
                     <h2 class="text-3xl font-extrabold text-gray-900">
-                        Verification Failed
+                        {{ t('auth.verificationFailed') }}
                     </h2>
                     <p class="mt-2 text-sm text-gray-600">
-                        {{ error || 'The verification link is invalid or has expired.' }}
+                        {{ error || t('auth.verificationFailedDescription') }}
                     </p>
 
-                    <div class="mt-8">
+                    <div class="mt-8 space-y-4">
                         <router-link to="/login" class="btn-primary w-full justify-center">
-                            Return to Login
+                            {{ t('auth.returnToLogin') }}
+                        </router-link>
+                        <router-link to="/forgot-password" class="btn-secondary w-full justify-center">
+                            {{ t('auth.resendVerification') }}
                         </router-link>
                     </div>
                 </div>
@@ -57,10 +60,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
+const { api } = useApi()
 
 const loading = ref(true)
 const success = ref(false)
@@ -69,10 +75,10 @@ const error = ref('')
 onMounted(async () => {
     try {
         const token = route.params.token
-        await axios.get(`/api/users/verify/${token}`)
+        await api.get(`/users/verify/${token}`)
         success.value = true
     } catch (err) {
-        error.value = err.response?.data?.message || 'Failed to verify email'
+        error.value = err.response?.data?.message || t('auth.emailVerificationFailed')
         success.value = false
     } finally {
         loading.value = false

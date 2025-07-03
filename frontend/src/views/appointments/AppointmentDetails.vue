@@ -3,7 +3,7 @@
         <div v-if="loading" class="text-center py-8">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent">
             </div>
-            <p class="mt-2 text-gray-600">Loading appointment details...</p>
+            <p class="mt-2 text-gray-600">{{ t('appointments.loadingDetails') }}</p>
         </div>
 
         <template v-else-if="appointment">
@@ -12,7 +12,7 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h1 class="text-2xl font-bold text-gray-900">
-                            Appointment Details
+                            {{ t('appointments.appointmentDetails') }}
                         </h1>
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" :class="{
                             'bg-green-100 text-green-800': appointment.status === 'completed',
@@ -30,7 +30,7 @@
                     <!-- Participants -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Advisor</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.advisor') }}</h3>
                             <div class="flex items-center space-x-4">
                                 <img :src="appointment.advisor.profilePicture || '/images/user-placeholder.jpg'"
                                     :alt="appointment.advisor.firstName" class="h-12 w-12 rounded-full object-cover" />
@@ -49,7 +49,7 @@
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Client</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.client') }}</h3>
                             <div class="flex items-center space-x-4">
                                 <img :src="appointment.client.profilePicture || '/images/user-placeholder.jpg'"
                                     :alt="appointment.client.firstName" class="h-12 w-12 rounded-full object-cover" />
@@ -58,7 +58,8 @@
                                         {{ appointment.client.firstName }} {{ appointment.client.lastName }}
                                     </p>
                                     <p class="text-sm text-gray-500">
-                                        Age: {{ calculateAge(appointment.client.dateOfBirth) }}
+                                        {{ t('user.age') }}: {{ calculateAge(appointment.client.dateOfBirth) }} {{
+                                        t('user.years') }}
                                     </p>
                                 </div>
                             </div>
@@ -68,27 +69,29 @@
                     <!-- Appointment Details -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Date & Time</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.dateTime') }}</h3>
                             <p class="text-gray-900">{{ formatDateTime(appointment.dateTime) }}</p>
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Consultation Type</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.consultationType') }}
+                            </h3>
                             <p class="text-gray-900">
-                                {{ appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1) }}
+                                {{ t(`appointments.types.${appointment.type}`) }}
                             </p>
                         </div>
                     </div>
 
                     <!-- Short Description -->
                     <div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Short Description</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.shortDescription') }}</h3>
                         <p class="text-gray-900">{{ appointment.shortDescription }}</p>
                     </div>
 
                     <!-- Consultation Summary (only for completed appointments) -->
                     <div v-if="appointment.status === 'completed' && appointment.consultationSummary">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Consultation Summary</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.consultationSummary') }}
+                        </h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <p class="text-gray-900 whitespace-pre-line">{{ appointment.consultationSummary }}</p>
                         </div>
@@ -97,79 +100,85 @@
                     <!-- Advices (only for completed appointments) -->
                     <div
                         v-if="appointment.status === 'completed' && appointment.advices && appointment.advices.length > 0">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Advices</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.advices') }}</h3>
                         <div class="space-y-4">
                             <div v-for="(advice, index) in appointment.advices" :key="index"
                                 class="bg-gray-50 p-4 rounded-lg">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <p class="text-sm font-medium text-gray-500">Action</p>
+                                        <p class="text-sm font-medium text-gray-500">{{ t('appointments.action') }}</p>
                                         <p class="text-gray-900">{{ advice.action }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-medium text-gray-500">Dosage</p>
+                                        <p class="text-sm font-medium text-gray-500">{{ t('appointments.dosage') }}</p>
                                         <p class="text-gray-900">{{ advice.dosage }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-medium text-gray-500">Frequency</p>
+                                        <p class="text-sm font-medium text-gray-500">{{ t('appointments.frequency') }}
+                                        </p>
                                         <p class="text-gray-900">{{ advice.frequency }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-medium text-gray-500">Duration</p>
+                                        <p class="text-sm font-medium text-gray-500">{{ t('appointments.duration') }}
+                                        </p>
                                         <p class="text-gray-900">{{ advice.duration }}</p>
                                     </div>
                                 </div>
                                 <div v-if="advice.instructions" class="mt-2">
-                                    <p class="text-sm font-medium text-gray-500">Instructions</p>
+                                    <p class="text-sm font-medium text-gray-500">{{ t('appointments.instructions') }}
+                                    </p>
                                     <p class="text-gray-900">{{ advice.instructions }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Follow-up Information (only for completed appointments with follow-up) -->
+                    <!-- Follow-up Information -->
                     <div
                         v-if="appointment.status === 'completed' && appointment.followUp && appointment.followUp.recommended">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Follow-up Recommendation</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.followUpRecommendation')
+                            }}</h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <p class="text-sm font-medium text-gray-500">Recommended Date</p>
+                                    <p class="text-sm font-medium text-gray-500">{{ t('appointments.recommendedDate') }}
+                                    </p>
                                     <p class="text-gray-900">{{ formatDate(appointment.followUp.date) }}</p>
                                 </div>
                                 <div v-if="appointment.followUp.notes">
-                                    <p class="text-sm font-medium text-gray-500">Notes</p>
+                                    <p class="text-sm font-medium text-gray-500">{{ t('appointments.notes') }}</p>
                                     <p class="text-gray-900">{{ appointment.followUp.notes }}</p>
                                 </div>
                             </div>
 
                             <div v-if="followUpAppointment" class="mt-4 p-3 bg-indigo-50 rounded-lg">
                                 <p class="text-sm font-medium text-indigo-800">
-                                    Follow-up appointment has been scheduled for
-                                    <span class="font-bold">{{ formatDateTime(followUpAppointment.dateTime) }}</span>
+                                    {{ t('appointments.followUpScheduled', {
+                                        dateTime:
+                                            formatDateTime(followUpAppointment.dateTime) }) }}
                                 </p>
                                 <div v-if="followUpAppointment.status === 'pending-payment'" class="mt-2">
                                     <button @click="proceedToPayment(followUpAppointment._id)"
                                         class="btn-primary text-sm">
-                                        Proceed to Payment
+                                        {{ t('appointments.proceedToPayment') }}
                                     </button>
                                 </div>
                             </div>
                             <div v-else-if="authStore.isClient && appointment.followUp.recommended" class="mt-4">
                                 <button @click="findFollowUpAppointment" class="btn-primary text-sm">
-                                    View Follow-up Details
+                                    {{ t('appointments.viewFollowUpDetails') }}
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Chat Log (if available) -->
+                    <!-- Chat Log -->
                     <div v-if="appointment.chatLog && appointment.chatLog.length > 0">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-medium text-gray-900">Chat History</h3>
+                            <h3 class="text-lg font-medium text-gray-900">{{ t('appointments.chatHistory') }}</h3>
                             <button @click="showChatLog = !showChatLog"
                                 class="text-sm bg-gradient-to-r from-royal-gold to-charcoal bg-clip-text text-transparent  hover:text-indigo-900">
-                                {{ showChatLog ? 'Hide Chat' : 'Show Chat' }}
+                                {{ showChatLog ? t('appointments.hideChat') : t('appointments.showChat') }}
                             </button>
                         </div>
                         <div v-if="showChatLog" class="bg-gray-50 p-4 rounded-lg max-h-64 overflow-y-auto">
@@ -185,29 +194,29 @@
                         </div>
                     </div>
 
-                    <!-- Payment Information for Pending-Payment Appointments -->
+                    <!-- Payment Information -->
                     <div v-if="appointment.status === 'pending-payment'">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Payment Information</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.paymentInformation') }}
+                        </h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <p class="text-gray-700">
-                                This appointment requires payment to be confirmed. Once payment is completed, your
-                                appointment will be scheduled.
+                                {{ t('appointments.paymentRequiredMessage') }}
                             </p>
                             <div class="mt-4">
-                                <p class="text-sm font-medium text-gray-500">Amount</p>
+                                <p class="text-sm font-medium text-gray-500">{{ t('appointments.amount') }}</p>
                                 <p class="text-gray-900">{{ formatCurrency(appointment.payment.amount) }} UZS</p>
                             </div>
                             <div class="mt-4">
                                 <button @click="proceedToPayment(appointment._id)" class="btn-primary">
-                                    Proceed to Payment
+                                    {{ t('appointments.proceedToPayment') }}
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Advisor-client chat -->
+                    <!-- Communication -->
                     <div class="mt-8" v-if="canStartChat">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Communication</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ t('appointments.communication') }}</h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <p class="text-gray-600 mb-4">
                                 {{ getChatButtonText }}
@@ -217,7 +226,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
-                                Start Chat
+                                {{ t('appointments.startChat') }}
                             </button>
                         </div>
                     </div>
@@ -226,52 +235,54 @@
                     <div class="flex justify-end space-x-4">
                         <button v-if="appointment.status === 'scheduled' && authStore.isClient"
                             class="btn-secondary text-red-600 hover:text-red-700" @click="cancelAppointment">
-                            Cancel Appointment
+                            {{ t('appointments.cancelAppointment') }}
                         </button>
                         <button v-if="appointment.status === 'scheduled' && isWithinJoinWindow" class="btn-primary"
                             @click="joinConsultation">
-                            {{ authStore.isAdvisor ? 'Start Consultation' : 'Join Consultation' }}
+                            {{ authStore.isAdvisor ? t('appointments.startConsultation') :
+                                t('appointments.joinConsultation') }}
                         </button>
-                        <div v-if="showFollowUpModal"
-                            class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-                            <div class="bg-white rounded-lg overflow-hidden shadow-xl max-w-md w-full mx-4">
-                                <div class="p-6">
-                                    <h3 class="text-lg font-medium text-gray-900 mb-4">Schedule Follow-up Appointment
-                                    </h3>
+                    </div>
 
-                                    <form @submit.prevent="createFollowUp">
-                                        <div class="space-y-4">
-                                            <div>
-                                                <label for="followUpDate"
-                                                    class="block text-sm font-medium text-gray-700">
-                                                    Follow-up Date
-                                                </label>
-                                                <input id="followUpDate" v-model="followUpDate" type="date"
-                                                    class="input mt-1" :min="minFollowUpDate" required />
-                                            </div>
+                    <!-- Follow-up Modal -->
+                    <div v-if="showFollowUpModal"
+                        class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                        <div class="bg-white rounded-lg overflow-hidden shadow-xl max-w-md w-full mx-4">
+                            <div class="p-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                                    {{ t('appointments.scheduleFollowUp') }}
+                                </h3>
 
-                                            <div>
-                                                <label for="followUpNotes"
-                                                    class="block text-sm font-medium text-gray-700">
-                                                    Notes
-                                                </label>
-                                                <textarea id="followUpNotes" v-model="followUpNotes" rows="3"
-                                                    class="input mt-1"
-                                                    placeholder="Add any notes about the follow-up appointment"></textarea>
-                                            </div>
+                                <form @submit.prevent="createFollowUp">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label for="followUpDate" class="block text-sm font-medium text-gray-700">
+                                                {{ t('appointments.followUpDate') }}
+                                            </label>
+                                            <input id="followUpDate" v-model="followUpDate" type="date"
+                                                class="input mt-1" :min="minFollowUpDate" required />
                                         </div>
 
-                                        <div class="mt-6 flex justify-end space-x-3">
-                                            <button type="button" class="btn-secondary"
-                                                @click="showFollowUpModal = false">
-                                                Cancel
-                                            </button>
-                                            <button type="submit" class="btn-primary" :disabled="submitting">
-                                                {{ submitting ? 'Scheduling...' : 'Schedule Follow-up' }}
-                                            </button>
+                                        <div>
+                                            <label for="followUpNotes" class="block text-sm font-medium text-gray-700">
+                                                {{ t('appointments.notes') }}
+                                            </label>
+                                            <textarea id="followUpNotes" v-model="followUpNotes" rows="3"
+                                                class="input mt-1"
+                                                :placeholder="t('appointments.followUpNotesPlaceholder')"></textarea>
                                         </div>
-                                    </form>
-                                </div>
+                                    </div>
+
+                                    <div class="mt-6 flex justify-end space-x-3">
+                                        <button type="button" class="btn-secondary" @click="showFollowUpModal = false">
+                                            {{ t('common.cancel') }}
+                                        </button>
+                                        <button type="submit" class="btn-primary" :disabled="submitting">
+                                            {{ submitting ? t('appointments.scheduling') :
+                                            t('appointments.scheduleFollowUp') }}
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -280,23 +291,26 @@
         </template>
 
         <div v-else class="text-center py-8">
-            <p class="text-gray-600">Appointment not found.</p>
+            <p class="text-gray-600">{{ t('appointments.appointmentNotFound') }}</p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { format, parseISO, differenceInYears, isWithinInterval, subMinutes, addMinutes } from 'date-fns'
+import { format, parseISO, differenceInYears, isWithinInterval, subMinutes, addMinutes, addDays } from 'date-fns'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { usePaymentStore } from '@/stores/payment'
-import axios from 'axios'
+import { useI18n } from '@/composables/useI18n'
+import { useApi } from '@/composables/useApi'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const paymentStore = usePaymentStore()
+const { t } = useI18n()
+const { api } = useApi()
 
 const appointment = ref(null)
 const followUpAppointment = ref(null)
@@ -317,7 +331,7 @@ const formatDateTime = (dateTime) => {
 }
 
 const formatDate = (date) => {
-    if (!date) return 'Not specified'
+    if (!date) return t('appointments.notSpecified')
     return format(parseISO(date), 'MMM d, yyyy')
 }
 
@@ -330,8 +344,15 @@ const formatCurrency = (amount) => {
 }
 
 const formatStatus = (status) => {
-    if (status === 'pending-payment') return 'Pending Payment'
-    return status.charAt(0).toUpperCase() + status.slice(1)
+    const statusMap = {
+        'pending-payment': 'appointments.pendingPayment',
+        'scheduled': 'appointments.scheduled',
+        'completed': 'appointments.completed',
+        'canceled': 'appointments.cancelled',
+        'no-show': 'appointments.noShow'
+    }
+
+    return statusMap[status] ? t(statusMap[status]) : status.charAt(0).toUpperCase() + status.slice(1)
 }
 
 const calculateAge = (dateOfBirth) => {
@@ -368,16 +389,15 @@ const getChatButtonText = computed(() => {
         `${appointment.value.client.firstName} ${appointment.value.client.lastName}` :
         `${appointment.value.advisor.firstName} ${appointment.value.advisor.lastName}`
 
-    return `Chat with ${otherParty} about this appointment`
+    return t('appointments.chatWithParty', { party: otherParty })
 })
 
 async function fetchAppointment() {
     try {
         loading.value = true
-        const response = await axios.get(`/api/appointments/${route.params.id}`)
+        const response = await api.get(`/appointments/${route.params.id}`)
         appointment.value = response.data.appointment
 
-        // If this appointment has a follow-up recommendation, try to find the follow-up appointment
         if (appointment.value.status === 'completed' &&
             appointment.value.followUp &&
             appointment.value.followUp.recommended) {
@@ -392,10 +412,7 @@ async function fetchAppointment() {
 
 async function findFollowUpAppointment() {
     try {
-        // Get client's pending-payment appointments
-        const response = await axios.get(`/api/appointments/client/${authStore.user._id}/pending-followups`)
-
-        // Find follow-up for this appointment
+        const response = await api.get(`/appointments/client/${authStore.user._id}/pending-followups`)
         const followUps = response.data.appointments || []
         const followUp = followUps.find(app =>
             app.shortDescription.includes(`Follow-up to appointment on`) &&
@@ -410,10 +427,10 @@ async function findFollowUpAppointment() {
 }
 
 async function cancelAppointment() {
-    if (!confirm('Are you sure you want to cancel this appointment?')) return
+    if (!confirm(t('appointments.cancelConfirm'))) return
 
     try {
-        await axios.patch(`/api/appointments/${appointment.value._id}/status`, {
+        await api.patch(`/appointments/${appointment.value._id}/status`, {
             status: 'canceled'
         })
         await fetchAppointment()
@@ -424,7 +441,7 @@ async function cancelAppointment() {
 
 async function joinConsultation() {
     try {
-        const response = await axios.get(`/api/consultations/${appointment.value._id}/join`)
+        const response = await api.get(`/consultations/${appointment.value._id}/join`)
         if (response.data.consultation) {
             router.push({
                 name: 'consultation-room',
@@ -433,11 +450,10 @@ async function joinConsultation() {
         }
     } catch (error) {
         console.error('Error joining consultation:', error)
-        // If consultation is not ready yet, show the time remaining
         if (error.response && error.response.data && error.response.data.startsInMinutes) {
-            alert(`This consultation will be available in ${error.response.data.startsInMinutes} minutes.`)
+            alert(t('appointments.consultationStartsIn', { minutes: error.response.data.startsInMinutes }))
         } else {
-            alert('Unable to join consultation at this time. Please try again later.')
+            alert(t('appointments.consultationJoinError'))
         }
     }
 }
@@ -445,10 +461,9 @@ async function joinConsultation() {
 async function proceedToPayment(appointmentId) {
     try {
         await paymentStore.createCheckoutSession(appointmentId)
-        // Redirect handled by payment store
     } catch (error) {
         console.error('Error creating payment session:', error)
-        alert('There was a problem processing your payment. Please try again.')
+        alert(t('appointments.paymentError'))
     }
 }
 
@@ -458,13 +473,11 @@ async function startChat() {
             appointment.value.client._id :
             appointment.value.advisor._id
 
-        // Create or get existing conversation
-        const response = await axios.post('/api/chat/conversations', {
+        const response = await api.post('/chat/conversations', {
             participantId,
             appointmentId: appointment.value._id
         })
 
-        // Navigate to chat
         router.push({
             name: 'chat-conversation',
             params: { id: response.data.conversation._id }
@@ -479,21 +492,18 @@ async function createFollowUp() {
 
     try {
         submitting.value = true
-        await axios.post(`/api/appointments/${route.params.id}/follow-up`, {
+        await api.post(`/appointments/${route.params.id}/follow-up`, {
             followUpDate: followUpDate.value,
             notes: followUpNotes.value
         })
 
-        // Close modal and reset form
         showFollowUpModal.value = false
         followUpDate.value = ''
         followUpNotes.value = ''
-
-        // Refresh appointment data
         await fetchAppointment()
     } catch (error) {
         console.error('Error creating follow-up:', error)
-        alert('Failed to schedule follow-up appointment. Please try again.')
+        alert(t('appointments.followUpError'))
     } finally {
         submitting.value = false
     }

@@ -6,7 +6,7 @@
                 <img :src="recipientAvatar" :alt="recipientName" class="h-10 w-10 rounded-full object-cover" />
                 <div class="ml-3">
                     <h3 class="text-lg font-medium text-gray-900">{{ recipientName }}</h3>
-                    <p v-if="recipientStatus" class="text-sm text-gray-500">{{ recipientStatus }}</p>
+                    <p v-if="recipientStatus" class="text-sm text-gray-500">{{ getStatusText(recipientStatus) }}</p>
                 </div>
             </div>
         </div>
@@ -17,7 +17,7 @@
                 :sender-name="recipientName" :sender-avatar="recipientAvatar" />
 
             <div v-if="isTyping" class="flex items-center space-x-2 text-gray-500">
-                <span>{{ recipientName }} is typing</span>
+                <span>{{ t('chat.typing', { user: recipientName }) }}</span>
                 <div class="flex space-x-1">
                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
@@ -35,8 +35,11 @@
 
 <script setup>
 import { ref, onMounted, watch, nextTick } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import ChatMessage from './ChatMessage.vue'
 import ChatInput from './ChatInput.vue'
+
+const { t } = useI18n()
 
 const props = defineProps({
     messages: {
@@ -84,6 +87,26 @@ function scrollToBottom() {
 
 function handleMessageSubmit(message) {
     emit('submit', message)
+}
+
+function getStatusText(status) {
+    // Map common status values to translation keys
+    const statusMap = {
+        'online': 'chat.online',
+        'offline': 'chat.offline',
+        'away': 'chat.away',
+        'busy': 'chat.busy',
+        'last_seen': 'chat.lastSeen'
+    }
+
+    // If status starts with "last_seen:", extract the time
+    if (status.startsWith('last_seen:')) {
+        const time = status.replace('last_seen:', '').trim()
+        return t('chat.lastSeen', { time })
+    }
+
+    // Return translated status or fallback to original
+    return statusMap[status] ? t(statusMap[status]) : status
 }
 
 watch(() => props.messages.length, () => {
