@@ -55,7 +55,6 @@ app.use('/api', authenticateUser, authenticatedLocalizationMiddleware);
 // Import route files
 const userRoutes = require('./src/user/routes');
 const appointmentRoutes = require('./src/appointment/routes');
-const telegramRoutes = require('./src/bot/routes');
 const paymentRoutes = require('./src/payment/routes');
 const consultationRoutes = require('./src/consultation/routes');
 const adminRoutes = require('./src/admin/routes');
@@ -65,7 +64,6 @@ const chatRoutes = require('./src/chat/routes');
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/appointments', appointmentRoutes);
-app.use('/api/telegram', telegramRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/admin', adminRoutes);

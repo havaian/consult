@@ -70,27 +70,27 @@ exports.sendConsultationCompletedNotification = async (appointment) => {
 
         // Send Telegram notification if user has linked account
         if (client.telegramId) {
-            const { telegramBot } = require('../bot/index');
-            if (telegramBot) {
-                await telegramBot.telegram.sendMessage(
-                    client.telegramId,
-                    getLocalizedMessage('notifications.consultationCompleted.client.telegram', clientLocale, {
-                        advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
-                    })
-                );
-            }
+            // const { telegramBot } = require('../bot/index');
+            // if (telegramBot) {
+            //     await telegramBot.telegram.sendMessage(
+            //         client.telegramId,
+            //         getLocalizedMessage('notifications.consultationCompleted.client.telegram', clientLocale, {
+            //             advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
+            //         })
+            //     );
+            // }
         }
 
         if (advisor.telegramId) {
-            const { telegramBot } = require('../bot/index');
-            if (telegramBot) {
-                await telegramBot.telegram.sendMessage(
-                    advisor.telegramId,
-                    getLocalizedMessage('notifications.consultationCompleted.advisor.telegram', advisorLocale, {
-                        clientName: `${client.firstName} ${client.lastName}`
-                    })
-                );
-            }
+            // const { telegramBot } = require('../bot/index');
+            // if (telegramBot) {
+            //     await telegramBot.telegram.sendMessage(
+            //         advisor.telegramId,
+            //         getLocalizedMessage('notifications.consultationCompleted.advisor.telegram', advisorLocale, {
+            //             clientName: `${client.firstName} ${client.lastName}`
+            //         })
+            //     );
+            // }
         }
     } catch (error) {
         console.error('Error sending consultation completed notification:', error);

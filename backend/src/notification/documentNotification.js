@@ -67,17 +67,17 @@ exports.sendDocumentUploadNotification = async (appointment, document, recipient
 
         // Send Telegram notification if user has linked account
         if (typeof recipient === 'object' && recipient.telegramId) {
-            const { telegramBot } = require('../bot/index');
-            if (telegramBot) {
-                await telegramBot.telegram.sendMessage(
-                    recipient.telegramId,
-                    getLocalizedMessage('notifications.documentUpload.telegram', recipientLocale, {
-                        uploaderName,
-                        documentName: document.name,
-                        appointmentDate: new Date(appointment.dateTime).toLocaleDateString()
-                    })
-                );
-            }
+            // const { telegramBot } = require('../bot/index');
+            // if (telegramBot) {
+            //     await telegramBot.telegram.sendMessage(
+            //         recipient.telegramId,
+            //         getLocalizedMessage('notifications.documentUpload.telegram', recipientLocale, {
+            //             uploaderName,
+            //             documentName: document.name,
+            //             appointmentDate: new Date(appointment.dateTime).toLocaleDateString()
+            //         })
+            //     );
+            // }
         }
 
     } catch (error) {

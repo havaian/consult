@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const amqp = require('amqplib');
-const { telegramBot } = require('../bot');
+// const { telegramBot } = require('../bot');
 const consultationNotification = require('./consultationNotification');
 const emailService = require('./emailService');
 const { getLocalizedMessage } = require('../localization');
@@ -270,10 +270,10 @@ class NotificationService {
     queueTelegramMessage(telegramData) {
         if (!this.rabbitChannel) {
             console.error('RabbitMQ channel not available for Telegram notifications');
-            // Fallback to direct send
-            this.sendTelegramMessage(telegramData.chatId, telegramData.text, telegramData.options).catch(err => {
-                console.error('Error in fallback Telegram send:', err);
-            });
+            // // Fallback to direct send
+            // this.sendTelegramMessage(telegramData.chatId, telegramData.text, telegramData.options).catch(err => {
+            //     console.error('Error in fallback Telegram send:', err);
+            // });
             return;
         }
 
@@ -286,32 +286,32 @@ class NotificationService {
         } catch (error) {
             console.error('Error queuing Telegram message:', error);
             // Fallback to direct send
-            this.sendTelegramMessage(telegramData.chatId, telegramData.text, telegramData.options).catch(err => {
-                console.error('Error in fallback Telegram send:', err);
-            });
-        }
+            // this.sendTelegramMessage(telegramData.chatId, telegramData.text, telegramData.options).catch(err => {
+            //     console.error('Error in fallback Telegram send:', err);
+            // });
+        }   
     }
 
-    /**
-     * Send a Telegram message directly
-     * @param {String} chatId Telegram chat ID
-     * @param {String} text Message text
-     * @param {Object} options Additional options
-     */
-    async sendTelegramMessage(chatId, text, options = {}) {
-        try {
-            if (!telegramBot) {
-                console.error('Telegram bot not initialized');
-                return;
-            }
+    // /**
+    //  * Send a Telegram message directly
+    //  * @param {String} chatId Telegram chat ID
+    //  * @param {String} text Message text
+    //  * @param {Object} options Additional options
+    //  */
+    // async sendTelegramMessage(chatId, text, options = {}) {
+    //     try {
+    //         if (!telegramBot) {
+    //             console.error('Telegram bot not initialized');
+    //             return;
+    //         }
 
-            const result = await telegramBot.telegram.sendMessage(chatId, text, options);
-            return result;
-        } catch (error) {
-            console.error('Error sending Telegram message:', error);
-            throw error;
-        }
-    }
+    //         const result = await telegramBot.telegram.sendMessage(chatId, text, options);
+    //         return result;
+    //     } catch (error) {
+    //         console.error('Error sending Telegram message:', error);
+    //         throw error;
+    //     }
+    // }
 
     /**
      * Send verification email
