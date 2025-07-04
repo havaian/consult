@@ -1,28 +1,14 @@
 # frontend/Dockerfile.prod
-FROM node:20-alpine as localization-builder
-
-# Build localization package
-WORKDIR /localization
-COPY localization/package*.json ./
-RUN npm ci --only=production
-COPY localization/ ./
-RUN npm pack
-
-# Frontend build stage
 FROM node:20-alpine as build
 
 WORKDIR /app
 
-# Copy and install localization package first
-COPY --from=localization-builder /localization/*.tgz ./
-RUN npm install *.tgz
-
-# Install frontend dependencies
-COPY frontend/package*.json ./
+# Install dependencies
+COPY package*.json ./
 RUN npm ci
 
-# Copy frontend source
-COPY frontend/ ./
+# Copy app source
+COPY . .
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -37,7 +23,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 80
