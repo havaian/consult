@@ -178,6 +178,21 @@ const router = createRouter({
         hideFooter: true
       }
     },
+    {
+      path: '/reviews/advisor/:advisorId',
+      name: 'advisor-reviews',
+      component: () => import('@/views/reviews/AdvisorReviews.vue'),
+      props: true
+    },
+    {
+      path: '/reviews/my-reviews',
+      name: 'my-reviews',
+      component: () => import('@/views/reviews/MyReviews.vue'),
+      meta: {
+        requiresAuth: true,
+        requiresClient: true
+      }
+    },
     // Error routes
     {
       path: '/:pathMatch(.*)*',

@@ -130,7 +130,7 @@ exports.validateUserInput = (data) => {
                 year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required()
             })
         ).optional(),
-        
+
         certifications: Joi.array().items(
             Joi.object({
                 name: Joi.string().trim().required(),
@@ -138,7 +138,7 @@ exports.validateUserInput = (data) => {
                 year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required()
             })
         ).optional(),
-        
+
         availability: Joi.array().items(
             Joi.object({
                 dayOfWeek: Joi.number().integer().min(0).max(6).required(),
@@ -378,6 +378,83 @@ exports.validateFollowUpInput = (data) => {
                 'date.base': 'Please provide a valid follow-up date',
                 'date.greater': 'Follow-up date must be in the future',
                 'any.required': 'Follow-up date is required'
+            })
+    });
+
+    return schema.validate(data, { abortEarly: false });
+};
+
+/**
+ * Validate review input
+ * @param {Object} data Review data for validation
+ * @returns {Object} Validation result
+ */
+exports.validateReviewInput = (data) => {
+    const schema = Joi.object({
+        appointmentId: Joi.string().required()
+            .messages({
+                'string.empty': 'Appointment ID is required',
+                'any.required': 'Appointment ID is required'
+            }),
+
+        rating: Joi.number().integer().min(1).max(5).required()
+            .messages({
+                'number.base': 'Rating must be a number',
+                'number.integer': 'Rating must be an integer',
+                'number.min': 'Rating must be between 1 and 5',
+                'number.max': 'Rating must be between 1 and 5',
+                'any.required': 'Rating is required'
+            }),
+
+        comment: Joi.string().trim().min(10).max(1000).required()
+            .messages({
+                'string.empty': 'Review comment is required',
+                'string.min': 'Review comment must be at least 10 characters long',
+                'string.max': 'Review comment cannot exceed 1000 characters',
+                'any.required': 'Review comment is required'
+            }),
+
+        communicationRating: Joi.number().integer().min(1).max(5).optional()
+            .messages({
+                'number.base': 'Communication rating must be a number',
+                'number.integer': 'Communication rating must be an integer',
+                'number.min': 'Communication rating must be between 1 and 5',
+                'number.max': 'Communication rating must be between 1 and 5'
+            }),
+
+        professionalismRating: Joi.number().integer().min(1).max(5).optional()
+            .messages({
+                'number.base': 'Professionalism rating must be a number',
+                'number.integer': 'Professionalism rating must be an integer',
+                'number.min': 'Professionalism rating must be between 1 and 5',
+                'number.max': 'Professionalism rating must be between 1 and 5'
+            }),
+
+        satisfactionRating: Joi.number().integer().min(1).max(5).optional()
+            .messages({
+                'number.base': 'Satisfaction rating must be a number',
+                'number.integer': 'Satisfaction rating must be an integer',
+                'number.min': 'Satisfaction rating must be between 1 and 5',
+                'number.max': 'Satisfaction rating must be between 1 and 5'
+            })
+    });
+
+    return schema.validate(data, { abortEarly: false });
+};
+
+/**
+ * Validate advisor response input
+ * @param {Object} data Response data for validation
+ * @returns {Object} Validation result
+ */
+exports.validateAdvisorResponseInput = (data) => {
+    const schema = Joi.object({
+        response: Joi.string().trim().min(10).max(500).required()
+            .messages({
+                'string.empty': 'Response is required',
+                'string.min': 'Response must be at least 10 characters long',
+                'string.max': 'Response cannot exceed 500 characters',
+                'any.required': 'Response is required'
             })
     });
 
