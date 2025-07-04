@@ -65,8 +65,8 @@ services:
   # Backend API service
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend/Dockerfile
     container_name: ${PROJECT_NAME}-backend
     restart: always
     depends_on:
@@ -94,7 +94,7 @@ services:
     ports:
       - "${BACKEND_EXPOSE}:${BACKEND_PORT}"
     volumes:
-      - ./localization/locales:/usr/src/app/locales:ro
+      - ./localization/locales:/app/locales:ro
     networks:
       - consult_net
     healthcheck:
