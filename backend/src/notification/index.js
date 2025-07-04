@@ -12,7 +12,7 @@ const { getLocalizedMessage } = require('../localization');
 class NotificationService {
     constructor() {
         // Initialize email transporter
-        this.emailTransporter = nodemailer.createTransporter({
+        this.emailTransporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: process.env.SMTP_PORT,
             secure: process.env.SMTP_SECURE === 'true',
