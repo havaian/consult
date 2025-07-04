@@ -1,6 +1,15 @@
-const Localization = require('@econsult/localization');
+// backend/src/localization/index.js
+const i18n = require('i18n');
 
-const i18n = new Localization();
+// Configure i18n
+i18n.configure({
+    locales: ['en', 'ru', 'uz'],
+    directory: __dirname + '/../../locales', // Points to mounted locales directory
+    defaultLocale: 'en',
+    objectNotation: true,
+    updateFiles: false, // Don't update files in production
+    syncFiles: false
+});
 
 // Middleware to detect user language
 const detectLanguage = (req, res, next) => {
@@ -16,9 +25,13 @@ const detectLanguage = (req, res, next) => {
     const validLocale = supportedLocales.includes(locale) ? locale : 'en';
 
     req.locale = validLocale;
+    
+    // Set locale for this request
+    i18n.setLocale(req, validLocale);
+    
+    // Add translation function to request
     req.t = (key, params = {}) => {
-        i18n.setLocale(validLocale);
-        return i18n.t(key, params);
+        return i18n.__(key, params);
     };
 
     next();
@@ -26,8 +39,10 @@ const detectLanguage = (req, res, next) => {
 
 // Function to get localized messages (useful for API responses)
 const getLocalizedMessage = (key, locale = 'en', params = {}) => {
-    i18n.setLocale(locale);
-    return i18n.t(key, params);
+    // Create a temporary object to set locale
+    const tempReq = {};
+    i18n.setLocale(tempReq, locale);
+    return i18n.__(tempReq, key, params);
 };
 
 module.exports = {

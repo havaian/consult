@@ -1,13 +1,21 @@
-// File: frontend/src/plugins/i18n.js
-import Localization from '@econsult/localization';
+// frontend/src/plugins/i18n.js
+import { createI18n } from 'vue-i18n'
 
-const i18n = new Localization();
+// Import your locale files directly
+import en from '../locales/en.json'
+import ru from '../locales/ru.json'
+import uz from '../locales/uz.json'
 
-// Set default locale based on browser or saved preference
-const savedLocale = localStorage.getItem('locale') ||
-    navigator.language.split('-')[0] ||
-    'en';
+const messages = {
+  en,
+  ru,
+  uz
+}
 
-i18n.setLocale(savedLocale);
+const i18n = createI18n({
+  locale: 'en', // set default locale
+  fallbackLocale: 'en',
+  messages,
+})
 
-export default i18n;
+export default i18n

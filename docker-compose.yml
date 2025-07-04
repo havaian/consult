@@ -65,8 +65,8 @@ services:
   # Backend API service
   backend:
     build:
-      context: . # Build context is now the root directory
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: ${PROJECT_NAME}-backend
     restart: always
     depends_on:
@@ -95,6 +95,8 @@ services:
       - "${BACKEND_EXPOSE}:${BACKEND_PORT}"
     volumes:
       - backend_logs:/usr/src/app/logs
+      # Mount localization files directly
+      - ./localization/locales:/usr/src/app/locales:ro
     networks:
       - consult_net
     healthcheck:
@@ -107,7 +109,7 @@ services:
   # Frontend service (production)
   frontend-prod:
     build:
-      context: . # Build context is now the root directory
+      context: .
       dockerfile: frontend/Dockerfile.prod
     container_name: ${PROJECT_NAME}-frontend
     restart: always
