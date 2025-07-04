@@ -11,6 +11,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@econsult/localization": "file:../localization",
     "@headlessui/vue": "^1.7.19",
     "@heroicons/vue": "^2.1.1",
     "@stripe/stripe-js": "^2.4.0",
