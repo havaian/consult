@@ -52,11 +52,25 @@ app.use('/api', limiter);
 // Enhanced localization for authenticated routes
 app.use('/api', authenticateUser, authenticatedLocalizationMiddleware);
 
+// Import route files
+const userRoutes = require('./src/user/routes');
+const appointmentRoutes = require('./src/appointment/routes');
+const telegramRoutes = require('./src/bot/routes');
+const paymentRoutes = require('./src/payment/routes');
+const consultationRoutes = require('./src/consultation/routes');
+const adminRoutes = require('./src/admin/routes');
+const specializationRoutes = require('./src/specializations/routes');
+const chatRoutes = require('./src/chat/routes');
+
 // Routes
-app.use('/api/users', require('./src/user/routes'));
-app.use('/api/appointments', require('./src/appointment/routes'));
-app.use('/api/chat', require('./src/chat/routes'));
-app.use('/api/admin', require('./src/admin/routes'));
+app.use('/api/users', userRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/telegram', telegramRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/consultations', consultationRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/specializations', specializationRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Health check endpoint with localization
 app.get('/api/health', (req, res) => {
