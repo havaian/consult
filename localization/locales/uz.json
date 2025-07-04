@@ -19,7 +19,10 @@
     "open": "Ochish",
     "submit": "Yuborish",
     "reset": "Qayta o'rnatish",
-    "processing": "Qayta ishlanmoqda..."
+    "processing": "Qayta ishlanmoqda...",
+    "remove": "Olib tashlash",
+    "error": "Xatolik",
+    "success": "Muvaffaqiyat"
   },
   "advisors": {
     "searchByName": "Ism bo'yicha qidirish",
@@ -139,7 +142,25 @@
     "preferNotToSay": "Aytishni istamayman",
     "creatingAccount": "Hisob yaratilmoqda...",
     "alreadyHaveAccount": "Hisobingiz bormi?",
-    "registrationFailed": "Hisob yaratib bo'lmadi"
+    "registrationFailed": "Hisob yaratib bo'lmadi",
+    "resetPasswordTitle": "Parolni tiklash",
+    "resetPasswordDescription": "Iltimos, yangi parolni kiriting.",
+    "passwordResetSuccessful": "Parol muvaffaqiyatli tiklandi! Endi yangi parol bilan kirishingiz mumkin.",
+    "newPassword": "Yangi parol",
+    "passwordRequirements": "Parol talablari:",
+    "passwordMinLength": "Kamida 8 ta belgi",
+    "passwordsMatch": "Parollar mos kelishi kerak",
+    "resetting": "Tiklanmoqda...",
+    "passwordValidationError": "Parollar mos kelishi va kamida 8 ta belgidan iborat bo'lishi kerak",
+    "resetPasswordFailed": "Parolni tiklash muvaffaqiyatsiz",
+    "verifyingEmail": "Emailingiz tekshirilmoqda...",
+    "emailVerified": "Email tasdiqlandi!",
+    "emailVerifiedDescription": "Emailingiz muvaffaqiyatli tasdiqlandi. Endi hisobingizga kirishingiz mumkin.",
+    "goToLogin": "Kirishga o'tish",
+    "verificationFailed": "Tasdiqlash muvaffaqiyatsiz",
+    "verificationFailedDescription": "Tasdiqlash havolasi noto'g'ri yoki muddati tugagan.",
+    "resendVerification": "Qayta yuborish",
+    "emailVerificationFailed": "Emailni tasdiqlash muvaffaqiyatsiz"
   },
   "specializations": {
     "corporatelaw": "Korporativ huquq",
@@ -161,25 +182,7 @@
     "laborlaw": "Mehnat qonunlari",
     "mediationarbitration": "Vositachilik va arbitraj",
     "internationallaw": "Xalqaro huquq",
-    "humanrights": "Inson huquqlari",
-    "resetPasswordTitle": "Parolni tiklash",
-    "resetPasswordDescription": "Iltimos, yangi parolni kiriting.",
-    "passwordResetSuccessful": "Parol muvaffaqiyatli tiklandi! Endi yangi parol bilan kirishingiz mumkin.",
-    "newPassword": "Yangi parol",
-    "passwordRequirements": "Parol talablari:",
-    "passwordMinLength": "Kamida 8 ta belgi",
-    "passwordsMatch": "Parollar mos kelishi kerak",
-    "resetting": "Tiklanmoqda...",
-    "passwordValidationError": "Parollar mos kelishi va kamida 8 ta belgidan iborat bo'lishi kerak",
-    "resetPasswordFailed": "Parolni tiklash muvaffaqiyatsiz",
-    "verifyingEmail": "Emailingiz tekshirilmoqda...",
-    "emailVerified": "Email tasdiqlandi!",
-    "emailVerifiedDescription": "Emailingiz muvaffaqiyatli tasdiqlandi. Endi hisobingizga kirishingiz mumkin.",
-    "goToLogin": "Kirishga o'tish",
-    "verificationFailed": "Tasdiqlash muvaffaqiyatsiz",
-    "verificationFailedDescription": "Tasdiqlash havolasi noto'g'ri yoki muddati tugagan.",
-    "resendVerification": "Qayta yuborish",
-    "emailVerificationFailed": "Emailni tasdiqlash muvaffaqiyatsiz"
+    "humanrights": "Inson huquqlari"
   },
   "user": {
     "profile": "Profil",
@@ -237,14 +240,6 @@
         "high": "YUQORI",
         "medium": "O'RTA",
         "low": "PAST"
-      },
-      "types": {
-        "online": "Onlayn",
-        "phone": "Telefon orqali",
-        "inPerson": "Yuzma-yuz",
-        "video": "Video konsultatsiya",
-        "audio": "Audio konsultatsiya",
-        "chat": "Chat konsultatsiya"
       },
       "modal": {
         "rejectTitle": "Uchrashuvni rad etish",
@@ -309,9 +304,11 @@
     "low": "PAST",
     "types": {
       "online": "Onlayn",
-      "phone": "Telefon",
-      "inPerson": "Shaxsan",
-      "video": "Video qo'ng'iroq"
+      "phone": "Telefon orqali",
+      "inPerson": "Yuzma-yuz",
+      "video": "Video konsultatsiya",
+      "audio": "Audio konsultatsiya",
+      "chat": "Chat konsultatsiya"
     },
     "mySchedule": "Mening jadvalim",
     "scheduledAppointments": "Rejalashtirilgan uchrashuvlar",

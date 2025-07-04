@@ -19,7 +19,10 @@
     "open": "Открыть",
     "submit": "Отправить",
     "reset": "Сбросить",
-    "processing": "Обработка..."
+    "processing": "Обработка...",
+    "remove": "Olib tashlash",
+    "error": "Xatolik",
+    "success": "Muvaffaqiyat"
   },
   "advisors": {
     "searchByName": "Поиск по имени",
@@ -139,7 +142,25 @@
     "preferNotToSay": "Предпочитаю не указывать",
     "creatingAccount": "Создание аккаунта...",
     "alreadyHaveAccount": "Уже есть аккаунт?",
-    "registrationFailed": "Не удалось создать аккаунт"
+    "registrationFailed": "Не удалось создать аккаунт",
+    "resetPasswordTitle": "Сбросить пароль",
+    "resetPasswordDescription": "Пожалуйста, введите новый пароль.",
+    "passwordResetSuccessful": "Пароль успешно сброшен! Теперь вы можете войти с новым паролем.",
+    "newPassword": "Новый пароль",
+    "passwordRequirements": "Требования к паролю:",
+    "passwordMinLength": "Минимум 8 символов",
+    "passwordsMatch": "Пароли должны совпадать",
+    "resetting": "Сброс...",
+    "passwordValidationError": "Пароли должны совпадать и содержать не менее 8 символов",
+    "resetPasswordFailed": "Не удалось сбросить пароль",
+    "verifyingEmail": "Проверка вашего email...",
+    "emailVerified": "Email подтвержден!",
+    "emailVerifiedDescription": "Ваш email был успешно подтвержден. Теперь вы можете войти в свой аккаунт.",
+    "goToLogin": "Перейти к входу",
+    "verificationFailed": "Проверка не удалась",
+    "verificationFailedDescription": "Ссылка для подтверждения недействительна или истекла.",
+    "resendVerification": "Отправить повторно",
+    "emailVerificationFailed": "Не удалось подтвердить email"
   },
   "specializations": {
     "corporatelaw": "Корпоративное право",
@@ -161,25 +182,7 @@
     "laborlaw": "Трудовое законодательство",
     "mediationarbitration": "Медиация и арбитраж",
     "internationallaw": "Международное право",
-    "humanrights": "Права человека",
-    "resetPasswordTitle": "Сбросить пароль",
-    "resetPasswordDescription": "Пожалуйста, введите новый пароль.",
-    "passwordResetSuccessful": "Пароль успешно сброшен! Теперь вы можете войти с новым паролем.",
-    "newPassword": "Новый пароль",
-    "passwordRequirements": "Требования к паролю:",
-    "passwordMinLength": "Минимум 8 символов",
-    "passwordsMatch": "Пароли должны совпадать",
-    "resetting": "Сброс...",
-    "passwordValidationError": "Пароли должны совпадать и содержать не менее 8 символов",
-    "resetPasswordFailed": "Не удалось сбросить пароль",
-    "verifyingEmail": "Проверка вашего email...",
-    "emailVerified": "Email подтвержден!",
-    "emailVerifiedDescription": "Ваш email был успешно подтвержден. Теперь вы можете войти в свой аккаунт.",
-    "goToLogin": "Перейти к входу",
-    "verificationFailed": "Проверка не удалась",
-    "verificationFailedDescription": "Ссылка для подтверждения недействительна или истекла.",
-    "resendVerification": "Отправить повторно",
-    "emailVerificationFailed": "Не удалось подтвердить email"
+    "humanrights": "Права человека"
   },
   "user": {
     "profile": "Профиль",
@@ -233,18 +236,10 @@
       "unknown": "Неизвестно",
       "urgency": {
         "unknown": "Неизвестно",
-        "urgent": "СРОЧНО",
+        "urgent": "СРОЧНО", 
         "high": "ВЫСОКИЙ",
         "medium": "СРЕДНИЙ",
         "low": "НИЗКИЙ"
-      },
-      "types": {
-        "online": "Олнайн",
-        "phone": "По телефону",
-        "inPerson": "Личная встреча",
-        "video": "Видео консультация",
-        "audio": "Аудио консультация",
-        "chat": "Чат консультация"
       },
       "modal": {
         "rejectTitle": "Отклонить встречу",
@@ -308,10 +303,12 @@
     "medium": "СРЕДНИЙ",
     "low": "НИЗКИЙ",
     "types": {
-      "online": "Онлайн",
-      "phone": "Телефон",
-      "inPerson": "Лично",
-      "video": "Видеозвонок"
+      "online": "Олнайн",
+      "phone": "По телефону",
+      "inPerson": "Личная встреча",
+      "video": "Видео консультация",
+      "audio": "Аудио консультация",
+      "chat": "Чат консультация"
     },
     "mySchedule": "Мое расписание",
     "scheduledAppointments": "Запланированные встречи",
@@ -591,6 +588,15 @@
         "thanks": "Спасибо за вашу преданность заботе о клиентах.",
         "telegram": "Ваша консультация с {{clientName}} завершена. Пожалуйста, заполните резюме консультации."
       }
+    },
+    "documentUpload": {
+      "subject": "Новый документ загружен - E-Consult",
+      "title": "Новый документ загружен",
+      "text": "{{uploaderName}} загрузил новый документ для вашей встречи, запланированной на {{appointmentDate}}.\nНазвание документа: {{documentName}}\nПожалуйста, войдите в свой аккаунт, чтобы просмотреть документ.",
+      "body": "{{uploaderName}} загрузил новый документ для вашей встречи, запланированной на {{appointmentDate}}.",
+      "documentName": "Название документа",
+      "action": "Пожалуйста, войдите в свой аккаунт, чтобы просмотреть документ.",
+      "telegram": "{{uploaderName}} загрузил новый документ ({{documentName}}) для вашей встречи {{appointmentDate}}."
     },
     "appointmentConfirmation": {
       "telegram": "✅ Ваша встреча с {{advisorName}} подтверждена на {{dateTime}}."

@@ -558,6 +558,9 @@
     "offline": "System is currently offline"
   },
   "notifications": {
+    "appointmentReminder": "Appointment reminder: {{title}} in {{time}}",
+    "appointmentConfirmed": "Your appointment has been confirmed",
+    "appointmentCancelled": "Your appointment has been cancelled",
     "messageReceived": "New message from {{sender}}",
     "paymentReceived": "Payment of {{amount}} received",
     "documentShared": "New document shared: {{filename}}",
