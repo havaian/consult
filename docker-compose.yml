@@ -125,7 +125,7 @@ services:
     ports:
       - "${FRONTEND_EXPOSE}:80"
     volumes:
-      - ./localization/locales:/app/src/plugins/locales:ro
+      - ./localization/locales:/app/src/localization/locales:ro
     networks:
       - consult_net
     healthcheck:

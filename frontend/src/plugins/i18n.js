@@ -2,9 +2,9 @@
 import { createI18n } from 'vue-i18n'
 
 // Import your locale files directly
-import en from '../locales/en.json'
-import ru from '../locales/ru.json'
-import uz from '../locales/uz.json'
+import en from '@/localization/locales/en.json'
+import ru from '@/localization/locales/ru.json'
+import uz from '@/localization/locales/uz.json'
 
 const messages = {
   en,

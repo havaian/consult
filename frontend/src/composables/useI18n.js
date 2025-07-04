@@ -1,7 +1,7 @@
 // frontend/src/composables/useI18n.js
 
 import { ref, computed } from 'vue';
-import i18n from '../plugins/i18n';
+import i18n from '@/plugins/i18n';
 
 const currentLocale = ref(i18n.getCurrentLocale());
 
