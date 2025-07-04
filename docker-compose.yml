@@ -109,8 +109,8 @@ services:
   # Frontend service (production)
   frontend-prod:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile.prod
+      context: ./frontend
+      dockerfile: Dockerfile.prod
     container_name: ${PROJECT_NAME}-frontend
     restart: always
     depends_on:
