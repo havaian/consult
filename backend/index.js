@@ -69,45 +69,6 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Localization info endpoint
-app.get('/api/localization/info', (req, res) => {
-    res.json({
-        currentLocale: req.locale,
-        supportedLocales: req.availableLocales,
-        defaultLocale: process.env.DEFAULT_LOCALE || 'en',
-        fallbackLocale: process.env.LOCALIZATION_FALLBACK || 'en'
-    });
-});
-
-// Endpoint to get translations for frontend
-app.get('/api/localization/translations/:locale?', (req, res) => {
-    const locale = req.params.locale || req.locale;
-    const supportedLocales = req.availableLocales;
-
-    if (!supportedLocales.includes(locale)) {
-        return res.status(400).json({
-            message: req.t('errors.invalidLanguage'),
-            supportedLocales
-        });
-    }
-
-    try {
-        const { i18n } = require('./src/localization');
-        const translations = i18n.getTranslations(locale);
-
-        res.json({
-            locale,
-            translations,
-            timestamp: new Date().toISOString()
-        });
-    } catch (error) {
-        console.error('Error getting translations:', error);
-        res.status(500).json({
-            message: req.t('errors.serverError')
-        });
-    }
-});
-
 // Enhanced error handling middleware with localization
 app.use(localizedErrorHandler);
 
