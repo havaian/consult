@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const { format } = require('date-fns');
+const { getLocalizedMessage } = require('../localization');
 
 // Format currency amount
 const formatCurrency = (amount) => {
@@ -13,7 +14,7 @@ const formatDateTime = (date) => {
 
 class EmailService {
     constructor() {
-        this.transporter = nodemailer.createTransport({
+        this.transporter = nodemailer.createTransporter({
             host: process.env.SMTP_HOST,
             port: process.env.SMTP_PORT,
             secure: process.env.SMTP_SECURE === 'true',
@@ -48,26 +49,32 @@ class EmailService {
         try {
             const { advisor, client, dateTime, type, payment } = appointment;
 
+            // Get locales
+            const clientLocale = client.preferredLanguage || 'en';
+            const advisorLocale = advisor.preferredLanguage || 'en';
+
             // Email to client
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Confirmation - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentBooked.client.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
-                    <p>Your appointment with Dr. ${advisor.firstName} ${advisor.lastName} has been successfully booked.</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.appointmentBooked.client.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentBooked.client.body', clientLocale, {
+                    advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
+                })}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Specialization:</strong> ${advisor.specializations.join(', ')}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
-                        ${payment && payment.amount ? `<p><strong>Amount Paid:</strong> ${formatCurrency(payment.amount)}</p>` : ''}
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.specialization', clientLocale)}:</strong> ${advisor.specializations.join(', ')}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
+                        ${payment && payment.amount ? `<p><strong>${getLocalizedMessage('emails.appointmentDetails.amountPaid', clientLocale)}:</strong> ${formatCurrency(payment.amount)}</p>` : ''}
                     </div>
                     
-                    <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
-                    <p>You can view your appointment details and join the consultation by logging into your e-consult.uz account.</p>
+                    <p>${getLocalizedMessage('emails.appointmentBooked.client.joinReminder', clientLocale)}</p>
+                    <p>${getLocalizedMessage('emails.appointmentBooked.client.loginInfo', clientLocale)}</p>
                 </div>
                 `
             });
@@ -75,20 +82,20 @@ class EmailService {
             // Email to advisor
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'New Appointment Scheduled - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentBooked.advisor.subject', advisorLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">New Appointment</h2>
-                    <p>A new appointment has been scheduled.</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.appointmentBooked.advisor.title', advisorLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentBooked.advisor.body', advisorLocale)}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', advisorLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.client', advisorLocale)}:</strong> ${client.firstName} ${client.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', advisorLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', advisorLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, advisorLocale)}</p>
                     </div>
                     
-                    <p>Please log in to your e-consult.uz account to view the complete appointment details.</p>
+                    <p>${getLocalizedMessage('emails.appointmentBooked.advisor.loginInfo', advisorLocale)}</p>
                 </div>
                 `
             });
@@ -105,24 +112,25 @@ class EmailService {
     async sendAppointmentBookingFailed(data) {
         try {
             const { client, advisor, dateTime, type, error } = data;
+            const clientLocale = client.preferredLanguage || 'en';
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Booking Failed - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentBookingFailed.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #e74c3c;">Appointment Booking Failed</h2>
-                    <p>Unfortunately, we couldn't complete your appointment booking.</p>
+                    <h2 style="color: #e74c3c;">${getLocalizedMessage('emails.appointmentBookingFailed.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentBookingFailed.body', clientLocale)}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
-                        <p><strong>Reason:</strong> ${error}</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(` .${type}`, clientLocale)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.reason', clientLocale)}:</strong> ${error}</p>
                     </div>
                     
-                    <p>Please try booking again or contact our support if you need assistance.</p>
+                    <p>${getLocalizedMessage('emails.appointmentBookingFailed.action', clientLocale)}</p>
                 </div>
                 `
             });
@@ -140,23 +148,26 @@ class EmailService {
         try {
             const { advisor, client, dateTime, type } = appointment;
 
+            const clientLocale = client.preferredLanguage || 'en';
+            const advisorLocale = advisor.preferredLanguage || 'en';
+
             // Email to client
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Reminder - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentReminder.client.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Appointment Reminder</h2>
-                    <p>This is a reminder about your upcoming appointment tomorrow.</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.appointmentReminder.client.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentReminder.client.body', clientLocale)}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
                     </div>
                     
-                    <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
+                    <p>${getLocalizedMessage('emails.appointmentReminder.joinReminder', clientLocale)}</p>
                 </div>
                 `
             });
@@ -164,20 +175,20 @@ class EmailService {
             // Email to advisor
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'Appointment Reminder - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentReminder.advisor.subject', advisorLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Appointment Reminder</h2>
-                    <p>This is a reminder about your upcoming appointment tomorrow.</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.appointmentReminder.advisor.title', advisorLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentReminder.advisor.body', advisorLocale)}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', advisorLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.client', advisorLocale)}:</strong> ${client.firstName} ${client.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', advisorLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', advisorLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, advisorLocale)}</p>
                     </div>
                     
-                    <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
+                    <p>${getLocalizedMessage('emails.appointmentReminder.joinReminder', advisorLocale)}</p>
                 </div>
                 `
             });
@@ -195,23 +206,26 @@ class EmailService {
         try {
             const { advisor, client, dateTime, type } = appointment;
 
+            const clientLocale = client.preferredLanguage || 'en';
+            const advisorLocale = advisor.preferredLanguage || 'en';
+
             // Email to client
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Cancelled - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentCancelled.client.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #e74c3c;">Appointment Cancelled</h2>
-                    <p>The following appointment has been cancelled by ${cancelledBy}.</p>
+                    <h2 style="color: #e74c3c;">${getLocalizedMessage('emails.appointmentCancelled.client.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentCancelled.client.body', clientLocale, { cancelledBy })}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
                     </div>
                     
-                    <p>You can schedule a new appointment through our website.</p>
+                    <p>${getLocalizedMessage('emails.appointmentCancelled.client.action', clientLocale)}</p>
                 </div>
                 `
             });
@@ -219,20 +233,20 @@ class EmailService {
             // Email to advisor
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'Appointment Cancelled - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentCancelled.advisor.subject', advisorLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #e74c3c;">Appointment Cancelled</h2>
-                    <p>The following appointment has been cancelled by ${cancelledBy}.</p>
+                    <h2 style="color: #e74c3c;">${getLocalizedMessage('emails.appointmentCancelled.advisor.title', advisorLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentCancelled.advisor.body', advisorLocale, { cancelledBy })}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', advisorLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.client', advisorLocale)}:</strong> ${client.firstName} ${client.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', advisorLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', advisorLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, advisorLocale)}</p>
                     </div>
                     
-                    <p>The time slot is now available for other appointments.</p>
+                    <p>${getLocalizedMessage('emails.appointmentCancelled.advisor.action', advisorLocale)}</p>
                 </div>
                 `
             });
@@ -250,23 +264,28 @@ class EmailService {
         try {
             const { advisor, client, dateTime, type } = appointment;
 
+            const clientLocale = client.preferredLanguage || 'en';
+            const advisorLocale = advisor.preferredLanguage || 'en';
+
             // Email to client
             await this.sendEmail({
                 to: client.email,
-                subject: 'Appointment Confirmed by Advisor - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentConfirmed.client.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Appointment Confirmed by Advisor</h2>
-                    <p>Your appointment has been confirmed by Dr. ${advisor.firstName} ${advisor.lastName}.</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.appointmentConfirmed.client.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentConfirmed.client.body', clientLocale, {
+                    advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
+                })}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
                     </div>
                     
-                    <p>Your appointment is now fully scheduled. You'll receive a reminder before the appointment time.</p>
+                    <p>${getLocalizedMessage('emails.appointmentConfirmed.client.reminder', clientLocale)}</p>
                 </div>
                 `
             });
@@ -274,20 +293,22 @@ class EmailService {
             // Email confirmation to advisor
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'Appointment Confirmation Successful - e-consult.uz',
+                subject: getLocalizedMessage('emails.appointmentConfirmed.advisor.subject', advisorLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
-                    <p>You have successfully confirmed the appointment with ${client.firstName} ${client.lastName}.</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.appointmentConfirmed.advisor.title', advisorLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.appointmentConfirmed.advisor.body', advisorLocale, {
+                    clientName: `${client.firstName} ${client.lastName}`
+                })}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', advisorLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.client', advisorLocale)}:</strong> ${client.firstName} ${client.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', advisorLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', advisorLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, advisorLocale)}</p>
                     </div>
                     
-                    <p>The appointment is now scheduled in your calendar. You'll receive a reminder before the appointment time.</p>
+                    <p>${getLocalizedMessage('emails.appointmentConfirmed.advisor.reminder', advisorLocale)}</p>
                 </div>
                 `
             });
@@ -304,24 +325,25 @@ class EmailService {
     async sendPaymentSuccessEmail(paymentId, appointment) {
         try {
             const { client, advisor, dateTime, type } = appointment;
+            const clientLocale = client.preferredLanguage || 'en';
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Payment Successful - e-consult.uz',
+                subject: getLocalizedMessage('emails.paymentSuccess.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Payment Successful</h2>
-                    <p>Your payment for the appointment has been processed successfully.</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.paymentSuccess.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.paymentSuccess.body', clientLocale)}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
-                        <p><strong>Payment ID:</strong> ${paymentId}</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.paymentId', clientLocale)}:</strong> ${paymentId}</p>
                     </div>
                     
-                    <p>Your appointment is now awaiting advisor confirmation. You'll receive a notification once confirmed.</p>
+                    <p>${getLocalizedMessage('emails.paymentSuccess.nextStep', clientLocale)}</p>
                 </div>
                 `
             });
@@ -344,7 +366,7 @@ class EmailService {
                     path: 'appointment',
                     populate: {
                         path: 'client advisor',
-                        select: 'firstName lastName email specializations'
+                        select: 'firstName lastName email specializations preferredLanguage'
                     }
                 });
 
@@ -353,26 +375,27 @@ class EmailService {
             }
 
             const { client, advisor, dateTime, type } = payment.appointment;
+            const clientLocale = client.preferredLanguage || 'en';
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Payment Confirmation - e-consult.uz',
+                subject: getLocalizedMessage('emails.paymentConfirmation.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Payment Confirmation</h2>
-                    <p>This is a confirmation of your payment for the following appointment:</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.paymentConfirmation.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.paymentConfirmation.body', clientLocale)}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Payment Details</h3>
-                        <p><strong>Payment ID:</strong> ${payment._id}</p>
-                        <p><strong>Amount:</strong> ${formatCurrency(payment.amount)}</p>
-                        <p><strong>Status:</strong> ${payment.status}</p>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.paymentDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.paymentDetails.paymentId', clientLocale)}:</strong> ${payment._id}</p>
+                        <p><strong>${getLocalizedMessage('emails.paymentDetails.amount', clientLocale)}:</strong> ${formatCurrency(payment.amount)}</p>
+                        <p><strong>${getLocalizedMessage('emails.paymentDetails.status', clientLocale)}:</strong> ${getLocalizedMessage(`payments.statuses.${payment.status}`, clientLocale)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
                     </div>
                     
-                    <p>Thank you for your payment. Your appointment is now confirmed.</p>
+                    <p>${getLocalizedMessage('emails.paymentConfirmation.thanks', clientLocale)}</p>
                 </div>
                 `
             });
@@ -392,31 +415,32 @@ class EmailService {
                 path: 'appointment',
                 populate: {
                     path: 'client advisor',
-                    select: 'firstName lastName email specializations'
+                    select: 'firstName lastName email specializations preferredLanguage'
                 }
             });
 
             const { client, advisor, dateTime, type } = payment.appointment;
+            const clientLocale = client.preferredLanguage || 'en';
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'Payment Refund - e-consult.uz',
+                subject: getLocalizedMessage('emails.paymentRefund.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Payment Refund</h2>
-                    <p>Your payment has been refunded for the following cancelled appointment:</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.paymentRefund.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.paymentRefund.body', clientLocale)}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Refund Details</h3>
-                        <p><strong>Payment ID:</strong> ${payment._id}</p>
-                        <p><strong>Amount:</strong> ${formatCurrency(payment.amount)}</p>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.refundDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.paymentDetails.paymentId', clientLocale)}:</strong> ${payment._id}</p>
+                        <p><strong>${getLocalizedMessage('emails.paymentDetails.amount', clientLocale)}:</strong> ${formatCurrency(payment.amount)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
                     </div>
                     
-                    <p>The refund will be processed according to your payment method's standard processing times.</p>
-                    <p>If you have any questions about this refund, please contact our support team.</p>
+                    <p>${getLocalizedMessage('emails.paymentRefund.processingInfo', clientLocale)}</p>
+                    <p>${getLocalizedMessage('emails.paymentRefund.support', clientLocale)}</p>
                 </div>
                 `
             });
@@ -435,35 +459,38 @@ class EmailService {
             await appointment.populate('client advisor');
 
             const { client, advisor, advices } = appointment;
+            const clientLocale = client.preferredLanguage || 'en';
 
             // Format advices for email
             let advicesHtml = '';
             advices.forEach((advice, index) => {
                 advicesHtml += `
                 <div style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px;">
-                    <p><strong>Action:</strong> ${advice.action}</p>
-                    <p><strong>Dosage:</strong> ${advice.dosage}</p>
-                    <p><strong>Frequency:</strong> ${advice.frequency}</p>
-                    <p><strong>Duration:</strong> ${advice.duration}</p>
-                    ${advice.instructions ? `<p><strong>Instructions:</strong> ${advice.instructions}</p>` : ''}
+                    <p><strong>${getLocalizedMessage('emails.adviceDetails.action', clientLocale)}:</strong> ${advice.action}</p>
+                    <p><strong>${getLocalizedMessage('emails.adviceDetails.dosage', clientLocale)}:</strong> ${advice.dosage}</p>
+                    <p><strong>${getLocalizedMessage('emails.adviceDetails.frequency', clientLocale)}:</strong> ${advice.frequency}</p>
+                    <p><strong>${getLocalizedMessage('emails.adviceDetails.duration', clientLocale)}:</strong> ${advice.duration}</p>
+                    ${advice.instructions ? `<p><strong>${getLocalizedMessage('emails.adviceDetails.instructions', clientLocale)}:</strong> ${advice.instructions}</p>` : ''}
                 </div>
                 `;
             });
 
             await this.sendEmail({
                 to: client.email,
-                subject: 'New Advices from Your Advisor - e-consult.uz',
+                subject: getLocalizedMessage('emails.adviceNotification.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">New Advices</h2>
-                    <p>Dr. ${advisor.firstName} ${advisor.lastName} has prescribed the following action(s) after your consultation:</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.adviceNotification.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.adviceNotification.body', clientLocale, {
+                    advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
+                })}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                         ${advicesHtml}
                     </div>
                     
-                    <p>You can view these advices at any time by logging into your e-consult.uz account.</p>
-                    <p><strong>Note:</strong> Always follow your advisor's instructions when taking actions.</p>
+                    <p>${getLocalizedMessage('emails.adviceNotification.viewOnline', clientLocale)}</p>
+                    <p><strong>${getLocalizedMessage('emails.adviceNotification.warning', clientLocale)}</strong></p>
                 </div>
                 `
             });
@@ -483,44 +510,51 @@ class EmailService {
 
             const { client, advisor, dateTime, type, shortDescription } = followUpAppointment;
 
+            const clientLocale = client.preferredLanguage || 'en';
+            const advisorLocale = advisor.preferredLanguage || 'en';
+
             await this.sendEmail({
                 to: client.email,
-                subject: 'Follow-up Appointment Recommended - e-consult.uz',
+                subject: getLocalizedMessage('emails.followUpNotification.client.subject', clientLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Follow-up Appointment</h2>
-                    <p>Dr. ${advisor.firstName} ${advisor.lastName} has recommended a follow-up appointment:</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.followUpNotification.client.title', clientLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.followUpNotification.client.body', clientLocale, {
+                    advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
+                })}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
-                        <p><strong>Reason:</strong> ${shortDescription}</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.reason', clientLocale)}:</strong> ${shortDescription}</p>
                     </div>
                     
-                    <p>This appointment requires payment confirmation. Please log in to your e-consult.uz account to confirm and complete payment for this follow-up appointment.</p>
+                    <p>${getLocalizedMessage('emails.followUpNotification.client.paymentRequired', clientLocale)}</p>
                 </div>
                 `
             });
 
             await this.sendEmail({
                 to: advisor.email,
-                subject: 'Follow-up Appointment Created - e-consult.uz',
+                subject: getLocalizedMessage('emails.followUpNotification.advisor.subject', advisorLocale),
                 html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #4a90e2;">Follow-up Appointment Created</h2>
-                    <p>You have successfully created a follow-up appointment for ${client.firstName} ${client.lastName}:</p>
+                    <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.followUpNotification.advisor.title', advisorLocale)}</h2>
+                    <p>${getLocalizedMessage('emails.followUpNotification.advisor.body', advisorLocale, {
+                    clientName: `${client.firstName} ${client.lastName}`
+                })}</p>
                     
                     <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                        <h3 style="margin-top: 0;">Appointment Details</h3>
-                        <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
-                        <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
-                        <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
-                        <p><strong>Reason:</strong> ${shortDescription}</p>
+                        <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', advisorLocale)}</h3>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.client', advisorLocale)}:</strong> ${client.firstName} ${client.lastName}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', advisorLocale)}:</strong> ${formatDateTime(dateTime)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', advisorLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, advisorLocale)}</p>
+                        <p><strong>${getLocalizedMessage('emails.appointmentDetails.reason', advisorLocale)}:</strong> ${shortDescription}</p>
                     </div>
                     
-                    <p>The client has been notified and needs to confirm the appointment by completing payment.</p>
+                    <p>${getLocalizedMessage('emails.followUpNotification.advisor.clientNotified', advisorLocale)}</p>
                 </div>
                 `
             });

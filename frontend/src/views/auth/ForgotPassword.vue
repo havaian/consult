@@ -77,7 +77,7 @@ async function handleSubmit() {
         loading.value = true
         error.value = ''
 
-        await api.post('/users/forgot-password', { email: email.value })
+        await api.post('/users/forgot-password', { email: emails.value })
         success.value = true
     } catch (err) {
         error.value = err.response?.data?.message || t('auth.forgotPasswordFailed')

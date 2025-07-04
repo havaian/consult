@@ -1,115 +1,190 @@
-// File: backend/src/middleware/localization.js
-const { detectLanguage } = require('../localization');
+const { i18n, getLocalizedMessage } = require('../localization');
 
-module.exports = detectLanguage;
+/**
+ * Enhanced localization middleware for comprehensive user interaction handling
+ */
+const localizationMiddleware = (req, res, next) => {
+    // Priority order for language detection:
+    // 1. Custom header (x-app-language)
+    // 2. URL parameter (lang)
+    // 3. Accept-Language header
+    // 4. User preference from database (req.user.preferredLanguage)
+    // 5. Default fallback
 
-// File: backend/src/user/controller.js (Updated with localization)
-const User = require('./model');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { getLocalizedMessage } = require('../localization');
+    const headerLang = req.headers['x-app-language'];
+    const queryLang = req.query.lang;
+    const acceptLang = req.headers['accept-language']?.split(',')[0]?.split('-')[0];
+    const userLang = req.user?.preferredLanguage;
+    const defaultLang = process.env.DEFAULT_LOCALE || 'en';
 
-const userController = {
-    async loginUser(req, res) {
+    // Determine locale with priority
+    let locale = headerLang || queryLang || acceptLang || userLang || defaultLang;
+
+    // Validate against supported locales
+    const supportedLocales = (process.env.SUPPORTED_LOCALES || 'en,ru,uz').split(',');
+    const validLocale = supportedLocales.includes(locale) ? locale : defaultLang;
+
+    // Set locale on request object
+    req.locale = validLocale;
+
+    // Create translation function bound to the request
+    req.t = (key, params = {}) => {
         try {
-            const { email, password } = req.body;
-            const locale = req.locale || 'en';
-
-            // Validate input
-            if (!email || !password) {
-                return res.status(400).json({
-                    message: req.t('errors.validation'),
-                    field: 'email_password'
-                });
-            }
-
-            // Find user
-            const user = await User.findOne({ email });
-            if (!user) {
-                return res.status(401).json({
-                    message: req.t('auth.invalidCredentials')
-                });
-            }
-
-            // Check password
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return res.status(401).json({
-                    message: req.t('auth.invalidCredentials')
-                });
-            }
-
-            // Generate JWT
-            const token = jwt.sign(
-                { userId: user._id, role: user.role },
-                process.env.JWT_SECRET,
-                { expiresIn: process.env.JWT_EXPIRES_IN }
-            );
-
-            res.json({
-                message: req.t('auth.loginSuccess'),
-                token,
-                user: {
-                    id: user._id,
-                    email: user.email,
-                    role: user.role,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    preferredLanguage: user.preferredLanguage || locale
-                }
-            });
+            i18n.setLocale(validLocale);
+            return i18n.t(key, params);
         } catch (error) {
-            console.error('Registration error:', error);
-            res.status(500).json({
-                message: req.t('errors.serverError')
-            });
+            console.error(`Translation error for key "${key}":`, error);
+            return key; // Return the key as fallback
         }
-    },
+    };
 
-    async updateUserProfile(req, res) {
-        try {
-            const userId = req.user.id;
-            const updates = req.body;
+    // Add utility function for getting localized messages with different locales
+    req.getLocalizedMessage = (key, locale = validLocale, params = {}) => {
+        return getLocalizedMessage(key, locale, params);
+    };
 
-            // Update user's preferred language if provided
-            if (updates.preferredLanguage) {
-                const { i18n } = require('../localization');
-                if (!i18n.hasLocale(updates.preferredLanguage)) {
-                    return res.status(400).json({
-                        message: req.t('errors.invalidLanguage')
-                    });
+    // Add available locales to request
+    req.availableLocales = supportedLocales;
+
+    // Store original res.json to wrap it
+    const originalJson = res.json;
+
+    // Override res.json to automatically localize common response patterns
+    res.json = function (data) {
+        // If data has a 'message' property and it's a translation key, translate it
+        if (data && typeof data === 'object' && data.message && typeof data.message === 'string') {
+            // Check if message looks like a translation key (contains dots)
+            if (data.message.includes('.')) {
+                try {
+                    const translatedMessage = req.t(data.message);
+                    if (translatedMessage !== data.message) {
+                        data.message = translatedMessage;
+                    }
+                } catch (error) {
+                    console.warn(`Could not translate message: ${data.message}`);
                 }
             }
-
-            const user = await User.findByIdAndUpdate(
-                userId,
-                updates,
-                { new: true, runValidators: true }
-            );
-
-            if (!user) {
-                return res.status(404).json({
-                    message: req.t('errors.notFound')
-                });
-            }
-
-            res.json({
-                message: req.t('success.updated'),
-                user: {
-                    id: user._id,
-                    email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    preferredLanguage: user.preferredLanguage
-                }
-            });
-        } catch (error) {
-            console.error('Update profile error:', error);
-            res.status(500).json({
-                message: req.t('errors.serverError')
-            });
         }
+
+        // Call original json method
+        return originalJson.call(this, data);
+    };
+
+    // Log language selection for debugging (only in development)
+    if (process.env.NODE_ENV === 'development') {
+        console.log(`Request language: ${validLocale} (User: ${req.user?.email || 'Anonymous'})`);
     }
+
+    next();
 };
 
-module.exports = userController;
+/**
+ * Middleware specifically for API routes that require user authentication
+ * This should be used after authentication middleware
+ */
+const authenticatedLocalizationMiddleware = (req, res, next) => {
+    if (req.user && req.user.preferredLanguage) {
+        const supportedLocales = (process.env.SUPPORTED_LOCALES || 'en,ru,uz').split(',');
+
+        if (supportedLocales.includes(req.user.preferredLanguage)) {
+            req.locale = req.user.preferredLanguage;
+
+            // Update the translation function
+            req.t = (key, params = {}) => {
+                try {
+                    i18n.setLocale(req.user.preferredLanguage);
+                    return i18n.t(key, params);
+                } catch (error) {
+                    console.error(`Translation error for key "${key}":`, error);
+                    return key;
+                }
+            };
+        }
+    }
+
+    next();
+};
+
+/**
+ * Utility function to create localized validation errors
+ */
+const createValidationError = (req, field, errorType, params = {}) => {
+    const key = `validation.${field}.${errorType}`;
+    return {
+        field,
+        message: req.t(key, params),
+        code: errorType
+    };
+};
+
+/**
+ * Utility function to create localized API responses
+ */
+const createLocalizedResponse = (req, messageKey, data = null, params = {}) => {
+    const response = {
+        message: req.t(messageKey, params),
+        locale: req.locale,
+        timestamp: new Date().toISOString()
+    };
+
+    if (data !== null) {
+        response.data = data;
+    }
+
+    return response;
+};
+
+/**
+ * Error handler that localizes error messages
+ */
+const localizedErrorHandler = (error, req, res, next) => {
+    let statusCode = 500;
+    let messageKey = 'errors.serverError';
+    let details = null;
+
+    // Handle specific error types
+    if (error.name === 'ValidationError') {
+        statusCode = 400;
+        messageKey = 'errors.validationError';
+        details = Object.keys(error.errors).map(field =>
+            createValidationError(req, field, 'invalid', { value: error.errors[field].value })
+        );
+    } else if (error.name === 'CastError') {
+        statusCode = 400;
+        messageKey = 'errors.invalidId';
+    } else if (error.code === 11000) {
+        statusCode = 409;
+        messageKey = 'errors.duplicateEntry';
+        const field = Object.keys(error.keyValue)[0];
+        details = { field, value: error.keyValue[field] };
+    } else if (error.name === 'JsonWebTokenError') {
+        statusCode = 401;
+        messageKey = 'errors.invalidToken';
+    } else if (error.name === 'TokenExpiredError') {
+        statusCode = 401;
+        messageKey = 'errors.tokenExpired';
+    }
+
+    // Log error for debugging
+    console.error('Localized error:', {
+        error: error.message,
+        stack: error.stack,
+        user: req.user?.email || 'Anonymous',
+        locale: req.locale,
+        url: req.url,
+        method: req.method
+    });
+
+    const response = createLocalizedResponse(req, messageKey);
+    if (details) response.details = details;
+
+    res.status(statusCode).json(response);
+};
+
+module.exports = {
+    localizationMiddleware,
+    authenticatedLocalizationMiddleware,
+    createValidationError,
+    createLocalizedResponse,
+    localizedErrorHandler
+};

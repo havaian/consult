@@ -1,3 +1,5 @@
+const { getLocalizedMessage } = require('../localization');
+
 /**
  * Send notification when a document is uploaded
  * @param {Object} appointment - Appointment object
@@ -15,7 +17,7 @@ exports.sendDocumentUploadNotification = async (appointment, document, recipient
         const uploader = document.uploadedBy === 'advisor' ? appointment.advisor : appointment.client;
 
         // Make sure we have the populated objects
-        let uploaderName, recipientEmail;
+        let uploaderName, recipientEmail, recipientLocale;
 
         if (typeof uploader === 'object') {
             uploaderName = document.uploadedBy === 'advisor' ?
@@ -32,26 +34,33 @@ exports.sendDocumentUploadNotification = async (appointment, document, recipient
 
         if (typeof recipient === 'object' && recipient.email) {
             recipientEmail = recipient.email;
+            recipientLocale = recipient.preferredLanguage || 'en';
         } else {
             // Fetch user data if not populated
             const User = require('../user/model');
             const recipientUser = await User.findById(recipient);
             recipientEmail = recipientUser.email;
+            recipientLocale = recipientUser.preferredLanguage || 'en';
         }
 
         // Send email notification
         await emailService.sendEmail({
             to: recipientEmail,
-            subject: 'New Document Uploaded - E-Consult',
-            text: `${uploaderName} has uploaded a new document for your appointment scheduled on ${new Date(appointment.dateTime).toLocaleDateString()}.
-            Document name: ${document.name}
-            Please log in to your account to view the document.`,
+            subject: getLocalizedMessage('notifications.documentUpload.subject', recipientLocale),
+            text: getLocalizedMessage('notifications.documentUpload.text', recipientLocale, {
+                uploaderName,
+                appointmentDate: new Date(appointment.dateTime).toLocaleDateString(),
+                documentName: document.name
+            }),
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #4a90e2;">New Document Uploaded</h2>
-              <p>${uploaderName} has uploaded a new document for your appointment scheduled on ${new Date(appointment.dateTime).toLocaleDateString()}.</p>
-              <p><strong>Document name:</strong> ${document.name}</p>
-              <p>Please log in to your account to view the document.</p>
+              <h2 style="color: #4a90e2;">${getLocalizedMessage('notifications.documentUpload.title', recipientLocale)}</h2>
+              <p>${getLocalizedMessage('notifications.documentUpload.body', recipientLocale, {
+                uploaderName,
+                appointmentDate: new Date(appointment.dateTime).toLocaleDateString()
+            })}</p>
+              <p><strong>${getLocalizedMessage('notifications.documentUpload.documentName', recipientLocale)}:</strong> ${document.name}</p>
+              <p>${getLocalizedMessage('notifications.documentUpload.action', recipientLocale)}</p>
             </div>
             `
         });
@@ -62,7 +71,11 @@ exports.sendDocumentUploadNotification = async (appointment, document, recipient
             if (telegramBot) {
                 await telegramBot.telegram.sendMessage(
                     recipient.telegramId,
-                    `${uploaderName} has uploaded a new document (${document.name}) for your appointment on ${new Date(appointment.dateTime).toLocaleDateString()}.`
+                    getLocalizedMessage('notifications.documentUpload.telegram', recipientLocale, {
+                        uploaderName,
+                        documentName: document.name,
+                        appointmentDate: new Date(appointment.dateTime).toLocaleDateString()
+                    })
                 );
             }
         }

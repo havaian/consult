@@ -1,5 +1,6 @@
 {
   "common": {
+    "dear": "Hurmatli",
     "loading": "Yuklanmoqda...",
     "save": "Saqlash",
     "cancel": "Bekor qilish",
@@ -237,6 +238,14 @@
         "medium": "O'RTA",
         "low": "PAST"
       },
+      "types": {
+        "online": "Onlayn",
+        "phone": "Telefon orqali",
+        "inPerson": "Yuzma-yuz",
+        "video": "Video konsultatsiya",
+        "audio": "Audio konsultatsiya",
+        "chat": "Chat konsultatsiya"
+      },
       "modal": {
         "rejectTitle": "Uchrashuvni rad etish",
         "rejectDescription": "Ushbu uchrashuvni rad etishni xohlaysizmi? Bu harakatni bekor qilib bo'lmaydi va mijoz xabardor qilinadi.",
@@ -425,6 +434,14 @@
       "goHome": "Bosh sahifaga o'tish"
     }
   },
+  "payments": {
+    "statuses": {
+      "succeeded": "Muvaffaqiyatli",
+      "pending": "Kutilmoqda",
+      "failed": "Muvaffaqiyatsiz",
+      "refunded": "Qaytarildi"
+    }
+  },
   "chat": {
     "inbox": {
       "title": "Xabarlar",
@@ -454,37 +471,141 @@
       "noToken": "Autentifikatsiya xatosi. Iltimos, qayta kiring."
     }
   },
-  "notifications": {
-    "newAppointment": "Yangi uchrashuvga yozilish",
-    "appointmentCancelled": "Uchrashv bekor qilindi",
-    "appointmentConfirmed": "Uchrashv tasdiqlandi",
-    "newMessage": "{{user}}dan yangi xabar",
-    "paymentSuccessful": "To'lov muvaffaqiyatli",
-    "paymentFailed": "To'lov muvaffaqiyatsiz",
-    "systemMaintenance": "Tizim texnik xizmat ko'rsatish rejalashtirilgan"
-  },
   "errors": {
-    "general": "Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
-    "network": "Tarmoq xatosi. Ulanishingizni tekshiring.",
-    "validation": "Iltimos, barcha majburiy maydonlarni to'ldiring.",
-    "unauthorized": "Sizda bu amalni bajarish uchun ruxsat yo'q.",
-    "forbidden": "Kirish rad etildi.",
-    "notFound": "Resurs topilmadi.",
-    "serverError": "Server xatosi. Keyinroq qayta urinib ko'ring.",
-    "sessionExpired": "Sessiyangiz tugadi. Iltimos, qayta kiring.",
-    "tooManyRequests": "Juda ko'p so'rovlar. Keyinroq qayta urinib ko'ring.",
+    "serverError": "Ichki server xatosi yuz berdi",
+    "notFound": "Resurs topilmadi",
+    "unauthorized": "Ruxsatsiz kirish",
+    "forbidden": "Kirish taqiqlangan",
+    "validationError": "Tekshirish xatosi",
+    "invalidId": "Noto'g'ri ID formati",
+    "duplicateEntry": "Yozuv allaqachon mavjud",
+    "invalidToken": "Yaroqsiz autentifikatsiya tokeni",
+    "tokenExpired": "Autentifikatsiya tokenining muddati tugagan",
+    "invalidCredentials": "Noto'g'ri email yoki parol",
+    "accountNotVerified": "Iltimos, email manzilingizni tasdiqlang",
+    "accountDeactivated": "Hisob o'chirilgan",
+    "emailAlreadyExists": "Email manzili allaqachon mavjud",
+    "phoneAlreadyExists": "Telefon raqami allaqachon mavjud",
     "invalidLanguage": "Noto'g'ri til tanlangan",
-    "failedToLoad": "Ma'lumotlarni yuklash muvaffaqiyatsiz. Sahifani yangilang."
+    "tooManyRequests": "Juda ko'p so'rovlar. Keyinroq urinib ko'ring",
+    "fileUploadError": "Fayl yuklashda xatolik",
+    "fileTooLarge": "Fayl hajmi juda katta",
+    "invalidFileType": "Noto'g'ri fayl turi",
+    "emailSendError": "Email yuborishda xatolik",
+    "paymentError": "To'lov qayta ishlashda xatolik",
+    "appointmentConflict": "Uchrashuv vaqti to'qnashuvi",
+    "slotNotAvailable": "Vaqt oralig'i mavjud emas",
+    "pastDateError": "O'tmishda uchrashuv belgilab bo'lmaydi",
+    "permissionDenied": "Ruxsat rad etildi",
+    "resourceLocked": "Resurs hozirda bloklangan",
+    "serviceUnavailable": "Xizmat vaqtincha mavjud emas"
   },
   "success": {
-    "saved": "O'zgarishlar muvaffaqiyatli saqlandi",
-    "deleted": "Muvaffaqiyatli o'chirildi",
-    "updated": "Muvaffaqiyatli yangilandi",
     "created": "Muvaffaqiyatli yaratildi",
-    "sent": "Muvaffaqiyatli yuborildi"
+    "updated": "Muvaffaqiyatli yangilandi",
+    "deleted": "Muvaffaqiyatli o'chirildi",
+    "saved": "Muvaffaqiyatli saqlandi",
+    "sent": "Muvaffaqiyatli yuborildi",
+    "registered": "Ro'yxatdan o'tish muvaffaqiyatli",
+    "loginSuccess": "Kirish muvaffaqiyatli",
+    "logoutSuccess": "Chiqish muvaffaqiyatli",
+    "passwordChanged": "Parol muvaffaqiyatli o'zgartirildi",
+    "emailVerified": "Email muvaffaqiyatli tasdiqlandi",
+    "profileUpdated": "Profil muvaffaqiyatli yangilandi",
+    "appointmentBooked": "Uchrashuv muvaffaqiyatli bron qilindi",
+    "appointmentCancelled": "Uchrashuv muvaffaqiyatli bekor qilindi",
+    "appointmentConfirmed": "Uchrashuv muvaffaqiyatli tasdiqlandi",
+    "paymentCompleted": "To'lov muvaffaqiyatli yakunlandi",
+    "documentUploaded": "Hujjat muvaffaqiyatli yuklandi",
+    "messageDelivered": "Xabar yetkazildi",
+    "accountLinked": "Hisob muvaffaqiyatli bog'landi",
+    "accountUnlinked": "Hisob muvaffaqiyatli uzildi",
+    "settingsUpdated": "Sozlamalar muvaffaqiyatli yangilandi"
+  },
+  "validation": {
+    "required": "Bu maydon to'ldirilishi shart",
+    "email": {
+      "invalid": "Iltimos, to'g'ri email manzilini kiriting",
+      "required": "Email talab qilinadi"
+    },
+    "password": {
+      "invalid": "Parol kamida 8 ta belgidan iborat bo'lishi kerak",
+      "required": "Parol talab qilinadi",
+      "mismatch": "Parollar mos kelmaydi",
+      "weak": "Parol juda zaif"
+    },
+    "phone": {
+      "invalid": "Iltimos, to'g'ri telefon raqamini kiriting",
+      "required": "Telefon raqami talab qilinadi"
+    },
+    "name": {
+      "invalid": "Ism faqat harflardan iborat bo'lishi kerak",
+      "required": "Ism talab qilinadi",
+      "tooShort": "Ism kamida 2 ta belgidan iborat bo'lishi kerak",
+      "tooLong": "Ism 50 ta belgidan kam bo'lishi kerak"
+    },
+    "date": {
+      "invalid": "Iltimos, to'g'ri sanani kiriting",
+      "future": "Sana kelajakda bo'lishi kerak",
+      "past": "Sana o'tmishda bo'lishi kerak"
+    },
+    "file": {
+      "required": "Iltimos, fayl tanlang",
+      "tooLarge": "Fayl hajmi {{maxSize}}MB dan kam bo'lishi kerak",
+      "invalidType": "Noto'g'ri fayl turi. Ruxsat etilgan turlar: {{allowedTypes}}"
+    }
   },
   "system": {
-    "healthy": "Tizim normal ishlaydi"
+    "healthy": "Tizim normal ishlayapti",
+    "maintenance": "Tizim texnik xizmat ko'rsatilmoqda",
+    "offline": "Tizim hozirda mavjud emas"
+  },
+  "notifications": {
+    "appointmentReminder": "Uchrashuv eslatmasi: {{title}} {{time}} da",
+    "appointmentConfirmed": "Uchrashuvingiz tasdiqlandi",
+    "appointmentCancelled": "Uchrashuvingiz bekor qilindi",
+    "messageReceived": "{{sender}} dan yangi xabar",
+    "paymentReceived": "{{amount}} to'lov qabul qilindi",
+    "documentShared": "Yangi hujjat: {{filename}}",
+    "reviewReceived": "Yangi sharh qabul qilindi",
+    "accountVerified": "Hisobingiz tasdiqlandi",
+    "passwordResetRequest": "Hisobingiz uchun parolni tiklash so'rovi",
+    "loginFromNewDevice": "{{location}} da {{device}} dan yangi kirish aniqlandi",
+    "consultationCompleted": {
+      "client": {
+        "subject": "Sizning konsultatsiyangiz tugadi - E-Consult",
+        "title": "Konsultatsiya tugadi",
+        "text": "{{advisorName}} bilan konsultatsiyangiz tugadi. Agar takroriy uchrashuv belgilash kerak bo'lsa, iltimos veb-saytimizga tashrif buyuring.",
+        "body": "{{advisorName}} bilan konsultatsiyangiz tugadi.",
+        "followUp": "Agar takroriy uchrashuv belgilash kerak bo'lsa, iltimos veb-saytimizga tashrif buyuring.",
+        "thanks": "Tibbiy ehtiyojlaringiz uchun E-Consult ni tanlaganingiz uchun rahmat.",
+        "telegram": "{{advisorName}} bilan konsultatsiyangiz tugadi."
+      },
+      "advisor": {
+        "subject": "Konsultatsiya tugadi - E-Consult",
+        "title": "Konsultatsiya tugadi",
+        "text": "{{clientName}} bilan konsultatsiyangiz tugadi. Agar hali qilmagan bo'lsangiz, konsultatsiya xulosasini to'ldiring.",
+        "body": "{{clientName}} bilan konsultatsiyangiz tugadi.",
+        "action": "Iltimos, konsultatsiya xulosasini to'ldiring va zarur bo'lgan tavsiyalar yoki takroriy uchrashuv tavsiyalarini qo'shing.",
+        "thanks": "Bemorlar g'amxo'rligiga bag'ishlanganingiz uchun rahmat.",
+        "telegram": "{{clientName}} bilan konsultatsiyangiz tugadi. Iltimos, konsultatsiya xulosasini to'ldiring."
+      }
+    },
+    "documentUpload": {
+      "subject": "Yangi hujjat yuklandi - E-Consult",
+      "title": "Yangi hujjat yuklandi",
+      "text": "{{uploaderName}} {{appointmentDate}} sanasida rejalashtirilgan uchrashuvingiz uchun yangi hujjat yukladi.\nHujjat nomi: {{documentName}}\nHujjatni ko'rish uchun hisobingizga kiring.",
+      "body": "{{uploaderName}} {{appointmentDate}} sanasida rejalashtirilgan uchrashuvingiz uchun yangi hujjat yukladi.",
+      "documentName": "Hujjat nomi",
+      "action": "Hujjatni ko'rish uchun hisobingizga kiring.",
+      "telegram": "{{uploaderName}} {{appointmentDate}} sanasidagi uchrashuvingiz uchun yangi hujjat ({{documentName}}) yukladi."
+    },
+    "appointmentConfirmation": {
+      "telegram": "✅ {{advisorName}} bilan uchrashuvingiz {{dateTime}} ga tasdiqlandi."
+    },
+    "appointmentCancellation": {
+      "telegram": "❌ {{advisorName}} bilan {{dateTime}} ga belgilangan uchrashuvingiz bekor qilindi."
+    }
   },
   "footer": {
     "available": "Mavjud",
@@ -496,7 +617,7 @@
     "sslSecured": "SSL himoyalangan",
     "gdprCompliant": "GDPR talablariga mos"
   },
-  "email": {
+  "emails": {
     "welcome": {
       "subject": "E-Consult'ga xush kelibsiz",
       "title": "E-Consult'ga xush kelibsiz!",
@@ -510,6 +631,186 @@
       "confirmationTitle": "Uchrashvingiz tasdiqlandi",
       "details": "Uchrashv tafsilotlari:",
       "footer": "Agar vaqtni o'zgartirish yoki bekor qilish kerak bo'lsa, biz bilan bog'laning."
+    },
+    "appointmentDetails": {
+      "title": "Uchrashuv tafsilotlari",
+      "advisor": "Maslahatchi",
+      "client": "Mijoz",
+      "specialization": "Ixtisoslashuv",
+      "dateTime": "Sana va vaqt",
+      "type": "Turi",
+      "amountPaid": "To'langan summa",
+      "reason": "Sabab",
+      "paymentId": "To'lov ID"
+    },
+    "appointmentBooked": {
+      "client": {
+        "subject": "Uchrashuv tasdiqlandi - e-consult.uz",
+        "title": "Uchrashuv tasdiqlandi",
+        "body": "{{advisorName}} bilan uchrashuvingiz muvaffaqiyatli bron qilindi.",
+        "joinReminder": "Belgilangan vaqtdan 5 daqiqa oldin konsultatsiyaga qo'shiling.",
+        "loginInfo": "Uchrashuv tafsilotlarini ko'rish va konsultatsiyaga qo'shilish uchun e-consult.uz hisobingizga kiring."
+      },
+      "advisor": {
+        "subject": "Yangi uchrashuv rejalashtirildi - e-consult.uz",
+        "title": "Yangi uchrashuv",
+        "body": "Yangi uchrashuv rejalashtirildi.",
+        "loginInfo": "To'liq uchrashuv tafsilotlarini ko'rish uchun e-consult.uz hisobingizga kiring."
+      }
+    },
+    "appointmentBookingFailed": {
+      "subject": "Uchrashuv bronlash muvaffaqiyatsiz - e-consult.uz",
+      "title": "Uchrashuv bronlash muvaffaqiyatsiz",
+      "body": "Afsuski, uchrashuvingizni bronlashni yakunlay olmadik.",
+      "action": "Iltimos, qayta urinib ko'ring yoki yordam kerak bo'lsa qo'llab-quvvatlash xizmatiga murojaat qiling."
+    },
+    "appointmentReminder": {
+      "client": {
+        "subject": "Uchrashuv eslatmasi - e-consult.uz",
+        "title": "Uchrashuv eslatmasi",
+        "body": "Bu ertangi kelayotgan uchrashuvingiz haqida eslatma."
+      },
+      "advisor": {
+        "subject": "Uchrashuv eslatmasi - e-consult.uz",
+        "title": "Uchrashuv eslatmasi",
+        "body": "Bu ertangi kelayotgan uchrashuvingiz haqida eslatma."
+      },
+      "joinReminder": "Belgilangan vaqtdan 5 daqiqa oldin konsultatsiyaga qo'shiling."
+    },
+    "appointmentCancelled": {
+      "client": {
+        "subject": "Uchrashuv bekor qilindi - e-consult.uz",
+        "title": "Uchrashuv bekor qilindi",
+        "body": "Quyidagi uchrashuv {{cancelledBy}} tomonidan bekor qilindi.",
+        "action": "Veb-saytimiz orqali yangi uchrashuv belgilashingiz mumkin."
+      },
+      "advisor": {
+        "subject": "Uchrashuv bekor qilindi - e-consult.uz",
+        "title": "Uchrashuv bekor qilindi",
+        "body": "Quyidagi uchrashuv {{cancelledBy}} tomonidan bekor qilindi.",
+        "action": "Vaqt oralig'i endi boshqa uchrashuvlar uchun mavjud."
+      }
+    },
+    "appointmentConfirmed": {
+      "client": {
+        "subject": "Uchrashuv maslahatchi tomonidan tasdiqlandi - e-consult.uz",
+        "title": "Uchrashuv maslahatchi tomonidan tasdiqlandi",
+        "body": "Uchrashuvingiz {{advisorName}} tomonidan tasdiqlandi.",
+        "reminder": "Uchrashuvingiz endi to'liq rejalashtirildi. Uchrashuv vaqti oldidan eslatma olasiz."
+      },
+      "advisor": {
+        "subject": "Uchrashuv tasdiqlanishi muvaffaqiyatli - e-consult.uz",
+        "title": "Uchrashuv tasdiqlandi",
+        "body": "Siz {{clientName}} bilan uchrashuvni muvaffaqiyatli tasdiqladingiz.",
+        "reminder": "Uchrashuv endi kalendaringizda rejalashtirildi. Uchrashuv vaqti oldidan eslatma olasiz."
+      }
+    },
+    "paymentSuccess": {
+      "subject": "To'lov muvaffaqiyatli - e-consult.uz",
+      "title": "To'lov muvaffaqiyatli",
+      "body": "Uchrashuv uchun to'lovingiz muvaffaqiyatli qayta ishlandi.",
+      "nextStep": "Uchrashuvingiz endi maslahatchi tasdig'ini kutmoqda. Tasdiqlanganidan keyin bildirishnoma olasiz."
+    },
+    "paymentConfirmation": {
+      "subject": "To'lov tasdiqlanishi - e-consult.uz",
+      "title": "To'lov tasdiqlanishi",
+      "body": "Bu quyidagi uchrashuv uchun to'lovingizning tasdiqlanishi:",
+      "thanks": "To'lovingiz uchun rahmat. Uchrashuvingiz endi tasdiqlandi."
+    },
+    "paymentDetails": {
+      "title": "To'lov tafsilotlari",
+      "paymentId": "To'lov ID",
+      "amount": "Summa",
+      "status": "Holat"
+    },
+    "paymentRefund": {
+      "subject": "To'lov qaytarildi - e-consult.uz",
+      "title": "To'lov qaytarildi",
+      "body": "Quyidagi bekor qilingan uchrashuv uchun to'lovingiz qaytarildi:",
+      "processingInfo": "Qaytarish to'lov usulining standart qayta ishlash vaqtlariga muvofiq amalga oshiriladi.",
+      "support": "Agar bu qaytarish haqida savollaringiz bo'lsa, qo'llab-quvvatlash guruhimizga murojaat qiling."
+    },
+    "refundDetails": {
+      "title": "Qaytarish tafsilotlari"
+    },
+    "adviceNotification": {
+      "subject": "Maslahatchangizdan yangi tavsiyalar - e-consult.uz",
+      "title": "Yangi tavsiyalar",
+      "body": "{{advisorName}} konsultatsiyadan keyin quyidagi harakatlarni tayinladi:",
+      "viewOnline": "Bu tavsiyalarni istalgan vaqtda e-consult.uz hisobingizga kirib ko'rishingiz mumkin.",
+      "warning": "Eslatma: Harakatlarni bajarishda har doim maslahatchangizning ko'rsatmalariga rioya qiling."
+    },
+    "adviceDetails": {
+      "action": "Harakat",
+      "dosage": "Dozasi",
+      "frequency": "Chastota",
+      "duration": "Davomiyligi",
+      "instructions": "Ko'rsatmalar"
+    },
+    "followUpNotification": {
+      "client": {
+        "subject": "Takroriy uchrashuv tavsiya qilindi - e-consult.uz",
+        "title": "Takroriy uchrashuv",
+        "body": "{{advisorName}} takroriy uchrashuv tavsiya qildi:",
+        "paymentRequired": "Bu uchrashuv to'lov tasdig'ini talab qiladi. Iltimos, bu takroriy uchrashuv uchun tasdiqlash va to'lovni yakunlash uchun e-consult.uz hisobingizga kiring."
+      },
+      "advisor": {
+        "subject": "Takroriy uchrashuv yaratildi - e-consult.uz",
+        "title": "Takroriy uchrashuv yaratildi",
+        "body": "Siz {{clientName}} uchun takroriy uchrashuvni muvaffaqiyatli yaratdingiz:",
+        "clientNotified": "Mijoz xabardor qilindi va to'lovni yakunlash orqali uchrashuvni tasdiqlashi kerak."
+      }
+    },
+    "verification": {
+      "subject": "Emailingizni tasdiqlang - e-consult.uz",
+      "title": "e-consult.uz Email tasdiqlash",
+      "body": "e-consult.uz da ro'yxatdan o'tganingiz uchun rahmat! Iltimos, quyidagi tugmani bosib email manzilingizni tasdiqlang:",
+      "text": "Iltimos, quyidagi havolani bosib emailingizni tasdiqlang: {{verificationLink}}",
+      "button": "Emailni tasdiqlash",
+      "altText": "Agar tugma ishlamasa, quyidagi havolani brauzeringizga nusxalash va joylashtirish mumkin:",
+      "expiry": "Bu havola 24 soat ichida amal qiladi.",
+      "ignore": "Agar siz e-consult.uz da hisob yaratmagan bo'lsangiz, iltimos bu emailni e'tiborsiz qoldiring."
+    },
+    "passwordReset": {
+      "subject": "Parolni tiklash - e-consult.uz",
+      "title": "e-consult.uz parolni tiklash",
+      "body": "Parolni tiklash so'rovi oldik. Yangi parol o'rnatish uchun quyidagi tugmani bosing:",
+      "text": "Siz parolni tiklash so'rovi yubordingiz. Parolni tiklash uchun quyidagi havolani bosing: {{resetLink}}",
+      "button": "Parolni tiklash",
+      "altText": "Agar tugma ishlamasa, quyidagi havolani brauzeringizga nusxalash va joylashtirish mumkin:",
+      "expiry": "Bu havola 10 daqiqa ichida amal qiladi.",
+      "ignore": "Agar siz parolni tiklash so'rovi yubormasangiz, iltimos bu emailni e'tiborsiz qoldiring yoki tashvishingiz bo'lsa qo'llab-quvvatlash bilan bog'laning."
+    },
+    "appointmentConfirmation": {
+      "client": {
+        "subject": "Uchrashuv tasdiqlandi - e-consult.uz",
+        "title": "Uchrashuv tasdiqlandi",
+        "text": "{{advisorName}} bilan uchrashuvingiz {{dateTime}} ga tasdiqlandi.",
+        "body": "{{advisorName}} bilan uchrashuvingiz tasdiqlandi.",
+        "loginInfo": "Uchrashuv tafsilotlarini ko'rish va konsultatsiyaga qo'shilish uchun e-consult.uz hisobingizga kiring."
+      },
+      "advisor": {
+        "subject": "Yangi uchrashuv - e-consult.uz",
+        "title": "Yangi uchrashuv",
+        "text": "{{clientName}} bilan yangi uchrashuvingiz {{dateTime}} ga belgilandi.",
+        "body": "{{clientName}} bilan yangi uchrashuvingiz bor.",
+        "loginInfo": "Uchrashuv tafsilotlarini ko'rish va konsultatsiyaga qo'shilish uchun e-consult.uz hisobingizga kiring."
+      }
+    },
+    "appointmentCancellation": {
+      "client": {
+        "subject": "Uchrashuv bekor qilindi - e-consult.uz",
+        "title": "Uchrashuv bekor qilindi",
+        "text": "{{advisorName}} bilan {{dateTime}} ga belgilangan uchrashuvingiz bekor qilindi.",
+        "body": "{{advisorName}} bilan uchrashuvingiz bekor qilindi.",
+        "action": "e-consult.uz hisobingizga kirib yangi uchrashuv belgilashingiz mumkin."
+      },
+      "advisor": {
+        "subject": "Uchrashuv bekor qilindi - e-consult.uz",
+        "title": "Uchrashuv bekor qilindi",
+        "text": "{{clientName}} bilan {{dateTime}} ga belgilangan uchrashuvingiz bekor qilindi.",
+        "body": "{{clientName}} bilan uchrashuvingiz bekor qilindi."
+      }
     }
   },
   "profile": {

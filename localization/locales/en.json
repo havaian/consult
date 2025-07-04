@@ -1,5 +1,6 @@
 {
   "common": {
+    "dear": "Dear",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -305,7 +306,9 @@
       "online": "Online",
       "phone": "Phone",
       "inPerson": "In Person",
-      "video": "Video Call"
+      "video": "Video Consultation",
+      "audio": "Audio Consultation",
+      "chat": "Chat Consultation"
     },
     "mySchedule": "My Schedule",
     "scheduledAppointments": "Scheduled Appointments",
@@ -428,6 +431,14 @@
       "goHome": "Go Home"
     }
   },
+  "payments": {
+    "statuses": {
+      "succeeded": "Succeeded",
+      "pending": "Pending",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    }
+  },
   "chat": {
     "inbox": {
       "title": "Messages",
@@ -457,37 +468,138 @@
       "noToken": "Authentication error. Please log in again."
     }
   },
-  "notifications": {
-    "newAppointment": "New appointment scheduled",
-    "appointmentCancelled": "Appointment cancelled",
-    "appointmentConfirmed": "Appointment confirmed",
-    "newMessage": "New message from {{user}}",
-    "paymentSuccessful": "Payment successful",
-    "paymentFailed": "Payment failed",
-    "systemMaintenance": "System maintenance scheduled"
-  },
   "errors": {
-    "general": "An error occurred. Please try again.",
-    "network": "Network error. Please check your connection.",
-    "validation": "Please fill in all required fields.",
-    "unauthorized": "You are not authorized to perform this action.",
-    "forbidden": "Access denied.",
-    "notFound": "Resource not found.",
-    "serverError": "Server error. Please try again later.",
-    "sessionExpired": "Your session has expired. Please log in again.",
-    "tooManyRequests": "Too many requests. Please try again later.",
+    "serverError": "Internal server error occurred",
+    "notFound": "Resource not found",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "validationError": "Validation error",
+    "invalidId": "Invalid ID format",
+    "duplicateEntry": "Entry already exists",
+    "invalidToken": "Invalid authentication token",
+    "tokenExpired": "Authentication token has expired",
+    "invalidCredentials": "Invalid email or password",
+    "accountNotVerified": "Please verify your email address",
+    "accountDeactivated": "Account has been deactivated",
+    "emailAlreadyExists": "Email address already exists",
+    "phoneAlreadyExists": "Phone number already exists",
     "invalidLanguage": "Invalid language selected",
-    "failedToLoad": "Failed to load data. Please refresh the page."
+    "tooManyRequests": "Too many requests. Please try again later",
+    "fileUploadError": "File upload failed",
+    "fileTooLarge": "File size too large",
+    "invalidFileType": "Invalid file type",
+    "emailSendError": "Failed to send email",
+    "paymentError": "Payment processing failed",
+    "appointmentConflict": "Appointment time conflict",
+    "slotNotAvailable": "Time slot not available",
+    "pastDateError": "Cannot schedule appointment in the past",
+    "permissionDenied": "Permission denied",
+    "resourceLocked": "Resource is currently locked",
+    "serviceUnavailable": "Service temporarily unavailable"
   },
   "success": {
-    "saved": "Changes saved successfully",
-    "deleted": "Deleted successfully",
-    "updated": "Updated successfully",
-    "created": "Created successfully",
-    "sent": "Sent successfully"
+    "created": "Successfully created",
+    "updated": "Successfully updated",
+    "deleted": "Successfully deleted",
+    "saved": "Successfully saved",
+    "sent": "Successfully sent",
+    "registered": "Registration successful",
+    "loginSuccess": "Login successful",
+    "logoutSuccess": "Logout successful",
+    "passwordChanged": "Password changed successfully",
+    "emailVerified": "Email verified successfully",
+    "profileUpdated": "Profile updated successfully",
+    "appointmentBooked": "Appointment booked successfully",
+    "appointmentCancelled": "Appointment cancelled successfully",
+    "appointmentConfirmed": "Appointment confirmed successfully",
+    "paymentCompleted": "Payment completed successfully",
+    "documentUploaded": "Document uploaded successfully",
+    "messageDelivered": "Message delivered",
+    "accountLinked": "Account linked successfully",
+    "accountUnlinked": "Account unlinked successfully",
+    "settingsUpdated": "Settings updated successfully"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": {
+      "invalid": "Please enter a valid email address",
+      "required": "Email is required"
+    },
+    "password": {
+      "invalid": "Password must be at least 8 characters long",
+      "required": "Password is required",
+      "mismatch": "Passwords do not match",
+      "weak": "Password is too weak"
+    },
+    "phone": {
+      "invalid": "Please enter a valid phone number",
+      "required": "Phone number is required"
+    },
+    "name": {
+      "invalid": "Name must contain only letters",
+      "required": "Name is required",
+      "tooShort": "Name must be at least 2 characters long",
+      "tooLong": "Name must be less than 50 characters long"
+    },
+    "date": {
+      "invalid": "Please enter a valid date",
+      "future": "Date must be in the future",
+      "past": "Date must be in the past"
+    },
+    "file": {
+      "required": "Please select a file",
+      "tooLarge": "File size must be less than {{maxSize}}MB",
+      "invalidType": "Invalid file type. Allowed types: {{allowedTypes}}"
+    }
   },
   "system": {
-    "healthy": "System is healthy"
+    "healthy": "System is running normally",
+    "maintenance": "System is under maintenance",
+    "offline": "System is currently offline"
+  },
+  "notifications": {
+    "messageReceived": "New message from {{sender}}",
+    "paymentReceived": "Payment of {{amount}} received",
+    "documentShared": "New document shared: {{filename}}",
+    "reviewReceived": "New review received",
+    "accountVerified": "Your account has been verified",
+    "passwordResetRequest": "Password reset requested for your account",
+    "loginFromNewDevice": "New login detected from {{device}} in {{location}}",
+    "consultationCompleted": {
+      "client": {
+        "subject": "Your Consultation Has Ended - E-Consult",
+        "title": "Consultation Ended",
+        "text": "Your consultation with {{advisorName}} has ended. If you need to schedule a follow-up appointment, please visit our website.",
+        "body": "Your consultation with {{advisorName}} has ended.",
+        "followUp": "If you need to schedule a follow-up appointment, please visit our website.",
+        "thanks": "Thank you for choosing E-Consult for your healthcare needs.",
+        "telegram": "Your consultation with {{advisorName}} has ended."
+      },
+      "advisor": {
+        "subject": "Consultation Completed - E-Consult",
+        "title": "Consultation Completed",
+        "text": "Your consultation with {{clientName}} has ended. Please complete your consultation summary if you haven't already done so.",
+        "body": "Your consultation with {{clientName}} has ended.",
+        "action": "Please complete your consultation summary and add any necessary advices or follow-up recommendations.",
+        "thanks": "Thank you for your dedication to client care.",
+        "telegram": "Your consultation with {{clientName}} has ended. Please complete your consultation summary."
+      }
+    },
+    "documentUpload": {
+      "subject": "New Document Uploaded - E-Consult",
+      "title": "New Document Uploaded",
+      "text": "{{uploaderName}} has uploaded a new document for your appointment scheduled on {{appointmentDate}}.\nDocument name: {{documentName}}\nPlease log in to your account to view the document.",
+      "body": "{{uploaderName}} has uploaded a new document for your appointment scheduled on {{appointmentDate}}.",
+      "documentName": "Document name",
+      "action": "Please log in to your account to view the document.",
+      "telegram": "{{uploaderName}} has uploaded a new document ({{documentName}}) for your appointment on {{appointmentDate}}."
+    },
+    "appointmentConfirmation": {
+      "telegram": "✅ Your appointment with {{advisorName}} has been confirmed for {{dateTime}}."
+    },
+    "appointmentCancellation": {
+      "telegram": "❌ Your appointment with {{advisorName}} scheduled for {{dateTime}} has been canceled."
+    }
   },
   "footer": {
     "available": "Available",
@@ -499,7 +611,7 @@
     "sslSecured": "SSL Secured",
     "gdprCompliant": "GDPR Compliant"
   },
-  "email": {
+  "emails": {
     "welcome": {
       "subject": "Welcome to E-Consult",
       "title": "Welcome to E-Consult!",
@@ -513,6 +625,186 @@
       "confirmationTitle": "Your appointment has been confirmed",
       "details": "Here are your appointment details:",
       "footer": "If you need to reschedule or cancel, please contact us."
+    },
+    "appointmentDetails": {
+      "title": "Appointment Details",
+      "advisor": "Advisor",
+      "client": "Client",
+      "specialization": "Specialization",
+      "dateTime": "Date & Time",
+      "type": "Type",
+      "amountPaid": "Amount Paid",
+      "reason": "Reason",
+      "paymentId": "Payment ID"
+    },
+    "appointmentBooked": {
+      "client": {
+        "subject": "Appointment Confirmation - e-consult.uz",
+        "title": "Appointment Confirmed",
+        "body": "Your appointment with {{advisorName}} has been successfully booked.",
+        "joinReminder": "Please make sure to join the consultation 5 minutes before the scheduled time.",
+        "loginInfo": "You can view your appointment details and join the consultation by logging into your e-consult.uz account."
+      },
+      "advisor": {
+        "subject": "New Appointment Scheduled - e-consult.uz",
+        "title": "New Appointment",
+        "body": "A new appointment has been scheduled.",
+        "loginInfo": "Please log in to your e-consult.uz account to view the complete appointment details."
+      }
+    },
+    "appointmentBookingFailed": {
+      "subject": "Appointment Booking Failed - e-consult.uz",
+      "title": "Appointment Booking Failed",
+      "body": "Unfortunately, we couldn't complete your appointment booking.",
+      "action": "Please try booking again or contact our support if you need assistance."
+    },
+    "appointmentReminder": {
+      "client": {
+        "subject": "Appointment Reminder - e-consult.uz",
+        "title": "Appointment Reminder",
+        "body": "This is a reminder about your upcoming appointment tomorrow."
+      },
+      "advisor": {
+        "subject": "Appointment Reminder - e-consult.uz",
+        "title": "Appointment Reminder",
+        "body": "This is a reminder about your upcoming appointment tomorrow."
+      },
+      "joinReminder": "Please make sure to join the consultation 5 minutes before the scheduled time."
+    },
+    "appointmentCancelled": {
+      "client": {
+        "subject": "Appointment Cancelled - e-consult.uz",
+        "title": "Appointment Cancelled",
+        "body": "The following appointment has been cancelled by {{cancelledBy}}.",
+        "action": "You can schedule a new appointment through our website."
+      },
+      "advisor": {
+        "subject": "Appointment Cancelled - e-consult.uz",
+        "title": "Appointment Cancelled",
+        "body": "The following appointment has been cancelled by {{cancelledBy}}.",
+        "action": "The time slot is now available for other appointments."
+      }
+    },
+    "appointmentConfirmed": {
+      "client": {
+        "subject": "Appointment Confirmed by Advisor - e-consult.uz",
+        "title": "Appointment Confirmed by Advisor",
+        "body": "Your appointment has been confirmed by {{advisorName}}.",
+        "reminder": "Your appointment is now fully scheduled. You'll receive a reminder before the appointment time."
+      },
+      "advisor": {
+        "subject": "Appointment Confirmation Successful - e-consult.uz",
+        "title": "Appointment Confirmed",
+        "body": "You have successfully confirmed the appointment with {{clientName}}.",
+        "reminder": "The appointment is now scheduled in your calendar. You'll receive a reminder before the appointment time."
+      }
+    },
+    "paymentSuccess": {
+      "subject": "Payment Successful - e-consult.uz",
+      "title": "Payment Successful",
+      "body": "Your payment for the appointment has been processed successfully.",
+      "nextStep": "Your appointment is now awaiting advisor confirmation. You'll receive a notification once confirmed."
+    },
+    "paymentConfirmation": {
+      "subject": "Payment Confirmation - e-consult.uz",
+      "title": "Payment Confirmation",
+      "body": "This is a confirmation of your payment for the following appointment:",
+      "thanks": "Thank you for your payment. Your appointment is now confirmed."
+    },
+    "paymentDetails": {
+      "title": "Payment Details",
+      "paymentId": "Payment ID",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "paymentRefund": {
+      "subject": "Payment Refund - e-consult.uz",
+      "title": "Payment Refund",
+      "body": "Your payment has been refunded for the following cancelled appointment:",
+      "processingInfo": "The refund will be processed according to your payment method's standard processing times.",
+      "support": "If you have any questions about this refund, please contact our support team."
+    },
+    "refundDetails": {
+      "title": "Refund Details"
+    },
+    "adviceNotification": {
+      "subject": "New Advices from Your Advisor - e-consult.uz",
+      "title": "New Advices",
+      "body": "{{advisorName}} has prescribed the following action(s) after your consultation:",
+      "viewOnline": "You can view these advices at any time by logging into your e-consult.uz account.",
+      "warning": "Note: Always follow your advisor's instructions when taking actions."
+    },
+    "adviceDetails": {
+      "action": "Action",
+      "dosage": "Dosage",
+      "frequency": "Frequency",
+      "duration": "Duration",
+      "instructions": "Instructions"
+    },
+    "followUpNotification": {
+      "client": {
+        "subject": "Follow-up Appointment Recommended - e-consult.uz",
+        "title": "Follow-up Appointment",
+        "body": "{{advisorName}} has recommended a follow-up appointment:",
+        "paymentRequired": "This appointment requires payment confirmation. Please log in to your e-consult.uz account to confirm and complete payment for this follow-up appointment."
+      },
+      "advisor": {
+        "subject": "Follow-up Appointment Created - e-consult.uz",
+        "title": "Follow-up Appointment Created",
+        "body": "You have successfully created a follow-up appointment for {{clientName}}:",
+        "clientNotified": "The client has been notified and needs to confirm the appointment by completing payment."
+      }
+    },
+    "verification": {
+      "subject": "Verify Your Email - e-consult.uz",
+      "title": "e-consult.uz Email Verification",
+      "body": "Thank you for registering with e-consult.uz! Please verify your email address by clicking the button below:",
+      "text": "Please verify your email by clicking on the following link: {{verificationLink}}",
+      "button": "Verify Email",
+      "altText": "If the button doesn't work, you can also copy and paste the following link into your browser:",
+      "expiry": "This link will expire in 24 hours.",
+      "ignore": "If you didn't create an account with e-consult.uz, please ignore this email."
+    },
+    "passwordReset": {
+      "subject": "Reset Your Password - e-consult.uz",
+      "title": "e-consult.uz Password Reset",
+      "body": "We received a request to reset your password. Click the button below to set a new password:",
+      "text": "You requested a password reset. Please click the following link to reset your password: {{resetLink}}",
+      "button": "Reset Password",
+      "altText": "If the button doesn't work, you can also copy and paste the following link into your browser:",
+      "expiry": "This link will expire in 10 minutes.",
+      "ignore": "If you didn't request a password reset, please ignore this email or contact support if you're concerned."
+    },
+    "appointmentConfirmation": {
+      "client": {
+        "subject": "Appointment Confirmation - e-consult.uz",
+        "title": "Appointment Confirmation",
+        "text": "Your appointment with {{advisorName}} has been confirmed for {{dateTime}}.",
+        "body": "Your appointment with {{advisorName}} has been confirmed.",
+        "loginInfo": "You can view your appointment details and join the consultation by logging into your e-consult.uz account."
+      },
+      "advisor": {
+        "subject": "New Appointment - e-consult.uz",
+        "title": "New Appointment",
+        "text": "You have a new appointment with {{clientName}} scheduled for {{dateTime}}.",
+        "body": "You have a new appointment with {{clientName}}.",
+        "loginInfo": "You can view appointment details and join the consultation by logging into your e-consult.uz account."
+      }
+    },
+    "appointmentCancellation": {
+      "client": {
+        "subject": "Appointment Canceled - e-consult.uz",
+        "title": "Appointment Canceled",
+        "text": "Your appointment with {{advisorName}} scheduled for {{dateTime}} has been canceled.",
+        "body": "Your appointment with {{advisorName}} has been canceled.",
+        "action": "You can schedule a new appointment by logging into your e-consult.uz account."
+      },
+      "advisor": {
+        "subject": "Appointment Canceled - e-consult.uz",
+        "title": "Appointment Canceled",
+        "text": "Your appointment with {{clientName}} scheduled for {{dateTime}} has been canceled.",
+        "body": "Your appointment with {{clientName}} has been canceled."
+      }
     }
   },
   "profile": {

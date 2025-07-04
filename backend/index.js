@@ -1,4 +1,4 @@
-// File: backend/index.js (Updated to include localization middleware)
+// File: backend/index.js (Updated with enhanced localization middleware)
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -6,8 +6,15 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const socketIo = require('socket.io');
 
-// Import localization middleware
-const localizationMiddleware = require('./src/middleware/localization');
+// Import enhanced localization middleware
+const {
+    localizationMiddleware,
+    authenticatedLocalizationMiddleware,
+    localizedErrorHandler
+} = require('./src/middleware/localization');
+
+// Import authentication middleware
+const { authenticateUser } = require('./src/auth');
 
 const app = express();
 
@@ -28,13 +35,22 @@ app.use(localizationMiddleware);
 // Compression
 app.use(compression());
 
-// Rate limiting
+// Rate limiting with localized messages
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100,
-    message: (req) => req.t('errors.tooManyRequests')
+    message: (req) => ({
+        message: req.t('errors.tooManyRequests'),
+        locale: req.locale,
+        timestamp: new Date().toISOString()
+    }),
+    standardHeaders: true,
+    legacyHeaders: false
 });
 app.use('/api', limiter);
+
+// Enhanced localization for authenticated routes
+app.use('/api', authenticateUser, authenticatedLocalizationMiddleware);
 
 // Routes
 app.use('/api/users', require('./src/user/routes'));
@@ -42,33 +58,73 @@ app.use('/api/appointments', require('./src/appointment/routes'));
 app.use('/api/chat', require('./src/chat/routes'));
 app.use('/api/admin', require('./src/admin/routes'));
 
-// Health check endpoint
+// Health check endpoint with localization
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
         message: req.t('system.healthy'),
+        locale: req.locale,
+        supportedLocales: req.availableLocales,
         timestamp: new Date().toISOString()
     });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({
-        message: req.t('errors.serverError')
+// Localization info endpoint
+app.get('/api/localization/info', (req, res) => {
+    res.json({
+        currentLocale: req.locale,
+        supportedLocales: req.availableLocales,
+        defaultLocale: process.env.DEFAULT_LOCALE || 'en',
+        fallbackLocale: process.env.LOCALIZATION_FALLBACK || 'en'
     });
 });
 
-// 404 handler
+// Endpoint to get translations for frontend
+app.get('/api/localization/translations/:locale?', (req, res) => {
+    const locale = req.params.locale || req.locale;
+    const supportedLocales = req.availableLocales;
+
+    if (!supportedLocales.includes(locale)) {
+        return res.status(400).json({
+            message: req.t('errors.invalidLanguage'),
+            supportedLocales
+        });
+    }
+
+    try {
+        const { i18n } = require('./src/localization');
+        const translations = i18n.getTranslations(locale);
+
+        res.json({
+            locale,
+            translations,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Error getting translations:', error);
+        res.status(500).json({
+            message: req.t('errors.serverError')
+        });
+    }
+});
+
+// Enhanced error handling middleware with localization
+app.use(localizedErrorHandler);
+
+// 404 handler with localization
 app.use('*', (req, res) => {
     res.status(404).json({
-        message: req.t('errors.notFound')
+        message: req.t('errors.notFound'),
+        locale: req.locale,
+        timestamp: new Date().toISOString()
     });
 });
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`Default locale: ${process.env.DEFAULT_LOCALE || 'en'}`);
+    console.log(`Supported locales: ${process.env.SUPPORTED_LOCALES || 'en,ru,uz'}`);
 });
 
 module.exports = server;

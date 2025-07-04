@@ -73,7 +73,7 @@ async function handleSubmit(event) {
         error.value = ''
 
         // Attempt login - will return response.data on success or throw on error
-        await authStore.login(email.value, password.value)
+        await authStore.login(emails.value, password.value)
 
         // If we get here, login was successful, so navigate
         router.push({ path: '/' })

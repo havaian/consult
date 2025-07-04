@@ -61,7 +61,7 @@ async function handleSubmit() {
         if (!verificationSent.value) {
             // Request verification code
             await api.post('/telegram/verification', {
-                email: email.value
+                email: emails.value
             })
             verificationSent.value = true
         } else {
