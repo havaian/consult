@@ -62,29 +62,11 @@ services:
       retries: 5
       start_period: 40s
 
-  # Shared localization service (for development)
-  localization:
-    build:
-      context: ./localization
-      dockerfile: Dockerfile
-    container_name: ${PROJECT_NAME}-localization
-    restart: always
-    volumes:
-      - ./localization:/app
-      - localization_node_modules:/app/node_modules
-    networks:
-      - consult_net
-    healthcheck:
-      test: ["CMD", "node", "-e", "require('./index.js')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   # Backend API service
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: . # Build context is now the root directory
+      dockerfile: backend/Dockerfile
     container_name: ${PROJECT_NAME}-backend
     restart: always
     depends_on:
@@ -93,8 +75,6 @@ services:
       redis:
         condition: service_healthy
       rabbitmq:
-        condition: service_healthy
-      localization:
         condition: service_healthy
     environment:
       - NODE_ENV=development
@@ -106,7 +86,6 @@ services:
       - RABBITMQ_URI=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_PORT_1}
       - FRONTEND_URL=${PROJECT_URL}
       - API_URL=${PROJECT_URL}/api
-      # Localization environment variables
       - DEFAULT_LOCALE=${DEFAULT_LOCALE:-en}
       - SUPPORTED_LOCALES=${SUPPORTED_LOCALES:-en,ru,uz}
       - LOCALIZATION_FALLBACK=${LOCALIZATION_FALLBACK:-en}
@@ -116,8 +95,6 @@ services:
       - "${BACKEND_EXPOSE}:${BACKEND_PORT}"
     volumes:
       - backend_logs:/usr/src/app/logs
-      # Mount shared localization package
-      - ./localization:/usr/src/app/node_modules/@econsult/localization
     networks:
       - consult_net
     healthcheck:
@@ -130,14 +107,12 @@ services:
   # Frontend service (production)
   frontend-prod:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
+      context: . # Build context is now the root directory
+      dockerfile: frontend/Dockerfile.prod
     container_name: ${PROJECT_NAME}-frontend
     restart: always
     depends_on:
       backend:
-        condition: service_healthy
-      localization:
         condition: service_healthy
     env_file:
       - ./.env
@@ -145,14 +120,10 @@ services:
       - VITE_SOCKET_URL=${API_URL}
       - VUE_APP_API_URL=${PROJECT_URL}/api
       - VUE_APP_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
-      # Localization environment variables
       - VUE_APP_DEFAULT_LOCALE=${DEFAULT_LOCALE:-en}
       - VUE_APP_SUPPORTED_LOCALES=${SUPPORTED_LOCALES:-en,ru,uz}
     ports:
       - "${FRONTEND_EXPOSE}:80"
-    volumes:
-      # Mount shared localization package
-      - ./localization:/usr/share/nginx/html/localization
     networks:
       - consult_net
     healthcheck:
@@ -167,7 +138,6 @@ volumes:
   redis_data:
   rabbitmq_data:
   backend_logs:
-  localization_node_modules:
 
 networks:
   consult_net:
