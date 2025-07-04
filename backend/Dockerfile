@@ -22,7 +22,11 @@ RUN chown -R nodeapp:nodeapp /app
 # Switch to non-root user
 USER nodeapp
 
+# Set environment variables
+ENV NODE_ENV=development
+
 # Expose port
 EXPOSE 3000
 
-CMD ["node", "app.js"]
+# Command to run the application
+CMD ["node", "--trace-warnings", "index.js"]
