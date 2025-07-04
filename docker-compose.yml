@@ -94,8 +94,6 @@ services:
     ports:
       - "${BACKEND_EXPOSE}:${BACKEND_PORT}"
     volumes:
-      - backend_logs:/usr/src/app/logs
-      # Mount localization files directly
       - ./localization/locales:/usr/src/app/locales:ro
     networks:
       - consult_net
@@ -126,6 +124,8 @@ services:
       - VUE_APP_SUPPORTED_LOCALES=${SUPPORTED_LOCALES:-en,ru,uz}
     ports:
       - "${FRONTEND_EXPOSE}:80"
+    volumes:
+      - ./localization/locales:/app/src/plugins/locales:ro
     networks:
       - consult_net
     healthcheck:
