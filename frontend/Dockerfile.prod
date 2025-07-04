@@ -4,17 +4,17 @@ FROM node:20-alpine as build
 WORKDIR /app
 
 # Install dependencies
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm ci
 
 # Copy app source
-COPY . .
+COPY frontend/ .
 
 # Set environment variables
 ENV NODE_ENV=production
 
 # Copy localization locales & build the app
-COPY ../localization/locales ./src/localization/locales
+COPY localization/locales ./src/localization/locales
 RUN npm run build
 
 # Production stage
