@@ -6,19 +6,17 @@ const { i18n, getLocalizedMessage } = require('../localization');
 const localizationMiddleware = (req, res, next) => {
     // Priority order for language detection:
     // 1. Custom header (x-app-language)
-    // 2. URL parameter (lang)
-    // 3. Accept-Language header
-    // 4. User preference from database (req.user.preferredLanguage)
-    // 5. Default fallback
+    // 2. Accept-Language header
+    // 3. User preference from database (req.user.preferredLanguage)
+    // 4. Default fallback
 
     const headerLang = req.headers['x-app-language'];
-    const queryLang = req.query.lang;
     const acceptLang = req.headers['accept-language']?.split(',')[0]?.split('-')[0];
     const userLang = req.user?.preferredLanguage;
     const defaultLang = process.env.DEFAULT_LOCALE || 'en';
 
     // Determine locale with priority
-    let locale = headerLang || queryLang || acceptLang || userLang || defaultLang;
+    let locale = headerLang || acceptLang || userLang || defaultLang;
 
     // Validate against supported locales
     const supportedLocales = (process.env.SUPPORTED_LOCALES || 'en,ru,uz').split(',');
