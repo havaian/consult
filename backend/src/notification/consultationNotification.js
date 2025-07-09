@@ -56,6 +56,27 @@ exports.sendConsultationCompletedNotification = async (appointment) => {
             `
         });
 
+        // Send Telegram notification if user has linked account
+        if (client.telegramId) {
+            const { telegramBot } = require('../bot/index');
+            if (telegramBot) {
+                await telegramBot.telegram.sendMessage(
+                    client.telegramId,
+                    `Your consultation with Dr. ${advisor.firstName} ${advisor.lastName} has ended.`
+                );
+            }
+        }
+
+        if (advisor.telegramId) {
+            const { telegramBot } = require('../bot/index');
+            if (telegramBot) {
+                await telegramBot.telegram.sendMessage(
+                    advisor.telegramId,
+                    `Your consultation with ${client.firstName} ${client.lastName} has ended. Please complete your consultation summary.`
+                );
+            }
+        }
+
     } catch (error) {
         console.error('Error sending consultation completed notification:', error);
     }

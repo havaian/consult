@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const amqp = require('amqplib');
+const { telegramBot } = require('../bot');
 const consultationNotification = require('./consultationNotification');
 const emailService = require('./emailService');
 

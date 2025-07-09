@@ -1,154 +1,150 @@
-const express = require('express');
-const router = express.Router();
-const reviewController = require('./controller');
-const { authenticateUser, authorizeRoles, ensureOwnership } = require('../auth');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-/**
- * @route POST /api/reviews
- * @desc Create a new review for an appointment
- * @access Private (Clients only)
- */
-router.post(
-    '/',
-    authenticateUser,
-    authorizeRoles(['client', 'admin']),
-    reviewController.createReview
-);
+const reviewSchema = new Schema({
+    client: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    advisor: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    appointment: {
+        type: Schema.Types.ObjectId,
+        ref: 'Appointment',
+        required: true
+    },
+    rating: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5
+    },
+    comment: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: 1000
+    },
+    // Specific rating categories
+    communicationRating: {
+        type: Number,
+        min: 1,
+        max: 5
+    },
+    professionalismRating: {
+        type: Number,
+        min: 1,
+        max: 5
+    },
+    satisfactionRating: {
+        type: Number,
+        min: 1,
+        max: 5
+    },
+    // Admin moderation fields
+    isApproved: {
+        type: Boolean,
+        default: true // Auto-approve by default, can be changed for moderation
+    },
+    rejectionReason: {
+        type: String,
+        trim: true
+    },
+    // Advisor response to review
+    advisorResponse: {
+        text: {
+            type: String,
+            trim: true
+        },
+        respondedAt: {
+            type: Date
+        }
+    },
+    // Timestamps
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+    timestamps: true
+});
 
-/**
- * @route GET /api/reviews/appointment/:appointmentId
- * @desc Get review for a specific appointment
- * @access Private (Client, Advisor, or Admin)
- */
-router.get(
-    '/appointment/:appointmentId',
-    authenticateUser,
-    reviewController.getReviewByAppointment
-);
+// Ensure a client can only leave one review per appointment
+reviewSchema.index({ client: 1, appointment: 1 }, { unique: true });
 
-/**
- * @route GET /api/reviews/advisor/:advisorId
- * @desc Get all reviews for an advisor
- * @access Public
- */
-router.get(
-    '/advisor/:advisorId',
-    reviewController.getAdvisorReviews
-);
+// Add indexes for frequent queries
+reviewSchema.index({ advisor: 1 });
+reviewSchema.index({ isApproved: 1 });
+reviewSchema.index({ rating: 1 });
 
-/**
- * @route GET /api/reviews/advisor/:advisorId/stats
- * @desc Get review statistics for an advisor
- * @access Public
- */
-router.get(
-    '/advisor/:advisorId/stats',
-    reviewController.getAdvisorReviewStats
-);
+// Prevent clients from reviewing their own appointments multiple times
+reviewSchema.pre('save', async function (next) {
+    if (this.isNew) {
+        const existingReview = await this.constructor.findOne({
+            client: this.client,
+            appointment: this.appointment
+        });
 
-/**
- * @route GET /api/reviews/client/:clientId
- * @desc Get all reviews written by a client
- * @access Private (Client must be owner or Admin)
- */
-router.get(
-    '/client/:clientId',
-    authenticateUser,
-    authorizeRoles(['client', 'admin']),
-    ensureOwnership('clientId'),
-    reviewController.getClientReviews
-);
+        if (existingReview) {
+            const error = new Error('You have already reviewed this appointment');
+            error.status = 400;
+            return next(error);
+        }
+    }
 
-/**
- * @route PATCH /api/reviews/:id
- * @desc Update a review (only within 24 hours and before advisor response)
- * @access Private (Client who wrote the review or Admin)
- */
-router.patch(
-    '/:id',
-    authenticateUser,
-    reviewController.updateReview
-);
+    this.updatedAt = Date.now();
+    next();
+});
 
-/**
- * @route DELETE /api/reviews/:id
- * @desc Delete a review (only if no advisor response exists)
- * @access Private (Client who wrote the review or Admin)
- */
-router.delete(
-    '/:id',
-    authenticateUser,
-    reviewController.deleteReview
-);
+// Static method to get advisor's average rating
+reviewSchema.statics.getAdvisorRating = async function (advisorId) {
+    const result = await this.aggregate([
+        {
+            $match: {
+                advisor: mongoose.Types.ObjectId(advisorId),
+                isApproved: true
+            }
+        },
+        {
+            $group: {
+                _id: '$advisor',
+                averageRating: { $avg: '$rating' },
+                communicationRating: { $avg: '$communicationRating' },
+                professionalismRating: { $avg: '$professionalismRating' },
+                satisfactionRating: { $avg: '$satisfactionRating' },
+                reviewCount: { $sum: 1 }
+            }
+        }
+    ]);
 
-/**
- * @route POST /api/reviews/:id/response
- * @desc Add advisor response to a review
- * @access Private (Advisor who received the review or Admin)
- */
-router.post(
-    '/:id/response',
-    authenticateUser,
-    authorizeRoles(['advisor', 'admin']),
-    reviewController.addAdvisorResponse
-);
+    return result.length ? result[0] : {
+        averageRating: 0,
+        communicationRating: 0,
+        professionalismRating: 0,
+        satisfactionRating: 0,
+        reviewCount: 0
+    };
+};
 
-/**
- * @route PATCH /api/reviews/:id/response
- * @desc Update advisor response to a review
- * @access Private (Advisor who received the review or Admin)
- */
-router.patch(
-    '/:id/response',
-    authenticateUser,
-    authorizeRoles(['advisor', 'admin']),
-    reviewController.updateAdvisorResponse
-);
+// Static method to get recent reviews for a advisor
+reviewSchema.statics.getRecentReviews = async function (advisorId, limit = 5) {
+    return this.find({
+        advisor: advisorId,
+        isApproved: true
+    })
+        .populate('client', 'firstName lastName profilePicture')
+        .sort({ createdAt: -1 })
+        .limit(limit);
+};
 
-/**
- * @route DELETE /api/reviews/:id/response
- * @desc Delete advisor response to a review
- * @access Private (Advisor who received the review or Admin)
- */
-router.delete(
-    '/:id/response',
-    authenticateUser,
-    authorizeRoles(['advisor', 'admin']),
-    reviewController.deleteAdvisorResponse
-);
+const Review = mongoose.model('Review', reviewSchema);
 
-/**
- * @route GET /api/reviews/recent
- * @desc Get recent approved reviews across all advisors
- * @access Public
- */
-router.get(
-    '/recent',
-    reviewController.getRecentReviews
-);
-
-/**
- * @route PATCH /api/reviews/:id/approve
- * @desc Approve or reject a review (Admin only)
- * @access Private (Admin only)
- */
-router.patch(
-    '/:id/approve',
-    authenticateUser,
-    authorizeRoles(['admin']),
-    reviewController.moderateReview
-);
-
-/**
- * @route GET /api/reviews/pending
- * @desc Get pending reviews for moderation
- * @access Private (Admin only)
- */
-router.get(
-    '/pending',
-    authenticateUser,
-    authorizeRoles(['admin']),
-    reviewController.getPendingReviews
-);
-
-module.exports = router;
+module.exports = Review;
