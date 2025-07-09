@@ -1,5 +1,4 @@
 const { format } = require('date-fns');
-const { getLocalizedMessage } = require('../localization');
 
 // Format currency amount
 const formatCurrency = (amount) => {
@@ -13,26 +12,25 @@ const formatDateTime = (date) => {
 
 exports.appointmentBookedClient = (appointment) => {
   const { advisor, dateTime, type, payment } = appointment;
-  const clientLocale = appointment.client?.preferredLanguage || 'en';
 
   return {
-    subject: getLocalizedMessage('emails.appointmentBooked.client.subject', clientLocale),
+    subject: 'Appointment Confirmation - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.appointmentBooked.client.title', clientLocale)}</h2>
-        <p>${getLocalizedMessage('emails.appointmentBooked.client.body', clientLocale)}</p>
+        <h2 style="color: #4a90e2;">Appointment Confirmed</h2>
+        <p>Your appointment has been successfully booked.</p>
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.specialization', clientLocale)}:</strong> ${advisor.specializations.join(', ')}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.amountPaid', clientLocale)}:</strong> ${formatCurrency(payment.amount)}</p>
+          <h3 style="margin-top: 0;">Appointment Details</h3>
+          <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+          <p><strong>Specialization:</strong> ${advisor.specializations.join(', ')}</p>
+          <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+          <p><strong>Amount Paid:</strong> ${formatCurrency(payment.amount)}</p>
         </div>
         
-        <p>${getLocalizedMessage('emails.appointmentBooked.client.joinReminder', clientLocale)}</p>
-        <p>${getLocalizedMessage('emails.appointmentBooked.client.loginInfo', clientLocale)}</p>
+        <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
+        <p>You can view your appointment details and join the consultation by logging into your consult.ytech.space account.</p>
       </div>
     `
   };
@@ -40,23 +38,22 @@ exports.appointmentBookedClient = (appointment) => {
 
 exports.appointmentBookedAdvisor = (appointment) => {
   const { client, dateTime, type } = appointment;
-  const advisorLocale = appointment.advisor?.preferredLanguage || 'en';
 
   return {
-    subject: getLocalizedMessage('emails.appointmentBooked.advisor.subject', advisorLocale),
+    subject: 'New Appointment Scheduled - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #4a90e2;">${getLocalizedMessage('emails.appointmentBooked.advisor.title', advisorLocale)}</h2>
-        <p>${getLocalizedMessage('emails.appointmentBooked.advisor.body', advisorLocale)}</p>
+        <h2 style="color: #4a90e2;">New Appointment</h2>
+        <p>A new appointment has been scheduled.</p>
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', advisorLocale)}</h3>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.client', advisorLocale)}:</strong> ${client.firstName} ${client.lastName}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', advisorLocale)}:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', advisorLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, advisorLocale)}</p>
+          <h3 style="margin-top: 0;">Appointment Details</h3>
+          <p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>
+          <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
         </div>
         
-        <p>${getLocalizedMessage('emails.appointmentBooked.advisor.loginInfo', advisorLocale)}</p>
+        <p>Please log in to your consult.ytech.space account to view the complete appointment details.</p>
       </div>
     `
   };
@@ -64,84 +61,80 @@ exports.appointmentBookedAdvisor = (appointment) => {
 
 exports.appointmentBookingFailed = (data) => {
   const { advisor, dateTime, type, error } = data;
-  const clientLocale = data.client?.preferredLanguage || 'en';
 
   return {
-    subject: getLocalizedMessage('emails.appointmentBookingFailed.subject', clientLocale),
+    subject: 'Appointment Booking Failed - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #e74c3c;">${getLocalizedMessage('emails.appointmentBookingFailed.title', clientLocale)}</h2>
-        <p>${getLocalizedMessage('emails.appointmentBookingFailed.body', clientLocale)}</p>
+        <h2 style="color: #e74c3c;">Appointment Booking Failed</h2>
+        <p>Unfortunately, we couldn't complete your appointment booking.</p>
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', clientLocale)}</h3>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', clientLocale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', clientLocale)}:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', clientLocale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, clientLocale)}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.reason', clientLocale)}:</strong> ${error}</p>
+          <h3 style="margin-top: 0;">Appointment Details</h3>
+          <p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>
+          <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
+          <p><strong>Reason:</strong> ${error}</p>
         </div>
         
-        <p>${getLocalizedMessage('emails.appointmentBookingFailed.action', clientLocale)}</p>
+        <p>Please try booking again or contact our support if you need assistance.</p>
       </div>
     `
   };
 };
 
-exports.appointmentReminder = (appointment, recipientType) => {
+exports.appointmentReminder = (appointment) => {
   const { advisor, client, dateTime, type } = appointment;
-  const isAdvisor = recipientType === 'advisor';
-  const locale = isAdvisor ?
-    (advisor?.preferredLanguage || 'en') :
-    (client?.preferredLanguage || 'en');
+  const isAdvisor = Boolean(advisor.email);
 
   return {
-    subject: getLocalizedMessage(`emails.appointmentReminder.${isAdvisor ? 'advisor' : 'client'}.subject`, locale),
+    subject: 'Appointment Reminder - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #4a90e2;">${getLocalizedMessage(`emails.appointmentReminder.${isAdvisor ? 'advisor' : 'client'}.title`, locale)}</h2>
-        <p>${getLocalizedMessage(`emails.appointmentReminder.${isAdvisor ? 'advisor' : 'client'}.body`, locale)}</p>
+        <h2 style="color: #4a90e2;">Appointment Reminder</h2>
+        <p>This is a reminder about your upcoming appointment tomorrow.</p>
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', locale)}</h3>
+          <h3 style="margin-top: 0;">Appointment Details</h3>
           ${isAdvisor
-        ? `<p><strong>${getLocalizedMessage('emails.appointmentDetails.client', locale)}:</strong> ${client.firstName} ${client.lastName}</p>`
-        : `<p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', locale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>`
+        ? `<p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>`
+        : `<p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>`
       }
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', locale)}:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', locale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, locale)}</p>
+          <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
         </div>
         
-        <p>${getLocalizedMessage('emails.appointmentReminder.joinReminder', locale)}</p>
+        <p>Please make sure to join the consultation 5 minutes before the scheduled time.</p>
       </div>
     `
   };
 };
 
-exports.appointmentCancelled = (appointment, cancelledBy, recipientType) => {
+exports.appointmentCancelled = (appointment, cancelledBy) => {
   const { advisor, client, dateTime, type } = appointment;
-  const isAdvisor = recipientType === 'advisor';
-  const locale = isAdvisor ?
-    (advisor?.preferredLanguage || 'en') :
-    (client?.preferredLanguage || 'en');
+  const isAdvisor = Boolean(advisor.email);
 
   return {
-    subject: getLocalizedMessage(`emails.appointmentCancelled.${isAdvisor ? 'advisor' : 'client'}.subject`, locale),
+    subject: 'Appointment Cancelled - consult.ytech.space',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #e74c3c;">${getLocalizedMessage(`emails.appointmentCancelled.${isAdvisor ? 'advisor' : 'client'}.title`, locale)}</h2>
-        <p>${getLocalizedMessage(`emails.appointmentCancelled.${isAdvisor ? 'advisor' : 'client'}.body`, locale, { cancelledBy })}</p>
+        <h2 style="color: #e74c3c;">Appointment Cancelled</h2>
+        <p>The following appointment has been cancelled by ${cancelledBy}.</p>
         
         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <h3 style="margin-top: 0;">${getLocalizedMessage('emails.appointmentDetails.title', locale)}</h3>
+          <h3 style="margin-top: 0;">Appointment Details</h3>
           ${isAdvisor
-        ? `<p><strong>${getLocalizedMessage('emails.appointmentDetails.client', locale)}:</strong> ${client.firstName} ${client.lastName}</p>`
-        : `<p><strong>${getLocalizedMessage('emails.appointmentDetails.advisor', locale)}:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>`
+        ? `<p><strong>Client:</strong> ${client.firstName} ${client.lastName}</p>`
+        : `<p><strong>Advisor:</strong> Dr. ${advisor.firstName} ${advisor.lastName}</p>`
       }
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.dateTime', locale)}:</strong> ${formatDateTime(dateTime)}</p>
-          <p><strong>${getLocalizedMessage('emails.appointmentDetails.type', locale)}:</strong> ${getLocalizedMessage(`appointments.types.${type}`, locale)}</p>
+          <p><strong>Date & Time:</strong> ${formatDateTime(dateTime)}</p>
+          <p><strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Consultation</p>
         </div>
         
-        <p>${getLocalizedMessage(`emails.appointmentCancelled.${isAdvisor ? 'advisor' : 'client'}.action`, locale)}</p>
+        ${isAdvisor
+        ? '<p>The time slot is now available for other appointments.</p>'
+        : '<p>You can schedule a new appointment through our website.</p>'
+      }
       </div>
     `
   };

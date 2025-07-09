@@ -1,5 +1,3 @@
-const { getLocalizedMessage } = require('../localization');
-
 /**
  * Send notification when a consultation is automatically completed
  * @param {Object} appointment - Appointment object with populated client and advisor
@@ -15,10 +13,6 @@ exports.sendConsultationCompletedNotification = async (appointment) => {
         const client = appointment.client;
         const advisor = appointment.advisor;
 
-        // Get user's preferred language
-        const clientLocale = client.preferredLanguage || 'en';
-        const advisorLocale = advisor.preferredLanguage || 'en';
-
         if (!client || !advisor) {
             console.error('Error: Client or advisor not populated in appointment for notification');
             return;
@@ -27,71 +21,41 @@ exports.sendConsultationCompletedNotification = async (appointment) => {
         // Send email to client
         await emailService.sendEmail({
             to: client.email,
-            subject: getLocalizedMessage('notifications.consultationCompleted.client.subject', clientLocale),
-            text: getLocalizedMessage('notifications.consultationCompleted.client.text', clientLocale, {
-                advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
-            }),
+            subject: 'Your Consultation Has Ended - E-Consult',
+            text: `Your consultation with Dr. ${advisor.firstName} ${advisor.lastName} has ended. 
+            If you need to schedule a follow-up appointment, please visit our website.`,
             html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #4a90e2;">${getLocalizedMessage('notifications.consultationCompleted.client.title', clientLocale)}</h2>
-                <p>${getLocalizedMessage('common.dear', clientLocale)} ${client.firstName} ${client.lastName},</p>
-                <p>${getLocalizedMessage('notifications.consultationCompleted.client.body', clientLocale, {
-                    advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
-                })}</p>
-                <p><strong>${getLocalizedMessage('appointments.appointmentDate', clientLocale)}:</strong> ${new Date(appointment.dateTime).toLocaleDateString()}</p>
-                <p><strong>${getLocalizedMessage('appointments.appointmentTime', clientLocale)}:</strong> ${new Date(appointment.dateTime).toLocaleTimeString()} - ${new Date(appointment.endTime).toLocaleTimeString()}</p>
-                <p>${getLocalizedMessage('notifications.consultationCompleted.client.followUp', clientLocale)}</p>
-                <p>${getLocalizedMessage('notifications.consultationCompleted.client.thanks', clientLocale)}</p>
-                </div>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #4a90e2;">Consultation Ended</h2>
+              <p>Dear ${client.firstName} ${client.lastName},</p>
+              <p>Your consultation with Dr. ${advisor.firstName} ${advisor.lastName} has ended.</p>
+              <p><strong>Date:</strong> ${new Date(appointment.dateTime).toLocaleDateString()}</p>
+              <p><strong>Time:</strong> ${new Date(appointment.dateTime).toLocaleTimeString()} - ${new Date(appointment.endTime).toLocaleTimeString()}</p>
+              <p>If you need to schedule a follow-up appointment, please visit our website.</p>
+              <p>Thank you for choosing E-Consult for your healthcare needs.</p>
+            </div>
             `
         });
 
         // Send email to advisor
         await emailService.sendEmail({
             to: advisor.email,
-            subject: getLocalizedMessage('notifications.consultationCompleted.advisor.subject', advisorLocale),
-            text: getLocalizedMessage('notifications.consultationCompleted.advisor.text', advisorLocale, {
-                clientName: `${client.firstName} ${client.lastName}`
-            }),
+            subject: 'Consultation Completed - E-Consult',
+            text: `Your consultation with ${client.firstName} ${client.lastName} has ended. 
+            Please complete your consultation summary if you haven't already done so.`,
             html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #4a90e2;">${getLocalizedMessage('notifications.consultationCompleted.advisor.title', advisorLocale)}</h2>
-                <p>${getLocalizedMessage('common.dear', advisorLocale)} Dr. ${advisor.firstName} ${advisor.lastName},</p>
-                <p>${getLocalizedMessage('notifications.consultationCompleted.advisor.body', advisorLocale, {
-                    clientName: `${client.firstName} ${client.lastName}`
-                })}</p>
-                <p><strong>${getLocalizedMessage('appointments.appointmentDate', advisorLocale)}:</strong> ${new Date(appointment.dateTime).toLocaleDateString()}</p>
-                <p><strong>${getLocalizedMessage('appointments.appointmentTime', advisorLocale)}:</strong> ${new Date(appointment.dateTime).toLocaleTimeString()} - ${new Date(appointment.endTime).toLocaleTimeString()}</p>
-                <p>${getLocalizedMessage('notifications.consultationCompleted.advisor.action', advisorLocale)}</p>
-                <p>${getLocalizedMessage('notifications.consultationCompleted.advisor.thanks', advisorLocale)}</p>
-                </div>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #4a90e2;">Consultation Completed</h2>
+              <p>Dear Dr. ${advisor.firstName} ${advisor.lastName},</p>
+              <p>Your consultation with ${client.firstName} ${client.lastName} has ended.</p>
+              <p><strong>Date:</strong> ${new Date(appointment.dateTime).toLocaleDateString()}</p>
+              <p><strong>Time:</strong> ${new Date(appointment.dateTime).toLocaleTimeString()} - ${new Date(appointment.endTime).toLocaleTimeString()}</p>
+              <p>Please complete your consultation summary and add any necessary advices or follow-up recommendations.</p>
+              <p>Thank you for your dedication to client care.</p>
+            </div>
             `
         });
 
-        // Send Telegram notification if user has linked account
-        if (client.telegramId) {
-            // const { telegramBot } = require('../bot/index');
-            // if (telegramBot) {
-            //     await telegramBot.telegram.sendMessage(
-            //         client.telegramId,
-            //         getLocalizedMessage('notifications.consultationCompleted.client.telegram', clientLocale, {
-            //             advisorName: `Dr. ${advisor.firstName} ${advisor.lastName}`
-            //         })
-            //     );
-            // }
-        }
-
-        if (advisor.telegramId) {
-            // const { telegramBot } = require('../bot/index');
-            // if (telegramBot) {
-            //     await telegramBot.telegram.sendMessage(
-            //         advisor.telegramId,
-            //         getLocalizedMessage('notifications.consultationCompleted.advisor.telegram', advisorLocale, {
-            //             clientName: `${client.firstName} ${client.lastName}`
-            //         })
-            //     );
-            // }
-        }
     } catch (error) {
         console.error('Error sending consultation completed notification:', error);
     }

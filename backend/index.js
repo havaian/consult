@@ -20,7 +20,6 @@ require('./db');
 // Import routes
 const userRoutes = require('./src/user/routes');
 const appointmentRoutes = require('./src/appointment/routes');
-const telegramRoutes = require('./src/bot/routes');
 // const assistantRoutes = require('./src/assistant/routes');
 const paymentRoutes = require('./src/payment/routes');
 const consultationRoutes = require('./src/consultation/routes');
