@@ -11,6 +11,9 @@ const socketIo = require('socket.io');
 const initializeSocketIO = require('./src/chat/socket');
 const { handleTextEncoding } = require('./src/auth/index'); // Import text encoding middleware from existing auth module
 
+// Import the backend localization
+const { localization } = require('./src/utils/localization');
+
 // Load environment variables
 require('dotenv').config();
 
@@ -62,6 +65,9 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Cookie parser
 app.use(cookieParser());
+
+// Apply localization middleware
+app.use(localization.middleware());
 
 // Apply text encoding middleware
 app.use(handleTextEncoding);
@@ -286,7 +292,7 @@ app.use(compression());
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again later'
+    message: req.t('errors.tooManyRequests')
 });
 app.use('/api', limiter);
 
@@ -326,7 +332,7 @@ scheduleAppointmentReminders();
 app.get('/api/health', (req, res) => {
     res.status(200).json({
         status: 'success',
-        message: 'Server is running',
+        message: req.t('server.running'),
         environment: process.env.NODE_ENV,
         timestamp: new Date().toISOString()
     });
@@ -341,7 +347,7 @@ app.use((err, req, res, next) => {
 
     res.status(statusCode).json({
         status,
-        message: err.message || 'Internal server error'
+        message: err.message || req.t('errors.serverError')
     });
 });
 

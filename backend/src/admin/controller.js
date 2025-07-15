@@ -74,7 +74,7 @@ exports.getAllUsers = async (req, res) => {
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching users',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -93,7 +93,7 @@ exports.getUserById = async (req, res) => {
             .select('-password -resetPasswordToken -resetPasswordExpire');
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Get additional statistics if needed
@@ -133,7 +133,7 @@ exports.getUserById = async (req, res) => {
     } catch (error) {
         console.error('Error fetching user details:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching user details',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -164,7 +164,7 @@ exports.updateUser = async (req, res) => {
         const user = await User.findById(id);
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Update allowed fields
@@ -192,13 +192,13 @@ exports.updateUser = async (req, res) => {
         await user.save();
 
         res.status(200).json({
-            message: 'User updated successfully',
+            message: req.t('success.updated'),
             user: user.getPublicProfile()
         });
     } catch (error) {
         console.error('Error updating user:', error);
         res.status(500).json({
-            message: 'An error occurred while updating user',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -215,26 +215,26 @@ exports.updateUserStatus = async (req, res) => {
         const { isActive } = req.body;
 
         if (isActive === undefined) {
-            return res.status(400).json({ message: 'isActive status is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         const user = await User.findById(id);
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         user.isActive = isActive;
         await user.save();
 
         res.status(200).json({
-            message: `User ${isActive ? 'activated' : 'deactivated'} successfully`,
+            message: req.t('success.updated'),
             user: user.getPublicProfile()
         });
     } catch (error) {
         console.error('Error updating user status:', error);
         res.status(500).json({
-            message: 'An error occurred while updating user status',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -251,26 +251,26 @@ exports.verifyUser = async (req, res) => {
         const { isVerified } = req.body;
 
         if (isVerified === undefined) {
-            return res.status(400).json({ message: 'isVerified status is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         const user = await User.findById(id);
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         user.isVerified = isVerified;
         await user.save();
 
         res.status(200).json({
-            message: `User ${isVerified ? 'verified' : 'unverified'} successfully`,
+            message: req.t('success.updated'),
             user: user.getPublicProfile()
         });
     } catch (error) {
         console.error('Error updating verification status:', error);
         res.status(500).json({
-            message: 'An error occurred while updating verification status',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -355,7 +355,7 @@ exports.getAllAppointments = async (req, res) => {
     } catch (error) {
         console.error('Error fetching appointments:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching appointments',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -375,7 +375,7 @@ exports.getAppointmentById = async (req, res) => {
             .populate('advisor', 'firstName lastName email phone specializations experience');
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Get payment details if available
@@ -391,7 +391,7 @@ exports.getAppointmentById = async (req, res) => {
     } catch (error) {
         console.error('Error fetching appointment details:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching appointment details',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -416,7 +416,7 @@ exports.updateAppointment = async (req, res) => {
         const appointment = await Appointment.findById(id);
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Update fields
@@ -429,13 +429,13 @@ exports.updateAppointment = async (req, res) => {
         await appointment.save();
 
         res.status(200).json({
-            message: 'Appointment updated successfully',
+            message: req.t('success.updated'),
             appointment
         });
     } catch (error) {
         console.error('Error updating appointment:', error);
         res.status(500).json({
-            message: 'An error occurred while updating appointment',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -546,7 +546,7 @@ exports.getAllPayments = async (req, res) => {
     } catch (error) {
         console.error('Error fetching payments:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching payments',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -710,7 +710,7 @@ exports.getDashboardStats = async (req, res) => {
     } catch (error) {
         console.error('Error generating dashboard statistics:', error);
         res.status(500).json({
-            message: 'An error occurred while generating dashboard statistics',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -787,7 +787,7 @@ exports.getSystemHealth = async (req, res) => {
     } catch (error) {
         console.error('Error checking system health:', error);
         res.status(500).json({
-            message: 'An error occurred while checking system health',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -803,7 +803,7 @@ exports.createSpecialization = async (req, res) => {
         const { name, description, icon } = req.body;
 
         if (!name) {
-            return res.status(400).json({ message: 'Specialization name is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Check if specializations already exists
@@ -812,7 +812,7 @@ exports.createSpecialization = async (req, res) => {
         });
 
         if (existingSpecialization) {
-            return res.status(400).json({ message: 'Specialization already exists' });
+            return res.status(400).json({ message: req.t('errors.duplicateEntry') });
         }
 
         // Create new specializations
@@ -825,13 +825,13 @@ exports.createSpecialization = async (req, res) => {
         await specializations.save();
 
         res.status(201).json({
-            message: 'Specialization created successfully',
+            message: req.t('success.created'),
             specializations
         });
     } catch (error) {
         console.error('Error creating specializations:', error);
         res.status(500).json({
-            message: 'An error occurred while creating specializations',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -872,7 +872,7 @@ exports.getAllSpecializations = async (req, res) => {
     } catch (error) {
         console.error('Error fetching specializations:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching specializations',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -892,7 +892,7 @@ exports.updateSpecialization = async (req, res) => {
         const specializations = await Specialization.findById(id);
 
         if (!specializations) {
-            return res.status(404).json({ message: 'Specialization not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Check if new name already exists (if name is being updated) 
@@ -903,7 +903,7 @@ exports.updateSpecialization = async (req, res) => {
             });
 
             if (existingSpecialization) {
-                return res.status(400).json({ message: 'Specialization with this name already exists' });
+                return res.status(400).json({ message: req.t('errors.duplicateEntry') });
             }
 
             specializations.name = name;
@@ -917,13 +917,13 @@ exports.updateSpecialization = async (req, res) => {
         await specializations.save();
 
         res.status(200).json({
-            message: 'Specialization updated successfully',
+            message: req.t('success.updated'),
             specializations
         });
     } catch (error) {
         console.error('Error updating specializations:', error);
         res.status(500).json({
-            message: 'An error occurred while updating specializations',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -942,7 +942,7 @@ exports.deleteSpecialization = async (req, res) => {
         const specializations = await Specialization.findById(id);
 
         if (!specializations) {
-            return res.status(404).json({ message: 'Specialization not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Check if specializations is in use
@@ -952,7 +952,7 @@ exports.deleteSpecialization = async (req, res) => {
 
         if (advisorsUsingSpecialization > 0) {
             return res.status(400).json({
-                message: 'Cannot delete specializations that is in use by advisors',
+                message: req.t('admin.specializationInUse'),
                 advisorsCount: advisorsUsingSpecialization
             });
         }
@@ -961,12 +961,12 @@ exports.deleteSpecialization = async (req, res) => {
         await specializations.remove();
 
         res.status(200).json({
-            message: 'Specialization deleted successfully'
+            message: req.t('success.deleted')
         });
     } catch (error) {
         console.error('Error deleting specializations:', error);
         res.status(500).json({
-            message: 'An error occurred while deleting specializations',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }

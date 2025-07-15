@@ -35,7 +35,7 @@ exports.getActiveSpecializations = async (req, res) => {
     } catch (error) {
         console.error('Error fetching specializations:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching specializations',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -53,7 +53,7 @@ exports.getSpecializationById = async (req, res) => {
         const specializations = await Specialization.findById(id);
 
         if (!specializations) {
-            return res.status(404).json({ message: 'Specialization not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         if (!specializations.isActive) {
@@ -77,7 +77,7 @@ exports.getSpecializationById = async (req, res) => {
     } catch (error) {
         console.error('Error fetching specializations:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching specializations',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -96,7 +96,7 @@ exports.getAdvisorsBySpecialization = async (req, res) => {
         const specializations = await Specialization.findById(id);
 
         if (!specializations) {
-            return res.status(404).json({ message: 'Specialization not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         if (!specializations.isActive) {
@@ -142,7 +142,7 @@ exports.getAdvisorsBySpecialization = async (req, res) => {
     } catch (error) {
         console.error('Error fetching advisors by specializations:', error);
         res.status(500).json({
-            message: 'An error occurred while fetching advisors',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }

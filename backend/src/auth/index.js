@@ -25,7 +25,7 @@ exports.authenticateUser = async (req, res, next) => {
         // Check token exists
         if (!token) {
             return res.status(401).json({
-                message: 'You are not logged in. Please log in to get access.'
+                message: req.t('auth.notLoggedIn')
             });
         }
 
@@ -54,7 +54,7 @@ exports.authenticateUser = async (req, res, next) => {
             } catch (personalError) {
                 // Both verification methods failed
                 return res.status(401).json({
-                    message: 'Invalid token. Please log in again.'
+                    message: req.t('auth.invalidToken')
                 });
             }
         }
@@ -64,21 +64,21 @@ exports.authenticateUser = async (req, res, next) => {
 
         if (!user) {
             return res.status(401).json({
-                message: 'The user belonging to this token no longer exists.'
+                message: req.t('auth.userNotExists')
             });
         }
 
         // Verify that user has confirmed their email
         if (!user.isVerified) {
             return res.status(401).json({
-                message: 'Please verify your email before accessing this resource.'
+                message: req.t('auth.emailNotVerified')
             });
         }
 
         // Check if user is active
         if (!user.isActive) {
             return res.status(401).json({
-                message: 'This account has been deactivated. Please contact support.'
+                message: req.t('auth.accountDeactivated')
             });
         }
 
@@ -90,14 +90,14 @@ exports.authenticateUser = async (req, res, next) => {
         // If token is expired
         if (now >= tokenExpiresAt) {
             return res.status(401).json({
-                message: 'Your token has expired. Please log in again.'
+                message: req.t('auth.tokenExpired')
             });
         }
 
         // If personal JWT secret was rotated after token was issued
         if (user.jwtSecretCreatedAt && tokenIssuedAt < user.jwtSecretCreatedAt) {
             return res.status(401).json({
-                message: 'Your session has expired due to security changes. Please log in again.'
+                message: req.t('auth.sessionExpired')
             });
         }
 
@@ -111,17 +111,17 @@ exports.authenticateUser = async (req, res, next) => {
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({
-                message: 'Invalid token. Please log in again.'
+                message: req.t('auth.invalidToken')
             });
         } else if (error.name === 'TokenExpiredError') {
             return res.status(401).json({
-                message: 'Your token has expired. Please log in again.'
+                message: req.t('auth.tokenExpired')
             });
         }
 
         console.error('Authentication error:', error);
         return res.status(500).json({
-            message: 'An error occurred during authentication.'
+            message: req.t('errors.serverError')
         });
     }
 };
@@ -134,13 +134,13 @@ exports.authorizeRoles = (roles) => {
     return (req, res, next) => {
         if (!req.user) {
             return res.status(401).json({
-                message: 'You must be logged in to access this resource.'
+                message: req.t('auth.loginRequired')
             });
         }
 
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({
-                message: `Role '${req.user.role}' is not authorized to access this resource.`
+                message: req.t('auth.roleNotAuthorized')
             });
         }
 
@@ -164,7 +164,7 @@ exports.ensureOwnership = (paramIdField) => {
         // For other roles, check if user is the owner
         if (req.user.id.toString() !== resourceOwnerId) {
             return res.status(403).json({
-                message: 'You are not authorized to access this resource.'
+                message: req.t('errors.unauthorized')
             });
         }
 
@@ -189,7 +189,7 @@ exports.ensureAppointmentAccess = async (req, res, next) => {
 
         if (!appointment) {
             return res.status(404).json({
-                message: 'Appointment not found.'
+                message: req.t('errors.serverError')
             });
         }
 
@@ -200,7 +200,7 @@ exports.ensureAppointmentAccess = async (req, res, next) => {
 
         if (!isAdvisor && !isClient) {
             return res.status(403).json({
-                message: 'You are not authorized to access this appointment.'
+                message: req.t('errors.unauthorized')
             });
         }
 
@@ -208,7 +208,7 @@ exports.ensureAppointmentAccess = async (req, res, next) => {
     } catch (error) {
         console.error('Appointment access error:', error);
         return res.status(500).json({
-            message: 'An error occurred while checking appointment access.'
+            message: req.t('errors.serverError')
         });
     }
 };
@@ -223,7 +223,7 @@ exports.verifyTelegramWebhook = (req, res, next) => {
         // Check if secret matches configured value
         if (!secret || secret !== process.env.TELEGRAM_WEBHOOK_SECRET) {
             return res.status(403).json({
-                message: 'Unauthorized webhook request'
+                message: req.t('errors.unauthorized')
             });
         }
 
@@ -231,7 +231,7 @@ exports.verifyTelegramWebhook = (req, res, next) => {
     } catch (error) {
         console.error('Telegram webhook verification error:', error);
         return res.status(500).json({
-            message: 'An error occurred during webhook verification.'
+            message: req.t('errors.serverError')
         });
     }
 };
@@ -284,7 +284,7 @@ exports.contentFilter = (req, res, next) => {
 
             if (!userId) {
                 return res.status(400).json({
-                    message: 'Content contains prohibited information. Please remove contact details or external communication platforms references.'
+                    message: req.t('security.prohibitedContent')
                 });
             }
 
@@ -293,7 +293,7 @@ exports.contentFilter = (req, res, next) => {
 
             // Return error
             return res.status(400).json({
-                message: 'For your safety and privacy, sharing contact information or references to external communication platforms is not allowed. Please communicate through the platform.'
+                message: req.t('security.privacyWarning')
             });
         }
 
@@ -435,7 +435,7 @@ exports.restrictChatDuringCall = async (req, res, next) => {
                 // Check if we're currently within the appointment time
                 if (now >= appointmentTime && now <= appointmentEndTime) {
                     return res.status(403).json({
-                        message: 'Chat is restricted during active video or audio consultations. Please use the consultation interface for communication.'
+                        message: req.t('chat.restrictedDuringCall')
                     });
                 }
             }
@@ -528,7 +528,7 @@ exports.contentFilter = (req, res, next) => {
 
             if (!userId) {
                 return res.status(400).json({
-                    message: 'Content contains prohibited information. Please remove contact details or external communication platforms references.'
+                    message: req.t('security.prohibitedContent')
                 });
             }
 
@@ -537,7 +537,7 @@ exports.contentFilter = (req, res, next) => {
 
             // Return error
             return res.status(400).json({
-                message: 'For your safety and privacy, sharing contact information or references to external communication platforms is not allowed. Please communicate through the platform.'
+                message: req.t('security.privacyWarning')
             });
         }
 

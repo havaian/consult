@@ -1,4 +1,7 @@
 {
+  "admin": {
+    "specializationInUse": "Невозможно удалить специализацию"
+  },
   "common": {
     "dear": "Уважаемый",
     "loading": "Загрузка...",

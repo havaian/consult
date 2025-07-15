@@ -34,7 +34,7 @@ class ConsultationController {
                 .populate('client', 'firstName lastName profilePicture dateOfBirth email');
 
             if (!appointment) {
-                return res.status(404).json({ message: 'Appointment not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             // Check if user is involved in the appointment
@@ -146,7 +146,7 @@ class ConsultationController {
             });
         } catch (error) {
             console.error('Error joining consultation:', error);
-            res.status(500).json({ message: 'An error occurred while joining the consultation' });
+            res.status(500).json({ message: req.t('errors.serverError') });
         }
     };
 
@@ -168,7 +168,7 @@ class ConsultationController {
             const appointment = await Appointment.findById(appointmentId);
 
             if (!appointment) {
-                return res.status(404).json({ message: 'Appointment not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             // Only advisor or admin can end consultation
@@ -205,7 +205,7 @@ class ConsultationController {
             });
         } catch (error) {
             console.error('Error ending consultation:', error);
-            res.status(500).json({ message: 'An error occurred while ending the consultation' });
+            res.status(500).json({ message: req.t('errors.serverError') });
         }
     };
 
@@ -231,7 +231,7 @@ class ConsultationController {
             const appointment = await Appointment.findById(appointmentId);
 
             if (!appointment) {
-                return res.status(404).json({ message: 'Appointment not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             // Only advisor or admin can add advices
@@ -266,7 +266,7 @@ class ConsultationController {
             });
         } catch (error) {
             console.error('Error adding advices:', error);
-            res.status(500).json({ message: 'An error occurred while adding advices' });
+            res.status(500).json({ message: req.t('errors.serverError') });
         }
     };
 
@@ -301,7 +301,7 @@ class ConsultationController {
                 .populate('client', 'firstName lastName');
 
             if (!originalAppointment) {
-                return res.status(404).json({ message: 'Original appointment not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             // Only advisor or admin can create follow-up
@@ -347,7 +347,7 @@ class ConsultationController {
             });
         } catch (error) {
             console.error('Error creating follow-up appointment:', error);
-            res.status(500).json({ message: 'An error occurred while creating follow-up appointment' });
+            res.status(500).json({ message: req.t('errors.serverError') });
         }
     };
 
@@ -368,7 +368,7 @@ class ConsultationController {
             const appointment = await Appointment.findById(appointmentId);
 
             if (!appointment) {
-                return res.status(404).json({ message: 'Appointment not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             res.status(200).json({
@@ -379,7 +379,7 @@ class ConsultationController {
             });
         } catch (error) {
             console.error('Error getting consultation status:', error);
-            res.status(500).json({ message: 'An error occurred while checking consultation status' });
+            res.status(500).json({ message: req.t('errors.serverError') });
         }
     };
 
@@ -405,7 +405,7 @@ class ConsultationController {
             const appointment = await Appointment.findById(appointmentId);
 
             if (!appointment) {
-                return res.status(404).json({ message: 'Appointment not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             // Check if user is involved in the appointment
@@ -425,7 +425,7 @@ class ConsultationController {
             });
         } catch (error) {
             console.error('Error saving chat log:', error);
-            res.status(500).json({ message: 'An error occurred while saving chat log' });
+            res.status(500).json({ message: req.t('errors.serverError') });
         }
     };
 
@@ -446,7 +446,7 @@ class ConsultationController {
             const appointment = await Appointment.findById(appointmentId);
 
             if (!appointment) {
-                return res.status(404).json({ message: 'Appointment not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             // Only process for scheduled appointments
@@ -505,7 +505,7 @@ class ConsultationController {
             });
         } catch (error) {
             console.error('Error handling room exit:', error);
-            res.status(500).json({ message: 'An error occurred while processing room exit' });
+            res.status(500).json({ message: req.t('errors.serverError') });
         }
     }
 
@@ -526,17 +526,17 @@ class ConsultationController {
                 .populate('advisor', 'firstName lastName email telegramId');
 
             if (!appointment) {
-                return res.status(404).json({ message: 'Appointment not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             // Verify advisor is assigned to this appointment
             if (appointment.advisor._id.toString() !== advisorId.toString()) {
-                return res.status(403).json({ message: 'You are not authorized to update this consultation' });
+                return res.status(403).json({ message: req.t('errors.unauthorized') });
             }
 
             // Verify appointment is completed
             if (appointment.status !== 'completed') {
-                return res.status(400).json({ message: 'Can only update completed consultations' });
+                return res.status(400).json({ message: req.t('consultations.onlyCompleted') });
             }
 
             // Update consultation summary if provided
@@ -613,13 +613,13 @@ class ConsultationController {
             await appointment.save();
 
             res.status(200).json({
-                message: 'Consultation results updated successfully',
+                message: req.t('success.updated'),
                 appointment
             });
 
         } catch (error) {
             console.error('Error updating consultation results:', error);
-            res.status(500).json({ message: 'An error occurred while updating consultation results' });
+            res.status(500).json({ message: req.t('errors.serverError') });
         }
     }
 }

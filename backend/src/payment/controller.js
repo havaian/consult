@@ -20,7 +20,7 @@ exports.createCheckoutSession = async (req, res) => {
             .populate('client', 'firstName lastName email');
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Check if appointment already has a payment
@@ -236,7 +236,7 @@ exports.verifySessionStatus = async (req, res) => {
             .populate('advisor', 'firstName lastName specializations');
 
         if (!payment) {
-            return res.status(404).json({ message: 'Payment not found for this session' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // If payment is still pending, check with Stripe

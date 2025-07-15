@@ -15,7 +15,7 @@ exports.createAppointment = async (req, res) => {
         // Validate duration is a multiple of 15 minutes
         if (duration % 15 !== 0 || duration < 15 || duration > 120) {
             return res.status(400).json({
-                message: 'Duration must be a multiple of 15 minutes (15, 30, 45, 60, etc.) and between 15-120 minutes'
+                message: req.t('appointments.invalidDuration')
             });
         }
 
@@ -38,28 +38,28 @@ exports.createAppointment = async (req, res) => {
                 advisor,
                 dateTime,
                 type,
-                error: error.details[0].message
+                error: req.t('errors.validationError')
             });
 
-            return res.status(400).json({ message: error.details[0].message });
+            return res.status(400).json({ message: req.t('errors.validationError') });
         }
 
         // Verify that advisor exists
         const advisor = await User.findById(advisorId);
         if (!advisor || advisor.role !== 'advisor') {
-            return res.status(404).json({ message: 'Advisor not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Verify that client exists
         const client = await User.findById(clientId);
         if (!client || client.role !== 'client') {
-            return res.status(404).json({ message: 'Client not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Check appointment type is valid
         const validTypes = ['video', 'audio', 'chat'];
         if (!validTypes.includes(type)) {
-            return res.status(400).json({ message: 'Invalid appointment type. Must be video, audio, or chat' });
+            return res.status(400).json({ message: req.t('appointments.invalidType') });
         }
 
         // Calculate end time based on duration
@@ -96,10 +96,10 @@ exports.createAppointment = async (req, res) => {
                 advisor,
                 dateTime,
                 type,
-                error: 'Advisor is not available at this time'
+                error: req.t('appointments.advisorNotAvailable')
             });
 
-            return res.status(409).json({ message: 'Advisor is not available at this time' });
+            return res.status(409).json({ message: req.t('appointments.advisorNotAvailable') });
         }
 
         // Check if advisor's working hours allow this appointment
@@ -109,7 +109,7 @@ exports.createAppointment = async (req, res) => {
         const advisorAvailability = advisor.availability.find(a => a.dayOfWeek === dayIndex);
 
         if (!advisorAvailability || !advisorAvailability.isAvailable) {
-            return res.status(400).json({ message: 'Advisor is not available on this day' });
+            return res.status(400).json({ message: req.t('appointments.advisorNotAvailableDay') });
         }
 
         // Check if appointment falls within advisor's working hours
@@ -153,7 +153,7 @@ exports.createAppointment = async (req, res) => {
         }
 
         if (!isWithinWorkingHours) {
-            return res.status(400).json({ message: 'Appointment time is outside advisor\'s working hours' });
+            return res.status(400).json({ message: req.t('appointments.outsideWorkingHours') });
         }
 
         // Create new appointment with pending-advisor-confirmation status
@@ -180,12 +180,12 @@ exports.createAppointment = async (req, res) => {
         });
 
         res.status(201).json({
-            message: 'Appointment created successfully, awaiting advisor confirmation',
+            message: req.t('appointments.created'),
             appointment
         });
     } catch (error) {
         console.error('Error creating appointment:', error);
-        res.status(500).json({ message: 'An error occurred while creating the appointment' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -266,7 +266,7 @@ exports.getClientAppointments = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching client appointments:', error);
-        res.status(500).json({ message: 'An error occurred while fetching appointments' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -323,7 +323,7 @@ exports.getAdvisorAppointments = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching advisor appointments:', error);
-        res.status(500).json({ message: 'An error occurred while fetching appointments' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -338,17 +338,17 @@ exports.confirmAppointment = async (req, res) => {
             .populate('advisor');
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Verify advisor is assigned to this appointment
         if (appointment.advisor._id.toString() !== advisorId.toString()) {
-            return res.status(403).json({ message: 'You are not authorized to confirm this appointment' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Check appointment status
         if (appointment.status !== 'pending-advisor-confirmation') {
-            return res.status(400).json({ message: `Cannot confirm appointment with status "${appointment.status}"` });
+            return res.status(400).json({ message: req.t('appointments.confirmationExpired') });
         }
 
         // Check confirmation deadline
@@ -371,7 +371,7 @@ exports.confirmAppointment = async (req, res) => {
             await NotificationService.sendAppointmentCancellationNotification(appointment, 'system');
 
             return res.status(400).json({
-                message: 'Confirmation deadline has passed. Appointment has been automatically canceled.'
+                message: req.t('appointments.confirmationExpired')
             });
         }
 
@@ -383,12 +383,12 @@ exports.confirmAppointment = async (req, res) => {
         await NotificationService.sendAppointmentConfirmedNotification(appointment);
 
         res.status(200).json({
-            message: 'Appointment confirmed successfully',
+            message: req.t('appointments.confirmed'),
             appointment
         });
     } catch (error) {
         console.error('Error confirming appointment:', error);
-        res.status(500).json({ message: 'An error occurred while confirming the appointment' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -403,7 +403,7 @@ exports.updateAppointmentStatus = async (req, res) => {
             .populate('advisor');
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Validate status transition
@@ -418,7 +418,7 @@ exports.updateAppointmentStatus = async (req, res) => {
 
         if (!validTransitions[appointment.status].includes(status)) {
             return res.status(400).json({
-                message: `Cannot change status from ${appointment.status} to ${status}`
+                message: req.t('appointments.cannotChangeStatus')
             });
         }
 
@@ -454,12 +454,12 @@ exports.updateAppointmentStatus = async (req, res) => {
         }
 
         res.status(200).json({
-            message: 'Appointment status updated successfully',
+            message: req.t('success.updated'),
             appointment
         });
     } catch (error) {
         console.error('Error updating appointment status:', error);
-        res.status(500).json({ message: 'An error occurred while updating appointment status' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -473,13 +473,13 @@ exports.getAppointmentById = async (req, res) => {
             .populate('client', 'firstName lastName profilePicture dateOfBirth email phone');
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         res.status(200).json({ appointment });
     } catch (error) {
         console.error('Error fetching appointment details:', error);
-        res.status(500).json({ message: 'An error occurred while fetching appointment details' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -491,19 +491,19 @@ exports.updateAdvices = async (req, res) => {
 
         const appointment = await Appointment.findById(id);
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Only allow advisors to update advices for completed appointments
         if (appointment.status !== 'completed') {
             return res.status(400).json({
-                message: 'Advices can only be added to completed appointments'
+                message: req.t('appointments.advicesOnlyCompleted')
             });
         }
 
         // Validate advisor is assigned to this appointment
         if (req.user.role === 'advisor' && appointment.advisor.toString() !== req.user.id) {
-            return res.status(403).json({ message: 'You are not authorized to update advices for this appointment' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Add new advices (preserve existing ones)
@@ -516,12 +516,12 @@ exports.updateAdvices = async (req, res) => {
         await NotificationService.sendAdviceNotification(appointment);
 
         res.status(200).json({
-            message: 'Advices updated successfully',
+            message: req.t('success.updated'),
             appointment
         });
     } catch (error) {
         console.error('Error updating advices:', error);
-        res.status(500).json({ message: 'An error occurred while updating advices' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -534,7 +534,7 @@ exports.scheduleFollowUp = async (req, res) => {
         // Validate duration is a multiple of 15 minutes
         if (duration % 15 !== 0 || duration < 15 || duration > 120) {
             return res.status(400).json({
-                message: 'Duration must be a multiple of 15 minutes (15, 30, 45, 60, etc.) and between 15-120 minutes'
+                message: req.t('appointments.invalidDuration')
             });
         }
 
@@ -543,7 +543,7 @@ exports.scheduleFollowUp = async (req, res) => {
             .populate('client');
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Update follow-up information
@@ -581,12 +581,12 @@ exports.scheduleFollowUp = async (req, res) => {
         await NotificationService.sendFollowUpNotification(followUpAppointment);
 
         res.status(200).json({
-            message: 'Follow-up scheduled successfully',
+            message: req.t('appointments.followUpScheduled'),
             followUpAppointment
         });
     } catch (error) {
         console.error('Error scheduling follow-up:', error);
-        res.status(500).json({ message: 'An error occurred while scheduling follow-up' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -613,7 +613,7 @@ exports.getPendingFollowUps = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching pending follow-ups:', error);
-        res.status(500).json({ message: 'An error occurred while fetching pending follow-ups' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -624,13 +624,13 @@ exports.getAdvisorAvailability = async (req, res) => {
         const { date } = req.query;
 
         if (!date) {
-            return res.status(400).json({ message: 'Date parameter is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Get advisor's working hours
         const advisor = await User.findById(advisorId);
         if (!advisor || advisor.role !== 'advisor') {
-            return res.status(404).json({ message: 'Advisor not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Parse date and get working hours for that day of week
@@ -641,7 +641,7 @@ exports.getAdvisorAvailability = async (req, res) => {
         const dayAvailability = advisor.availability.find(a => a.dayOfWeek === dayIndex);
         if (!dayAvailability || !dayAvailability.isAvailable) {
             return res.status(200).json({
-                message: 'Advisor is not available on this day',
+                message: req.t('appointments.advisorNotAvailableDay'),
                 availableSlots: []
             });
         }
@@ -678,7 +678,7 @@ exports.getAdvisorAvailability = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching advisor availability:', error);
-        res.status(500).json({ message: 'An error occurred while fetching advisor availability' });
+        res.status(500).json({ message: req.t('errors.serverError')  });
     }
 };
 
@@ -741,7 +741,7 @@ exports.getPendingConfirmations = async (req, res) => {
         console.error('Error fetching pending confirmations:', error);
         res.status(500).json({ 
             success: false,
-            message: 'An error occurred while fetching pending confirmations',
+            message: req.t('errors.serverError'),
             error: error.message 
         });
     }
@@ -855,17 +855,17 @@ exports.updateConsultationResults = async (req, res) => {
             .populate('advisor', 'firstName lastName email telegramId');
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Verify advisor is assigned to this appointment
         if (appointment.advisor._id.toString() !== advisorId.toString()) {
-            return res.status(403).json({ message: 'You are not authorized to update this consultation' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Verify appointment is completed
         if (appointment.status !== 'completed') {
-            return res.status(400).json({ message: 'Can only update completed consultations' });
+            return res.status(400).json({ message: req.t('consultations.onlyCompleted') });
         }
 
         // Update consultation summary if provided
@@ -942,13 +942,13 @@ exports.updateConsultationResults = async (req, res) => {
         await appointment.save();
 
         res.status(200).json({
-            message: 'Consultation results updated successfully',
+            message: req.t('success.updated'),
             appointment
         });
 
     } catch (error) {
         console.error('Error updating consultation results:', error);
-        res.status(500).json({ message: 'An error occurred while updating consultation results' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -963,14 +963,14 @@ exports.uploadDocument = async (req, res) => {
         const userId = req.user.id;
 
         if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
+            return res.status(400).json({ message: req.t('validation.fileRequired') });
         }
 
         // Find appointment
         const appointment = await Appointment.findById(id);
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Determine who is uploading (client or advisor)
@@ -982,7 +982,7 @@ exports.uploadDocument = async (req, res) => {
             if (req.file && req.file.path) {
                 fs.unlinkSync(req.file.path);
             }
-            return res.status(403).json({ message: 'You are not authorized to upload documents for this appointment' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Add document to appointment
@@ -1006,12 +1006,12 @@ exports.uploadDocument = async (req, res) => {
         await NotificationService.sendDocumentUploadNotification(appointment, document, recipient);
 
         res.status(201).json({
-            message: 'Document uploaded successfully',
+            message: req.t('success.documentUploaded'),
             document
         });
     } catch (error) {
         console.error('Error uploading document:', error);
-        res.status(500).json({ message: 'An error occurred while uploading document' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -1029,7 +1029,7 @@ exports.getDocuments = async (req, res) => {
         const appointment = await Appointment.findById(id);
 
         if (!appointment) {
-            return res.status(404).json({ message: 'Appointment not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Verify user is involved in the appointment
@@ -1037,7 +1037,7 @@ exports.getDocuments = async (req, res) => {
         const isClient = req.user.role === 'client' && appointment.client.toString() === userId;
 
         if (!isAdvisor && !isClient && req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'You are not authorized to access documents for this appointment' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Return documents
@@ -1046,7 +1046,7 @@ exports.getDocuments = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching documents:', error);
-        res.status(500).json({ message: 'An error occurred while fetching documents' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -1062,7 +1062,7 @@ exports.getCalendarAppointments = async (req, res) => {
         const { startDate, endDate, view = 'month' } = req.query;
 
         if (!startDate || !endDate) {
-            return res.status(400).json({ message: 'Start date and end date are required for calendar view' });
+            return res.status(400).json({ message: req.t('validation.datesRequired') });
         }
 
         // Set up query based on user role
@@ -1073,7 +1073,7 @@ exports.getCalendarAppointments = async (req, res) => {
         } else if (userRole === 'client') {
             query.client = userId;
         } else if (userRole !== 'admin') {
-            return res.status(403).json({ message: 'Unauthorized access to calendar' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Add date range to query
@@ -1140,6 +1140,6 @@ exports.getCalendarAppointments = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching calendar appointments:', error);
-        res.status(500).json({ message: 'An error occurred while fetching calendar appointments' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };

@@ -14,12 +14,12 @@ exports.chatWithAssistant = async (req, res) => {
         const userId = req.user ? req.user.id : req.body.userId;
 
         if (!message) {
-            return res.status(400).json({ message: 'Message is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Only fallback to request body userId if user is not authenticated
         if (!userId) {
-            return res.status(400).json({ message: 'User authentication required' });
+            return res.status(400).json({ message: req.t('auth.authRequired') });
         }
 
         // Generate response from AI assistant
@@ -77,7 +77,7 @@ exports.chatWithAssistant = async (req, res) => {
     } catch (error) {
         console.error('Error in assistant chat:', error);
         res.status(500).json({
-            message: 'An error occurred while processing your request',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -121,7 +121,7 @@ exports.getChatHistory = async (req, res) => {
         console.error('Error getting chat history:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while retrieving chat history',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -157,13 +157,13 @@ exports.clearConversationHistory = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Conversation history cleared successfully'
+            message: req.t('success.cleared')
         });
     } catch (error) {
         console.error('Error clearing conversation history:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while clearing conversation history',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -181,7 +181,7 @@ exports.getHealthInfo = async (req, res) => {
         const userId = req.user ? req.user.id : 'anonymous';
 
         if (!topic) {
-            return res.status(400).json({ message: 'Topic is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Construct a message asking for information about the topic
@@ -199,7 +199,7 @@ exports.getHealthInfo = async (req, res) => {
         console.error('Error getting health information:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while fetching health information',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -217,11 +217,11 @@ exports.checkSymptoms = async (req, res) => {
         const userId = req.user ? req.user.id : req.body.userId;
 
         if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
-            return res.status(400).json({ message: 'Valid symptoms array is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         if (!userId) {
-            return res.status(400).json({ message: 'User authentication required' });
+            return res.status(400).json({ message: req.t('auth.authRequired') });
         }
 
         // Construct a message asking about the symptoms
@@ -240,7 +240,7 @@ exports.checkSymptoms = async (req, res) => {
         console.error('Error checking symptoms:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while checking symptoms',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -257,12 +257,12 @@ exports.submitFeedback = async (req, res) => {
         const userId = req.user.id;
 
         if (!messageId || !feedback) {
-            return res.status(400).json({ message: 'Message ID and feedback type are required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Validate feedback type
         if (!['thumbs_up', 'thumbs_down'].includes(feedback)) {
-            return res.status(400).json({ message: 'Invalid feedback type' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Store feedback in Redis
@@ -283,13 +283,13 @@ exports.submitFeedback = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Feedback submitted successfully'
+            message: req.t('success.submitted')
         });
     } catch (error) {
         console.error('Error submitting feedback:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while submitting feedback',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }

@@ -24,7 +24,7 @@ router.post('/verification', async (req, res) => {
         if (!email || !telegramChatId) {
             return res.status(400).json({
                 success: false,
-                message: 'Email and telegramChatId are required'
+                message: req.t('validation.required')
             });
         }
 
@@ -37,7 +37,7 @@ router.post('/verification', async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: 'User not found'
+                message: req.t('errors.notFound')
             });
         }
 
@@ -70,13 +70,13 @@ router.post('/verification', async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Verification code sent to email'
+            message: req.t('telegram.codeSent')
         });
     } catch (error) {
         console.error('Error generating verification code:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to generate verification code'
+            message: req.t('telegram.codeGenerationFailed')
         });
     }
 });
@@ -94,14 +94,14 @@ router.post('/send', async (req, res) => {
         if (!userId || !message) {
             return res.status(400).json({
                 success: false,
-                message: 'User ID and message are required'
+                message: req.t('validation.required')
             });
         }
 
         if (!telegramBot) {
             return res.status(503).json({
                 success: false,
-                message: 'Telegram bot is not initialized'
+                message: req.t('telegram.botNotInitialized')
             });
         }
 
@@ -112,7 +112,7 @@ router.post('/send', async (req, res) => {
         if (!user || !user.telegramId) {
             return res.status(404).json({
                 success: false,
-                message: 'User not found or Telegram account not linked'
+                message: req.t('errors.serverError')
             });
         }
 
@@ -126,13 +126,13 @@ router.post('/send', async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Message sent successfully'
+            message: req.t('success.sent')
         });
     } catch (error) {
         console.error('Error sending Telegram message:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to send message',
+            message: req.t('telegram.sendFailed'),
             error: error.message
         });
     }
@@ -152,7 +152,7 @@ router.get('/status', (req, res) => {
     } else {
         res.status(503).json({
             status: 'offline',
-            message: 'Telegram bot is not initialized'
+            message: req.t('telegram.botNotInitialized')
         });
     }
 });

@@ -166,7 +166,7 @@ function initializeSocketIO(io) {
             // Verify user is a participant in this conversation
             const conversation = await Conversation.findById(conversationId);
             if (!conversation) {
-                socket.emit('error', { message: 'Conversation not found' });
+                socket.emit('error', { message: req.t('errors.serverError') });
                 return;
             }
 
@@ -262,7 +262,7 @@ function initializeSocketIO(io) {
                     .populate('participants', 'firstName lastName profilePicture role');
 
                 if (!conversation) {
-                    if (callback) callback({ success: false, message: 'Conversation not found' });
+                    if (callback) callback({ success: false, message: req.t('errors.serverError') });
                     return;
                 }
 
@@ -273,7 +273,7 @@ function initializeSocketIO(io) {
                 if (!isParticipant) {
                     if (callback) callback({
                         success: false,
-                        message: 'You are not authorized to send messages in this conversation'
+                        message: req.t('errors.unauthorized')
                     });
                     return;
                 }
@@ -289,7 +289,7 @@ function initializeSocketIO(io) {
                 // Verify receiver exists
                 const receiver = await User.findById(receiverId);
                 if (!receiver) {
-                    if (callback) callback({ success: false, message: 'Receiver not found' });
+                    if (callback) callback({ success: false, message: req.t('errors.serverError') });
                     return;
                 }
 
@@ -359,7 +359,7 @@ function initializeSocketIO(io) {
             if (callback) callback({ success: true, message: messageForSocket });
         } catch (error) {
             console.error('Error handling new message:', error);
-            if (callback) callback({ success: false, message: 'Failed to send message' });
+            if (callback) callback({ success: false, message: req.t('telegram.sendFailed') });
         }
     }
 

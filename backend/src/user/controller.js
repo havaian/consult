@@ -26,7 +26,7 @@ exports.registerUser = async (req, res) => {
         // Now validate the processed data
         const { error } = validateUserInput(userData);
         if (error) {
-            return res.status(400).json({ message: error.details[0].message });
+            return res.status(400).json({ message: req.t('errors.validationError') });
         }
 
         const { email, password, firstName, lastName, phone, role } = userData;
@@ -120,7 +120,7 @@ exports.registerUser = async (req, res) => {
         });
     } catch (error) {
         console.error('Error registering user:', error);
-        res.status(500).json({ message: 'An error occurred while registering user' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -144,7 +144,7 @@ exports.verifyEmail = async (req, res) => {
         res.status(200).json({ message: 'Email verified successfully' });
     } catch (error) {
         console.error('Error verifying email:', error);
-        res.status(500).json({ message: 'An error occurred while verifying email' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -192,7 +192,7 @@ exports.loginUser = async (req, res) => {
         });
     } catch (error) {
         console.error('Error logging in:', error);
-        res.status(500).json({ message: 'An error occurred while logging in' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -202,14 +202,14 @@ exports.getCurrentUser = async (req, res) => {
         const user = await User.findById(req.user.id).select('-password -resetPasswordToken -resetPasswordExpire -verificationToken -jwtSecret');
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // res.status(200).json({ user: user.getPublicProfile() });
         res.status(200).json(user);
     } catch (error) {
         console.error('Error fetching current user:', error);
-        res.status(500).json({ message: 'An error occurred while fetching user profile' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -245,7 +245,7 @@ exports.updateUserProfile = async (req, res) => {
         );
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         res.status(200).json({
@@ -254,7 +254,7 @@ exports.updateUserProfile = async (req, res) => {
         });
     } catch (error) {
         console.error('Error updating profile:', error);
-        res.status(500).json({ message: 'An error occurred while updating profile' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -287,7 +287,7 @@ exports.changePassword = async (req, res) => {
         res.status(200).json({ message: 'Password changed successfully' });
     } catch (error) {
         console.error('Error changing password:', error);
-        res.status(500).json({ message: 'An error occurred while changing password' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -316,7 +316,7 @@ exports.forgotPassword = async (req, res) => {
         res.status(200).json({ message: 'Password reset email sent' });
     } catch (error) {
         console.error('Error sending password reset email:', error);
-        res.status(500).json({ message: 'An error occurred while processing your request' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -359,7 +359,7 @@ exports.resetPassword = async (req, res) => {
         res.status(200).json({ message: 'Password reset successful' });
     } catch (error) {
         console.error('Error resetting password:', error);
-        res.status(500).json({ message: 'An error occurred while resetting password' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -437,7 +437,7 @@ exports.getAdvisors = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching advisors:', error);
-        res.status(500).json({ message: 'An error occurred while fetching advisors' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -454,13 +454,13 @@ exports.getAdvisorById = async (req, res) => {
         }).select('-password -verificationToken -resetPasswordToken -resetPasswordExpire');
 
         if (!advisor) {
-            return res.status(404).json({ message: 'Advisor not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         res.status(200).json({ advisor });
     } catch (error) {
         console.error('Error fetching advisor details:', error);
-        res.status(500).json({ message: 'An error occurred while fetching advisor details' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -489,7 +489,7 @@ exports.linkTelegramAccount = async (req, res) => {
         res.status(200).json({ message: 'Telegram account linked successfully' });
     } catch (error) {
         console.error('Error linking Telegram account:', error);
-        res.status(500).json({ message: 'An error occurred while linking Telegram account' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -499,7 +499,7 @@ exports.deactivateAccount = async (req, res) => {
         const user = await User.findById(req.user.id);
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         user.isActive = false;
@@ -508,7 +508,7 @@ exports.deactivateAccount = async (req, res) => {
         res.status(200).json({ message: 'Account deactivated successfully' });
     } catch (error) {
         console.error('Error deactivating account:', error);
-        res.status(500).json({ message: 'An error occurred while deactivating account' });
+        res.status(500).json({ message: req.t('errors.serverError') });
     }
 };
 
@@ -519,13 +519,13 @@ exports.getAdvisorAvailability = async (req, res) => {
         const { date } = req.query;
 
         if (!date) {
-            return res.status(400).json({ message: 'Date parameter is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Get advisor's working hours
         const advisor = await User.findById(advisorId);
         if (!advisor || advisor.role !== 'advisor') {
-            return res.status(404).json({ message: 'Advisor not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Parse date and get working hours for that day of week
@@ -536,7 +536,7 @@ exports.getAdvisorAvailability = async (req, res) => {
         const dayAvailability = advisor.availability.find(a => a.dayOfWeek === dayIndex);
         if (!dayAvailability || !dayAvailability.isAvailable) {
             return res.status(200).json({
-                message: 'Advisor is not available on this day',
+                message: req.t('appointments.advisorNotAvailableDay'),
                 availableSlots: []
             });
         }
@@ -573,7 +573,7 @@ exports.getAdvisorAvailability = async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching advisor availability:', error);
-        res.status(500).json({ message: 'An error occurred while fetching advisor availability' });
+        res.status(500).json({ message: req.t('errors.serverError')  });
     }
 };
 

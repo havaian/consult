@@ -1,4 +1,7 @@
 {
+  "admin": {
+    "specializationInUse": "Mutaxassislikni o'chirib bo'lmaydi"
+  },
   "common": {
     "dear": "Hurmatli",
     "loading": "Yuklanmoqda...",

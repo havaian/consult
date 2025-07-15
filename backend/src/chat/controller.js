@@ -23,7 +23,7 @@ exports.getConversations = async (req, res) => {
         console.error('Error fetching conversations:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while fetching conversations',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -45,12 +45,12 @@ exports.getConversationById = async (req, res) => {
             .populate('appointment');
 
         if (!conversation) {
-            return res.status(404).json({ message: 'Conversation not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Check if user is a participant
         if (!conversation.participants.some(p => p._id.toString() === userId)) {
-            return res.status(403).json({ message: 'You are not authorized to access this conversation' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Get messages for this conversation with pagination
@@ -81,7 +81,7 @@ exports.getConversationById = async (req, res) => {
         console.error('Error fetching conversation:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while fetching conversation',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -98,7 +98,7 @@ exports.sendMessage = async (req, res) => {
         const userId = (req.user.id).toString();
 
         if (!text) {
-            return res.status(400).json({ message: 'Message text is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         let conversation;
@@ -108,11 +108,11 @@ exports.sendMessage = async (req, res) => {
             conversation = await Conversation.findById(conversationId);
 
             if (!conversation) {
-                return res.status(404).json({ message: 'Conversation not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             if (!conversation.participants.some(p => p.toString() === userId)) {
-                return res.status(403).json({ message: 'You are not authorized to send messages in this conversation' });
+                return res.status(403).json({ message: req.t('errors.unauthorized') });
             }
         }
         // If no conversationId, create a new conversation between sender and receiver
@@ -120,7 +120,7 @@ exports.sendMessage = async (req, res) => {
             // Verify receiver exists
             const receiver = await User.findById(receiverId);
             if (!receiver) {
-                return res.status(404).json({ message: 'Receiver not found' });
+                return res.status(404).json({ message: req.t('errors.notFound') });
             }
 
             // Check if a conversation already exists between these users
@@ -140,7 +140,7 @@ exports.sendMessage = async (req, res) => {
                 await conversation.save();
             }
         } else {
-            return res.status(400).json({ message: 'Either conversationId or receiverId is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Create the message
@@ -170,7 +170,7 @@ exports.sendMessage = async (req, res) => {
         console.error('Error sending message:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while sending the message',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -187,13 +187,13 @@ exports.createConversation = async (req, res) => {
         const userId = req.user.id;
 
         if (!participantId) {
-            return res.status(400).json({ message: 'Participant ID is required' });
+            return res.status(400).json({ message: req.t('validation.required') });
         }
 
         // Verify participant exists
         const participant = await User.findById(participantId);
         if (!participant) {
-            return res.status(404).json({ message: 'Participant not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         // Check if a conversation already exists between these users
@@ -238,7 +238,7 @@ exports.createConversation = async (req, res) => {
         console.error('Error creating conversation:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while creating the conversation',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -257,11 +257,11 @@ exports.markMessagesAsRead = async (req, res) => {
         // Check if conversation exists and user is a participant
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) {
-            return res.status(404).json({ message: 'Conversation not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         if (!conversation.participants.some(p => p.toString() === userId)) {
-            return res.status(403).json({ message: 'You are not authorized to access this conversation' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Mark messages as read
@@ -269,13 +269,13 @@ exports.markMessagesAsRead = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Messages marked as read'
+            message: req.t('success.updated')
         });
     } catch (error) {
         console.error('Error marking messages as read:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while marking messages as read',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -294,11 +294,11 @@ exports.archiveConversation = async (req, res) => {
         // Check if conversation exists and user is a participant
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) {
-            return res.status(404).json({ message: 'Conversation not found' });
+            return res.status(404).json({ message: req.t('errors.notFound') });
         }
 
         if (!conversation.participants.some(p => p.toString() === userId)) {
-            return res.status(403).json({ message: 'You are not authorized to archive this conversation' });
+            return res.status(403).json({ message: req.t('errors.unauthorized') });
         }
 
         // Archive the conversation
@@ -307,13 +307,13 @@ exports.archiveConversation = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Conversation archived successfully'
+            message: req.t('success.archived')
         });
     } catch (error) {
         console.error('Error archiving conversation:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while archiving the conversation',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
@@ -354,7 +354,7 @@ exports.getUnreadMessagesCount = async (req, res) => {
         console.error('Error getting unread messages count:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while getting unread messages count',
+            message: req.t('errors.serverError'),
             error: error.message
         });
     }
