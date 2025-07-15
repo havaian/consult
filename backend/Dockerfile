@@ -16,11 +16,11 @@ COPY localization/locales ./src/localization/locales
 # Create a non-root user
 RUN addgroup -S nodeapp && adduser -S -G nodeapp nodeapp
 
-# Change ownership of the app directory
-RUN chown -R nodeapp:nodeapp /app
+# # Change ownership of the app directory
+# RUN chown -R nodeapp:nodeapp /app
 
-# Switch to non-root user
-USER nodeapp
+# # Switch to non-root user
+# USER nodeapp
 
 # Set environment variables
 ENV NODE_ENV=development
